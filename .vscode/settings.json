@@ -1,0 +1,21 @@
+{
+	"editor.insertSpaces": false,
+	"editor.defaultFormatter": "JohnnyMorganz.stylua",
+	
+	"cSpell.enabled": true,
+	"cSpell.words": [
+		"Roblox",
+		"rojo",
+	],
+
+	"cSpell.ignorePaths": [
+		"vscode-extension",
+		".git/objects",
+		".vscode",	// ignore vscode workspace settings
+		".vscode-insiders",
+		"*.toml"	// ignore toml files
+	],
+
+	"luau-lsp.sourcemap.rojoProjectFile": "${workspaceFolderBasename}.project.json",
+	"luau-lsp.platform.type": "roblox"
+}

@@ -1,0 +1,27 @@
+name: Lint
+
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  Lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Lint
+        run: selene src/
+    
+  

@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "johnnymorganz.stylua",
+        "evaera.vscode-rojo",
+        "johnnymorganz.luau-lsp",
+        "usernamehw.errorlens",
+        "streetsidesoftware.code-spell-checker",
+        "github.vscode-github-actions",
+        "tamasfe.even-better-toml"
+    ]
+}

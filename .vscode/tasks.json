@@ -1,0 +1,78 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Install programs",
+            "detail": "Install programms using aftman",
+            "command": "aftman install && exit",
+            "group": {
+                "kind": "none"
+            },
+            "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "Load depends",
+            "command": "wally install && exit",
+            "group": {
+                "kind": "none"
+            },
+            "detail": "Install all project depends",
+            "problemMatcher": [],
+            "dependsOn": ["Install programs"]
+        },
+        {
+            "type": "shell",
+            "label": "Build game",
+            "command": "rojo build ${workspaceFolderBasename}.project.json --output ${workspaceFolderBasename}.rbxl && exit",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Build game",
+            "dependsOn": ["Load depends"]
+        },
+        {
+            "type": "shell",
+            "label": "Build tests",
+            "detail": "Build tests place",
+            "command": "rojo build tests.project.json --output tests.rbxl && exit",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": ["Load depends"]
+        },
+        {
+            "type": "shell",
+            "label": "Generate sourcemap for game",
+            "detail": "Generate sourcemap for game project",
+            "command": "rojo sourcemap ${workspaceFolderBasename}.project.json --output sourcemap.json && exit",
+            "group": {
+                "kind": "none"
+            },
+            "dependsOn": ["Load depends"]
+        },
+        {
+            "type": "shell",
+            "label": "Generate sourcemap for tests",
+            "detail": "Generate sourcemap for tests project",
+            "command": "rojo sourcemap tests.project.json --output sourcemap.json && exit",
+            "group": {
+                "kind": "none"
+            },
+            "dependsOn": ["Load depends"]
+        }
+    ],
+    "windows": {
+        "options": {
+            "shell": {
+                "executable": "cmd",
+                "args": [
+                    "/k"
+                ]
+            }
+        }
+    },
+    "version": "2.0.0"
+}

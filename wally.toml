@@ -1,0 +1,31 @@
+[package]
+name = "owner/packagename"
+
+description = "description of package"
+
+version = "0.1.0"
+
+registry = "https://github.com/UpliftGames/wally-index"
+
+# or server
+realm = "shared"
+
+license = ""
+
+repository = "https://github/"
+
+authors = ["You <you mail>"]
+
+exclude = ["*"]
+
+include = ["src", "src/**", "wally.toml", "README.md", "init.lua"]
+
+private = false
+
+[dependencies]
+
+
+[server-dependencies]
+
+
+[dev-dependencies]

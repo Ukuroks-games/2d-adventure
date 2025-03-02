@@ -1,0 +1,19 @@
+{
+	"name": "Tests",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Packages": { 
+				"$path": "Packages"
+			},
+			"DevPackages": { 
+				"$path": "DevPackages"
+			}
+		},
+		"Workspace": {
+			"$className": "Workspace",
+			"$path": "tests"
+		}
+	}
+}
