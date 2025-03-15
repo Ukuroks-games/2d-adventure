@@ -1,6 +1,6 @@
-local control = require(script.Parent.controlType)
+local ControlType = require(script.Parent.ControlType)
 
-local DefaultControls: control.Control = {
+local DefaultControls: ControlType.Control = {
 	Keyboard = {
 		Up = Enum.KeyCode.W,
 		Down = Enum.KeyCode.S,
@@ -8,10 +8,10 @@ local DefaultControls: control.Control = {
 		Left = Enum.KeyCode.A,
 	},
 	Gamepad = {
-		Up = Enum.KeyCode.W,
-		Down = Enum.KeyCode.W,
-		Right = Enum.KeyCode.W,
-		Left = Enum.KeyCode.W,
+		Up = Enum.KeyCode.ButtonA,
+		Down = Enum.KeyCode.ButtonB,
+		Right = Enum.KeyCode.ButtonR1,
+		Left = Enum.KeyCode.ButtonR2,
 	}
 }
 

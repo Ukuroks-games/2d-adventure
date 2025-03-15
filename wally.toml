@@ -23,9 +23,10 @@ include = ["src", "src/**", "wally.toml", "README.md", "init.lua"]
 private = false
 
 [dependencies]
-giflib = "egor00f/giflib@0.1.7"
+giflib = "egor00f/giflib@>=0.1.6"
 stdlib = "egor00f/stdlib@0.1.8"
 switch = "egor00f/switch@0.1.0"
+cooldown = "egor00f/cooldownlib@0.1.0"
 
 [server-dependencies]
 

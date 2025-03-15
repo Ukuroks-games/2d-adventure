@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local giflib = require(ReplicatedStorage.Packages._Index["egor00f_giflib@0.1.6"].giflib.src.giflib)
-local giflibFrame = require(ReplicatedStorage.Packages._Index["egor00f_giflib@0.1.6"].giflib.src.gifFrame)
+local giflib = require(ReplicatedStorage.Packages.giflib)
+local giflibFrame = giflib.Frame
 
 --[[
 	Player class
@@ -18,10 +18,28 @@ export type Animations = {
 	-- Other animations
 }
 
+--[[
+	Класс игрока
+]]
 export type Player2d = {
+	--[[
+		Анимации игрока
+	]]
 	Animations: Animations,
+
+	--[[
+		Скорость ходьбы
+	]]
 	WalkSpeed: number,
+
+	--[[
+		Текущяя анимация
+	]]
 	CurrentAnimation: giflib.Gif,
+
+	--[[
+		Фреём в которы вписиваются анимации
+	]]
 	Frame: Frame
 }
 

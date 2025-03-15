@@ -28,8 +28,7 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            },
-            "dependsOn": ["Load depends"]
+            }
         },
         {
             "type": "shell",
@@ -38,8 +37,7 @@
             "command": "rojo sourcemap tests.project.json --output sourcemap.json && exit",
             "group": {
                 "kind": "none"
-            },
-            "dependsOn": ["Load depends"]
+            }
         }
     ],
     "windows": {
