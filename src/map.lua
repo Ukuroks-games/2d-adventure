@@ -9,11 +9,14 @@ local map = {}
 
 export type Map = {
 	Image: ImageLabel,
+
 	Objects: {
 		Instance
 	},
+
 	cam: camera2d.Camera2d,
-	SetPlayerPos: (self: Map, pos: Vector2)->nil
+
+	SetPlayerPos: (self: Map, pos: Vector2) -> nil
 }
 
 function map.SetPlayerPos(self: Map, pos: Vector2)
@@ -33,13 +36,15 @@ end
 
 	`Size` - Size of map. If you want that map scale to screen use Vector2.new(1, 1)
 ]]
-function map.new(Size: Vector2, cam: camera2d.Camera2d, Objects: { Instance }?): Map
+function map.new(Size: Vector2, cam: camera2d.Camera2d, BackgroundImage: string, Objects: { Instance }?): Map
 	local self: Map = {
 		Image = Instance.new("ImageLabel"),
 		Objects = Objects or {},
 		cam = cam,
 		SetPlayerPos = map.SetPlayerPos
 	}
+
+	self.Image.Image = "rbxassetid://" .. BackgroundImage
 
 	self.Image.Size = UDim2.fromScale(Size.X, Size.Y)
 

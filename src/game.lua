@@ -1,11 +1,16 @@
+local ContextActionService = game:GetService("ContextActionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
+local InputLib = require(ReplicatedStorage.Packages.InputLib)
 local cooldown = require(ReplicatedStorage.Packages.cooldown)
-local switch = require(ReplicatedStorage.Packages.switch)
+local stdlib = require(ReplicatedStorage.Packages.stdlib)
 local defaultControls = require(script.Parent.defaultControls)
 local map = require(script.Parent.map)
 local player = require(script.Parent.player)
+
 
 --[[
 	Класс игры
@@ -15,18 +20,44 @@ local Game = {}
 export type Game = {
 	Frame: Frame,
 	Player: player.Player2d,
-	Map: map.Map
+	Map: map.Map,
+
+	Destroying: RBXScriptSignal,
+	DestroyingEvent: BindableEvent,
+
+	Destroy: (self: Game) -> nil
 }
 
+--[[
+
+]]
+function Game.Destroy(self: Game)
+	self.DestroyingEvent:Fire()
+
+	self.Frame:Destroy()
+	self.DestroyingEvent:Destroy()
+end
+
+--[[
+
+]]
 function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
+
+	local DestroyingEvent = Instance.new("BindableEvent")
+
 	local self: Game = {
 		Frame = GameFrame,
 		Player = Player,
-		Map = Map
+		Map = Map,
+		Destroying = DestroyingEvent.Event,
+		DestroyingEvent = DestroyingEvent,
+		Destroy = Game.Destroy
 	}
 
 	self.Map.Image.Parent = self.Frame
 	self.Player.Frame.Parent = self.Frame
+
+	self.Player.Animations.IDLE:SetFrame(1)	-- set first IDLE frame as default
 
 	local function showAnimation(animationName: string)
 		if	self.Player.CurrentAnimation.AnimationRunning and
@@ -44,58 +75,159 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 		showAnimation("IDLE")
 	end
 
-	local function Up()
-		showAnimation("WalkUp")
-		self.Map.Image.Position = UDim2.new(self.Map.Image.Position.X, UDim.new(self.Map.Image.Position.Y.Scale, self.Map.Image.Position.Y.Offset + self.Player.WalkSpeed))
-	end
+	local cooldownTime = 0.02
 
-	local function Down()
-		showAnimation("WalkDown")
-		self.Map.Image.Position = UDim2.new(self.Map.Image.Position.X, UDim.new(self.Map.Image.Position.Y.Scale, self.Map.Image.Position.Y.Offset - self.Player.WalkSpeed))
-	end
+	local Up = cooldown.new(
+		cooldownTime,
+		function ()
+			showAnimation("WalkUp")
 
-	local function Left()
-		showAnimation("WalkLeft")
-		self.Map.Image.Position = UDim2.new(UDim.new(self.Map.Image.Position.X.Scale, self.Map.Image.Position.X.Offset + self.Player.WalkSpeed), self.Map.Image.Position.Y)
-	end
-
-	local function Right()
-		showAnimation("WalkRight")
-		self.Map.Image.Position = UDim2.new(UDim.new(self.Map.Image.Position.X.Scale, self.Map.Image.Position.X.Offset - self.Player.WalkSpeed), self.Map.Image.Position.Y)
-	end
-
-	local WalkCooldown = cooldown.new(
-		0.08,
-		function(Input: InputObject)
-			if Input.UserInputType == Enum.UserInputType.Keyboard or Input.UserInputType == Enum.UserInputType.Gamepad1 then
-				switch(Input.KeyCode)
+			TweenService:Create(
+				self.Map.Image, 
+				TweenInfo.new(cooldownTime),
 				{
-					[defaultControls.Keyboard.Down] = Down,
-					[defaultControls.Keyboard.Up] = Up,
-					[defaultControls.Keyboard.Left] = Left,
-					[defaultControls.Keyboard.Right] = Right,
-					[defaultControls.Gamepad.Down] = Down,
-					[defaultControls.Gamepad.Up] = Up,
-					[defaultControls.Gamepad.Left] = Left,
-					[defaultControls.Gamepad.Right] = Right
+					["Position"] = UDim2.new(
+						self.Map.Image.Position.X, 
+						UDim.new(
+							self.Map.Image.Position.Y.Scale,
+							self.Map.Image.Position.Y.Offset + self.Player.WalkSpeed
+						)
+					)
 				}
-			end
+			):Play()
 		end
 	)
-	
-	local function Hanlder(...)
-		WalkCooldown:Call(...)
-	end
 
-	UserInputService.InputBegan:Connect(Hanlder)
-	UserInputService.InputChanged:Connect(Hanlder)
+	local Down = cooldown.new(
+		cooldownTime,
+		function()
+			showAnimation("WalkDown")
+
+			TweenService:Create(
+				self.Map.Image, 
+				TweenInfo.new(cooldownTime),
+				{
+					["Position"] = UDim2.new(
+						self.Map.Image.Position.X,
+						UDim.new(
+							self.Map.Image.Position.Y.Scale,
+							self.Map.Image.Position.Y.Offset - self.Player.WalkSpeed
+						)
+					)
+				}
+			):Play()
+
+		end
+	)
+
+	local Left = cooldown.new(
+		cooldownTime,
+		function ()
+			showAnimation("WalkLeft")
+
+			TweenService:Create(
+				self.Map.Image, 
+				TweenInfo.new(cooldownTime),
+				{
+					["Position"] = UDim2.new(
+						UDim.new(
+							self.Map.Image.Position.X.Scale,
+							self.Map.Image.Position.X.Offset + self.Player.WalkSpeed
+						), 
+						self.Map.Image.Position.Y
+					)
+				}
+			):Play()
+		
+		end
+	)
+
+	local Right = cooldown.new(
+		cooldownTime,
+		function()
+			showAnimation("WalkRight")
+
+			TweenService:Create(
+				self.Map.Image, 
+				TweenInfo.new(cooldownTime),
+				{
+					["Position"] = UDim2.new(
+						UDim.new(
+							self.Map.Image.Position.X.Scale,
+							self.Map.Image.Position.X.Offset - self.Player.WalkSpeed
+						), 
+						self.Map.Image.Position.Y
+					)
+				}
+			):Play()
+		end
+	)
+
+	InputLib.WhileKeyPressed(
+		function()
+			Up:Call()
+		end,
+		{
+			defaultControls.Keyboard.Up,
+			defaultControls.Gamepad.Up,
+		}
+	)
+
+	InputLib.WhileKeyPressed(
+		function()
+			Down:Call()
+		end,
+		{
+			defaultControls.Keyboard.Down,
+			defaultControls.Gamepad.Down,
+		}
+	)
+
+	InputLib.WhileKeyPressed(
+		function()
+			Left:Call()
+		end,
+		{
+			defaultControls.Keyboard.Left,
+			defaultControls.Gamepad.Left,
+		}
+	)
+
+	InputLib.WhileKeyPressed(
+		function()
+			Right:Call()
+		end,
+		{
+			defaultControls.Keyboard.Right,
+			defaultControls.Gamepad.Right,
+		}
+	)
 
 	task.spawn(function()
-		while true do
-			WalkCooldown.CallEvent.Event:Wait()
-			task.wait(4)
-			IDLE()
-		end
+		local event = stdlib.events.AnyEvent(
+			{
+				Up.CallEvent.Event,
+				Down.CallEvent.Event,
+				Right.CallEvent.Event,
+				Left.CallEvent.Event
+			}
+		)
+
+		local IdleRun = cooldown.new(4, IDLE)
+
+		local t = task.spawn(function()
+			while true do
+				event.Event:Wait()
+				wait(4)
+				IdleRun:Call()
+			end
+		end)
+
+		self.Destroying:Connect(function(...: any) 
+			task.cancel(t)
+			IdleRun:Destroy()
+			event:Destroy()
+		end)
 	end)
 
 	return self

@@ -14,7 +14,7 @@ GameFrame.Size = UDim2.fromScale(1, 1)
 
 
 local cam = camera2d.new(1)
-local Map = map.new(Vector2.new(1, 1), cam)
+local Map = map.new(Vector2.new(1, 1), cam, "76803732961234")
 
 
 

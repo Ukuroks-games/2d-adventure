@@ -45,7 +45,7 @@ export type Player2d = {
 
 
 
-function player.new(Animations: { {giflibFrame.GifFrame} }, WalkSpeed: number, Size: { X: number, Y: number }): Player2d
+function player.new(Animations: { [string]: {giflibFrame.GifFrame} }, WalkSpeed: number, Size: { X: number, Y: number }): Player2d
 	
 	local PlayerFrame = Instance.new("Frame")
 	PlayerFrame.BackgroundTransparency = 1
@@ -57,6 +57,7 @@ function player.new(Animations: { {giflibFrame.GifFrame} }, WalkSpeed: number, S
 
 	for i, v in pairs(Animations) do
 		CreatedAnimations[i] = giflib.new(PlayerFrame, v, true)
+		CreatedAnimations[i]:Hide()
 	end
 
 	local self: Player2d = {
