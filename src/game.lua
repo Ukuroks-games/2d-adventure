@@ -22,10 +22,17 @@ export type Game = {
 	Player: player.Player2d,
 	Map: map.Map,
 
-	Destroying: RBXScriptSignal,
-	DestroyingEvent: BindableEvent,
+	CollideSteped: RBXScriptSignal,
 
-	Destroy: (self: Game) -> nil
+	Destroying: RBXScriptSignal,
+
+
+	Destroy: (self: Game) -> nil,
+	
+	
+	DestroyingEvent: BindableEvent,
+	CollideStepedEvent: BindableEvent
+	
 }
 
 --[[
@@ -44,6 +51,7 @@ end
 function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 
 	local DestroyingEvent = Instance.new("BindableEvent")
+	local CollideStepedEvent = Instance.new("BindableEvent")
 
 	local self: Game = {
 		Frame = GameFrame,
@@ -51,6 +59,8 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 		Map = Map,
 		Destroying = DestroyingEvent.Event,
 		DestroyingEvent = DestroyingEvent,
+		CollideSteped = CollideStepedEvent.Event,
+		CollideStepedEvent = CollideStepedEvent,
 		Destroy = Game.Destroy
 	}
 
@@ -203,31 +213,37 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 		}
 	)
 
-	task.spawn(function()
-		local event = stdlib.events.AnyEvent(
-			{
-				Up.CallEvent.Event,
-				Down.CallEvent.Event,
-				Right.CallEvent.Event,
-				Left.CallEvent.Event
-			}
-		)
+	local event = stdlib.events.AnyEvent(
+		{
+			Up.CallEvent.Event,
+			Down.CallEvent.Event,
+			Right.CallEvent.Event,
+			Left.CallEvent.Event
+		}
+	)
 
-		local IdleRun = cooldown.new(4, IDLE)
+	local IdleRun = cooldown.new(4, IDLE)
 
-		local t = task.spawn(function()
-			while true do
-				event.Event:Wait()
-				wait(4)
-				IdleRun:Call()
-			end
-		end)
+	local t = task.spawn(function()
+		while true do
+			event.Event:Wait()
+			wait(4)
+			IdleRun:Call()
+		end
+	end)
 
-		self.Destroying:Connect(function(...: any) 
-			task.cancel(t)
-			IdleRun:Destroy()
-			event:Destroy()
-		end)
+	local Collide_thread = task.spawn(function()
+		while true do
+			self.Map:CalcCollide()
+			self.CollideStepedEvent:Fire()
+		end
+	end)
+
+	self.Destroying:Connect(function(...: any) 
+		task.cancel(t)
+		task.cancel(Collide_thread)
+		IdleRun:Destroy()
+		event:Destroy()
 	end)
 
 	return self
