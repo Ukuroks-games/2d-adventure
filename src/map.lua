@@ -13,6 +13,8 @@ local camera2d = require(script.Parent.camera2d)
 local map = {}
 
 export type Map = {
+	-- fields
+
 	Image: ImageLabel,
 
 	Objects: {
@@ -21,9 +23,17 @@ export type Map = {
 
 	cam: camera2d.Camera2d,
 
+	ObjectMovement: RBXScriptSignal,
+
+	ObjectMovementEvent: BindableEvent,
+
+	-- function
+
 	SetPlayerPos: (self: Map, pos: Vector2) -> nil,
 
-	CalcCollide: (self: Map) -> nil
+	CalcCollide: (self: Map) -> nil,
+
+	Destroy: (self: Map) -> nil
 }
 
 function map.SetPlayerPos(self: Map, pos: Vector2)
@@ -74,18 +84,30 @@ function map.CalcCollide(self: Map)
 
 end
 
+function map.Destroy(self: Map)
+	self.ObjectMovementEvent:Destroy()
+
+	table.clear(self)
+end
+
 --[[
 	Map constructor
 
 	`Size` - Size of map. If you want that map scale to screen use Vector2.new(1, 1)
 ]]
 function map.new(Size: Vector2, cam: camera2d.Camera2d, BackgroundImage: string, Objects: { Object2d.Object2d }?): Map
+
+	local ObjectMovementEvent = Instance.new("BindableEvent")
+
 	local self: Map = {
 		Image = Instance.new("ImageLabel"),
 		Objects = Objects or {},
 		cam = cam,
+		ObjectMovement = ObjectMovementEvent.Event,
+		ObjectMovementEvent = ObjectMovementEvent,
 		SetPlayerPos = map.SetPlayerPos,
-		CalcCollide = map.CalcCollide
+		CalcCollide = map.CalcCollide,
+		Destroy = map.Destroy
 	}
 
 	self.Image.Image = "rbxassetid://" .. BackgroundImage

@@ -26,13 +26,15 @@ export type Game = {
 
 	Destroying: RBXScriptSignal,
 
+	PlayerMove: RBXScriptSignal,
+
 
 	Destroy: (self: Game) -> nil,
 	
 	
 	DestroyingEvent: BindableEvent,
-	CollideStepedEvent: BindableEvent
-	
+	CollideStepedEvent: BindableEvent,
+	PlayerMoveEvent: BindableEvent
 }
 
 --[[
@@ -42,16 +44,19 @@ function Game.Destroy(self: Game)
 	self.DestroyingEvent:Fire()
 
 	self.Frame:Destroy()
+	self.CollideStepedEvent:Destroy()
+	self.PlayerMoveEvent:Destroy()
 	self.DestroyingEvent:Destroy()
 end
 
 --[[
-
+	Game constructor
 ]]
 function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 
 	local DestroyingEvent = Instance.new("BindableEvent")
 	local CollideStepedEvent = Instance.new("BindableEvent")
+	local PlayerMoveEvent = Instance.new("BindableEvent")
 
 	local self: Game = {
 		Frame = GameFrame,
@@ -61,6 +66,8 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 		DestroyingEvent = DestroyingEvent,
 		CollideSteped = CollideStepedEvent.Event,
 		CollideStepedEvent = CollideStepedEvent,
+		PlayerMove = PlayerMoveEvent.Event,
+		PlayerMoveEvent = PlayerMoveEvent,
 		Destroy = Game.Destroy
 	}
 
@@ -85,7 +92,7 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 		showAnimation("IDLE")
 	end
 
-	local cooldownTime = 0.02
+	local cooldownTime = 0.016
 
 	local Up = cooldown.new(
 		cooldownTime,
@@ -105,6 +112,8 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 					)
 				}
 			):Play()
+
+			PlayerMoveEvent:Fire()
 		end
 	)
 
@@ -127,6 +136,7 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 				}
 			):Play()
 
+			PlayerMoveEvent:Fire()
 		end
 	)
 
@@ -148,7 +158,8 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 					)
 				}
 			):Play()
-		
+
+			PlayerMoveEvent:Fire()
 		end
 	)
 
@@ -170,6 +181,8 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 					)
 				}
 			):Play()
+
+			PlayerMoveEvent:Fire()
 		end
 	)
 
@@ -223,6 +236,12 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 	)
 
 	local IdleRun = cooldown.new(4, IDLE)
+	local CollideStepRunEvent = stdlib.events.AnyEvent(
+		{
+			self.Map.ObjectMovement,
+			self.PlayerMove
+		}
+	)
 
 	local t = task.spawn(function()
 		while true do
@@ -236,6 +255,7 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 		while true do
 			self.Map:CalcCollide()
 			self.CollideStepedEvent:Fire()
+			CollideStepRunEvent.Event:Wait()
 		end
 	end)
 
@@ -243,6 +263,7 @@ function Game.new(GameFrame: Frame, Player: player.Player2d, Map: map.Map): Game
 		task.cancel(t)
 		task.cancel(Collide_thread)
 		IdleRun:Destroy()
+		CollideStepRunEvent:Destroy()
 		event:Destroy()
 	end)
 
