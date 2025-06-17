@@ -3,18 +3,30 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Game = require(ReplicatedStorage.shared.game)
 local giflib = require(ReplicatedStorage.Packages.giflib)
+local ExImage = require(ReplicatedStorage.shared.ExImage)
 local camera2d = require(ReplicatedStorage.shared.camera2d)
 local map = require(ReplicatedStorage.shared.map)
 local player = require(ReplicatedStorage.shared.player)
+local Object2d = require(ReplicatedStorage.shared.Object2d)
 
 
-local GameGui = Instance.new("ScreenGui", Players.LocalPlayer.PlayerGui)
-local GameFrame = Instance.new("Frame", GameGui)
+local GameFrame = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui").Frame
 GameFrame.Size = UDim2.fromScale(1, 1)
 
 
 local cam = camera2d.new(1)
-local Map = map.new(Vector2.new(1, 1), cam, "76803732961234")
+local Map = map.new(
+	Vector2.new(1, 1),
+	cam,
+	"76803732961234",
+	{
+		Object2d.new(
+			Vector2.new(157, 196),
+			Vector2.new(28, 69),
+			ExImage.new("84486373084684")
+		)
+	}
+)
 
 
 

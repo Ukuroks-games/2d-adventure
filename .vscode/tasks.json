@@ -32,9 +32,18 @@
         },
         {
             "type": "shell",
-            "label": "Generate sourcemap ",
+            "label": "Generate sourcemap",
             "detail": "Generate sourcemap for project",
             "command": "rojo sourcemap tests.project.json --output sourcemap.json && exit",
+            "group": {
+                "kind": "none"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Lint",
+            "detail": "Lint this project",
+            "command": "make lint && exit",
             "group": {
                 "kind": "none"
             }

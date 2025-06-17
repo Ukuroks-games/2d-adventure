@@ -17,6 +17,15 @@
 				"Gravity": 0
 			}
 		},
+		"StarterGui": {
+			"$className": "StarterGui",
+			"ScreenGui": {
+				"$className": "ScreenGui",
+				"Frame": {
+					"$className": "Frame"
+				}
+			}
+		},
 		"StarterPlayer": {
 			"$className": "StarterPlayer",
 			"StarterPlayerScripts": {

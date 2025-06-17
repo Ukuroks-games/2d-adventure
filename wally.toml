@@ -1,7 +1,7 @@
 [package]
 name = "egor00f/2d-adventure"
 
-description = "Egnine for 2d adventure games"
+description = "Egnine for 2d games in roblox"
 
 version = "0.1.0"
 
@@ -15,10 +15,6 @@ license = "MIT"
 repository = "https://github/Ukuroks-Games/2d-adventure"
 
 authors = ["Egor00f <velikiydolbayeb@gmail.com>"]
-
-exclude = ["*"]
-
-include = ["src", "src/**", "wally.toml", "README.md", "init.lua"]
 
 private = false
 
