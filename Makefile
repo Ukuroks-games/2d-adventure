@@ -17,10 +17,16 @@ package: configure
 	wally package --output $(PACKAGE_NAME) --project-path build
 
 publish: configure
-	wally publish
+	wally publish --project-path build
 
 lint:
 	selene src/ tests/
+
+Packages: wally.toml
+	wally install
+
+tests: Packages
+	rojo build tests.project.json --output tests.rbxl
 
 clean: 
 	rm -rf build $(PACKAGE_NAME)

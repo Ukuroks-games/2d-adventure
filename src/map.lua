@@ -40,9 +40,13 @@ export type Map = {
 }
 
 function map.SetPlayerPos(self: Map, pos: Vector2)
-	TweenService:Create(self.Image, TweenInfo.new(self.cam.CameraMoveSpeed / pos.Magnitude), {
-		["Position"] = UDim2.fromScale(pos.X, pos.X),
-	}):Play()
+	TweenService:Create(
+		self.Image,
+		TweenInfo.new(self.cam.CameraMoveSpeed / pos.Magnitude),
+		{
+			["Position"] = UDim2.fromScale(pos.X, pos.X),
+		}
+	):Play()
 end
 
 function map.AddObject(self: Map, obj: Object2d.Object2d)
@@ -59,23 +63,32 @@ function map.CalcPositions(self: Map)
 end
 
 function map.CalcCollide(self: Map)
-	local Objects = algorithm.copy_if(self.Objects, function(value: Object2d.Object2d): boolean
-		return value.CanCollide
-	end)
+	local Objects = algorithm.copy_if(
+		self.Objects,
+		function(value: Object2d.Object2d): boolean
+			return value.CanCollide
+		end
+	)
 
 	for _, v in pairs(Objects) do
-		local i = algorithm.find_if(Objects, function(value: Object2d.Object2d): boolean
-			return (
-				(
-					value.AnchorPosition.X >= v.AnchorPosition.X
-					and value.AnchorPosition.X <= (v.AnchorPosition.X + v.Size.X)
-				) -- check if value in v
-				and (
-					value.AnchorPosition.Y >= v.AnchorPosition.Y
-					and value.AnchorPosition.Y <= (v.AnchorPosition.Y + v.Size.Y)
-				)
-			) -- обратная проверка не нужна т.к. и так проходим по всем
-		end)
+		local i = algorithm.find_if(
+			Objects,
+			function(value: Object2d.Object2d): boolean
+				return (
+					(
+						value.AnchorPosition.X >= v.AnchorPosition.X
+						and value.AnchorPosition.X
+							<= (v.AnchorPosition.X + v.Size.X)
+					) -- check if value in v
+					and (
+						value.AnchorPosition.Y >= v.AnchorPosition.Y
+						and value.AnchorPosition.Y
+							<= (v.AnchorPosition.Y + v.Size.Y)
+					)
+				) -- обратная проверка не нужна т.к. и так проходим по всем
+			end
+		)
+
 		local collided = (function()
 			if i then
 				return Objects[i]
@@ -104,7 +117,12 @@ end
 
 	`Size` - Size of map. If you want that map scale to screen use Vector2.new(1, 1)
 ]]
-function map.new(Size: Vector2, cam: camera2d.Camera2d, BackgroundImage: string, Objects: { Object2d.Object2d }?): Map
+function map.new(
+	Size: Vector2,
+	cam: camera2d.Camera2d,
+	BackgroundImage: string,
+	Objects: { Object2d.Object2d }?
+): Map
 	local ObjectMovementEvent = Instance.new("BindableEvent")
 
 	local self: Map = {

@@ -22,7 +22,7 @@ private = false
 giflib = "egor00f/giflib@>=0.1.7"
 stdlib = "egor00f/stdlib@>=0.1.9"
 switch = "egor00f/switch@0.1.0"
-cooldown = "egor00f/cooldownlib@0.1.0"
+cooldown = "egor00f/cooldownlib@>=0.1.1"
 InputLib = "egor00f/inputlib@>=0.1.0"
 
 [server-dependencies]
