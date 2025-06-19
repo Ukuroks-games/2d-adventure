@@ -15,8 +15,10 @@ local GameFrame = Players.LocalPlayer
 GameFrame.Size = UDim2.fromScale(1, 1)
 
 local cam = camera2d.new(1)
+
+-- entrace
 local Map = map.new(Vector2.new(1, 1), cam, "76803732961234", {
-	Object2d.new(
+	Object2d.new( -- door
 		Vector2.new(157, 196),
 		Vector2.new(28, 69),
 		ExImage.new("84486373084684")
@@ -27,7 +29,7 @@ local _game = Game.new(
 	GameFrame,
 	player.new(
 		{
-			["IDLE"] = {
+			["IDLE"] = { -- IDLE animation frames
 				giflib.Frame.new("123651728909570", 0.5), -- 1
 				giflib.Frame.new("73880862501758", 0.08), -- 2
 				giflib.Frame.new("76251571010833", 0.08), -- 3

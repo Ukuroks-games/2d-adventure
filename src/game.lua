@@ -135,6 +135,7 @@ local function showAnimation(self: Game, animationName: string)
 			~= self.Player.Animations[animationName]
 	then
 		self.Player.CurrentAnimation:StopAnimation()
+		self.Player.CurrentAnimation:Hide()
 	end
 
 	self.Player.Animations[animationName]:StartAnimation()
@@ -342,7 +343,7 @@ function Game.new(
 	})
 
 	--[[
-
+		
 	]]
 	local IDLE_show_thread = task.spawn(function()
 		--[[
@@ -382,7 +383,7 @@ function Game.new(
 		end
 	end)
 
-	self.Destroying:Connect(function(...: any)
+	self.Destroying:Connect(function()
 		task.cancel(IDLE_show_thread)
 		task.cancel(Collide_thread)
 		IdleRun:Destroy()

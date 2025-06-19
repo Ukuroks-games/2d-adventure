@@ -9,12 +9,12 @@ local giflibFrame = giflib.Frame
 local player = {}
 
 export type Animations = {
-	WalkUp:	giflib.Gif,
-	WalkDown:	giflib.Gif,
-	WalkRight:	giflib.Gif,
-	WalkLeft:	giflib.Gif,
-	IDLE:	giflib.Gif,
-		
+	WalkUp: giflib.Gif,
+	WalkDown: giflib.Gif,
+	WalkRight: giflibFrame.Gif,
+	WalkLeft: giflib.Gif,
+	IDLE: giflib.Gif,
+
 	-- Other animations
 }
 
@@ -40,31 +40,40 @@ export type Player2d = {
 	--[[
 		Фреём в которы вписиваются анимации
 	]]
-	Frame: Frame
+	Frame: Frame,
 }
 
-
-
-function player.new(Animations: { [string]: { giflibFrame.GifFrame } }, WalkSpeed: number, Size: { X: number, Y: number }): Player2d
-	
+function player.new(
+	Animations: { [string]: {} },
+	WalkSpeed: number,
+	Size: { X: number, Y: number }
+): Player2d
 	local PlayerFrame = Instance.new("Frame")
 	PlayerFrame.BackgroundTransparency = 1
 	PlayerFrame.Size = UDim2.fromScale(Size.X, Size.Y)
-	PlayerFrame.Position = UDim2.new(0.5, - PlayerFrame.AbsoluteSize.X / 2, 0.5, - PlayerFrame.AbsoluteSize.Y / 2)	-- move to center PlayerFrame
-	
+	PlayerFrame.Position = UDim2.new(
+		0.5,
+		-PlayerFrame.AbsoluteSize.X / 2,
+		0.5,
+		-PlayerFrame.AbsoluteSize.Y / 2
+	) -- move to center PlayerFrame
 
 	local CreatedAnimations = {}
 
 	for i, v in pairs(Animations) do
-		CreatedAnimations[i] = giflib.new(PlayerFrame, v, true)
-		CreatedAnimations[i]:Hide()
+		local gif = giflib.gif.new(PlayerFrame, v, true)
+
+		gif:Hide()
+		gif:SetBackgroundTransparency(1)
+
+		CreatedAnimations[i] = gif
 	end
 
 	local self: Player2d = {
 		Frame = PlayerFrame,
 		Animations = CreatedAnimations,
 		WalkSpeed = WalkSpeed,
-		CurrentAnimation = CreatedAnimations.IDLE or nil
+		CurrentAnimation = CreatedAnimations.IDLE or nil,
 	}
 
 	return self
