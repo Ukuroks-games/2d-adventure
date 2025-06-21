@@ -72,7 +72,7 @@ function player.new(
 		Animations = CreatedAnimations,
 		WalkSpeed = WalkSpeed,
 		CurrentAnimation = CreatedAnimations.IDLE or nil,
-	}, physicObject.new(PlayerFrame))
+	}, physicObject.new(PlayerFrame, true))
 
 	self.Touched:Connect(function(collided: physicObject.PhysicObject)
 		print("player touched", collided)

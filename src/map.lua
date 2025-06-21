@@ -76,7 +76,7 @@ function map.CalcCollide(self: Map)
 
 	for _, v in pairs(Objects) do
 		local i = algorithm.find_if(Objects, function(value): boolean
-			return (
+			return value ~= v and (
 				(
 					value.Image.AbsolutePosition.X
 						>= v.Image.AbsolutePosition.X

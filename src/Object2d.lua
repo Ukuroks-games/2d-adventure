@@ -27,7 +27,7 @@ export type Object2d = {
 	AnchorPosition: Vector2,
 
 	--[[
-		то какого ихначально оъект размера
+		то какого изначально объект размера
 	]]
 	Size: Vector2,
 

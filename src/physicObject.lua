@@ -17,14 +17,14 @@ function physicObject.Destroy(self: PhysicObject)
 	self.TouchedEvent:Destroy()
 end
 
-function physicObject.new(image: ImageType): PhysicObject
+function physicObject.new(image: ImageType, canCollide: boolean?): PhysicObject
 	local TouchedEvent = Instance.new("BindableEvent")
 
 	local this = {
 		Touched = TouchedEvent.Event,
 		TouchedEvent = TouchedEvent,
 		Image = image,
-		CanCollide = true,
+		CanCollide = canCollide or true,
 	}
 
 	return this
