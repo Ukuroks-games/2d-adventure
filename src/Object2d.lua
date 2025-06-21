@@ -1,4 +1,11 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local stdlib = require(ReplicatedStorage.Packages.stdlib)
+
+local utility = stdlib.utility
+
 local ExImage = require(script.Parent.ExImage)
+local physicObject = require(script.Parent.physicObject)
 
 local Object2d = {}
 
@@ -24,18 +31,12 @@ export type Object2d = {
 	]]
 	Size: Vector2,
 
-	CanCollide: boolean,
-
-	Touched: RBXScriptSignal,
-
 	TouchedSide: number,
-
-	TouchedEvent: BindableEvent,
 
 	Image: ExImage.ExImage,
 
 	CalcSizeAndPos: (self: Object2d, background: ExImage.ExImage) -> nil,
-}
+} & physicObject.PhysicObject
 
 --[[
 	Расчитывает координаты объекта
@@ -135,18 +136,12 @@ function Object2d.new(
 	Image: ExImage.ExImage,
 	isButton: boolean?
 ): Object2d
-	local TouchedEvent = Instance.new("BindableEvent")
-
-	local self: Object2d = {
+	local self: Object2d = utility.merge({
 		AnchorPosition = AnchorPosition,
 		Size = Size,
-		CanCollide = true,
 		TouchedSide = Object2d.TouchSide.NoTouched, -- by default not touched
-		Touched = TouchedEvent.Event,
-		TouchedEvent = TouchedEvent,
-		Image = Image,
 		CalcSizeAndPos = Object2d.CalcSizeAndPos,
-	}
+	}, physicObject.new(Image))
 
 	self.Image.BackgroundTransparency = 1
 

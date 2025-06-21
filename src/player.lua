@@ -1,7 +1,11 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local giflib = require(ReplicatedStorage.Packages.giflib)
-local giflibFrame = giflib.Frame
+local stdlib = require(ReplicatedStorage.Packages.stdlib)
+
+local utility = stdlib.utility
+
+local physicObject = require(script.Parent.physicObject)
 
 --[[
 	Player class
@@ -11,7 +15,7 @@ local player = {}
 export type Animations = {
 	WalkUp: giflib.Gif,
 	WalkDown: giflib.Gif,
-	WalkRight: giflibFrame.Gif,
+	WalkRight: giflib.Gif,
 	WalkLeft: giflib.Gif,
 	IDLE: giflib.Gif,
 
@@ -36,12 +40,7 @@ export type Player2d = {
 		Текущяя анимация
 	]]
 	CurrentAnimation: giflib.Gif,
-
-	--[[
-		Фреём в которы вписиваются анимации
-	]]
-	Frame: Frame,
-}
+} & physicObject.PhysicObject
 
 function player.new(
 	Animations: { [string]: {} },
@@ -69,12 +68,15 @@ function player.new(
 		CreatedAnimations[i] = gif
 	end
 
-	local self: Player2d = {
-		Frame = PlayerFrame,
+	local self: Player2d = utility.merge({
 		Animations = CreatedAnimations,
 		WalkSpeed = WalkSpeed,
 		CurrentAnimation = CreatedAnimations.IDLE or nil,
-	}
+	}, physicObject.new(PlayerFrame))
+
+	self.Touched:Connect(function(collided: physicObject.PhysicObject)
+		print("player touched", collided)
+	end)
 
 	return self
 end

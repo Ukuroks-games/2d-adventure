@@ -84,7 +84,7 @@ export type Game = {
 	--[[
 		List of objects that will be destroyed on Destroy call
 	]]
-	DestroyableObjects: { Destroy: (self: any) -> any },
+	DestroyableObjects: {},
 
 	Connections: { RBXScriptConnection },
 
@@ -165,8 +165,6 @@ function Game.Up(self: Game)
 			}
 		)
 		:Play()
-
-	self.PlayerMoveEvent:Fire()
 end
 
 function Game.Down(self: Game)
@@ -187,8 +185,6 @@ function Game.Down(self: Game)
 			}
 		)
 		:Play()
-
-	self.PlayerMoveEvent:Fire()
 end
 
 function Game.Left(self: Game)
@@ -209,8 +205,6 @@ function Game.Left(self: Game)
 			}
 		)
 		:Play()
-
-	self.PlayerMoveEvent:Fire()
 end
 
 function Game.Right(self: Game)
@@ -231,8 +225,6 @@ function Game.Right(self: Game)
 			}
 		)
 		:Play()
-
-	self.PlayerMoveEvent:Fire()
 end
 
 --[[
@@ -246,7 +238,6 @@ function Game.new(
 ): Game
 	local DestroyingEvent = Instance.new("BindableEvent")
 	local CollideStepedEvent = Instance.new("BindableEvent")
-	local PlayerMoveEvent = Instance.new("BindableEvent")
 
 	local self = {
 		Frame = GameFrame,
@@ -256,8 +247,6 @@ function Game.new(
 		DestroyingEvent = DestroyingEvent,
 		CollideSteped = CollideStepedEvent.Event,
 		CollideStepedEvent = CollideStepedEvent,
-		PlayerMove = PlayerMoveEvent.Event,
-		PlayerMoveEvent = PlayerMoveEvent,
 		CooldownTime = cooldownTime or 0.016,
 		DestroyableObjects = {},
 		Connections = {},
@@ -270,9 +259,23 @@ function Game.new(
 	}
 
 	self.Map.Image.Parent = self.Frame
-	self.Player.Frame.Parent = self.Frame
+	self.Player.Image.Parent = self.Frame
 
-	self.Map:CalcPositions()
+	table.insert(self.Map.Objects, self.Player) -- add player to objects for enable collision for player
+
+	--[[
+		обёртка для self.Map:CalcPositions
+	]]
+	local function CalcPositions()
+		self.Map:CalcPositions()
+	end
+
+	CalcPositions() -- превоночальный расет
+
+	--[[
+		расчет после изменения фрейма игры
+	]]
+	self.Frame:GetPropertyChangedSignal("Size"):Connect(CalcPositions)
 
 	self.Player.Animations.IDLE:SetFrame(1) -- set first IDLE frame as default
 
@@ -329,12 +332,15 @@ function Game.new(
 		})
 	)
 
-	local event = stdlib.events.AnyEvent({
+	local PlayerMoveEvent = stdlib.events.AnyEvent({
 		Up.CallEvent.Event,
 		Down.CallEvent.Event,
 		Right.CallEvent.Event,
 		Left.CallEvent.Event,
 	})
+
+	self.PlayerMoveEvent = PlayerMoveEvent
+	self.PlayerMove = PlayerMoveEvent.Event
 
 	local IdleRun = cooldown.new(4, self.IDLE)
 	local CollideStepRunEvent = stdlib.events.AnyEvent({
@@ -358,37 +364,30 @@ function Game.new(
 
 		local t
 
-		event.Event:Connect(function()
+		self.PlayerMoveEvent.Event:Connect(function()
 			if t then
 				task.cancel(t)
 			end
 		end)
 
-		while true do
-			event.Event:Wait()
-
+		self.PlayerMove:Connect(function()
 			t = task.spawn(function()
 				wait(4)
 
 				IdleRun(self)
 			end)
-		end
+		end)
 	end)
 
-	local Collide_thread = task.spawn(function()
-		while true do
-			self.Map:CalcCollide()
-			self.CollideStepedEvent:Fire()
-			CollideStepRunEvent.Event:Wait()
-		end
+	CollideStepRunEvent.Event:Connect(function()
+		self.Map:CalcCollide()
+		self.CollideStepedEvent:Fire()
 	end)
 
 	self.Destroying:Connect(function()
 		task.cancel(IDLE_show_thread)
-		task.cancel(Collide_thread)
 		IdleRun:Destroy()
 		CollideStepRunEvent:Destroy()
-		event:Destroy()
 	end)
 
 	return self

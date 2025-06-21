@@ -13,7 +13,7 @@
         {
             "type": "shell",
             "label": "Load depends",
-            "command": "wally install && exit",
+            "command": "make ./Package && exit",
             "group": {
                 "kind": "none"
             },
@@ -22,12 +22,32 @@
         },
         {
             "type": "shell",
-            "label": "Build",
+            "label": "Build tests",
             "detail": "Build tests place",
-            "command": "rojo build tests.project.json --output tests.rbxl && exit",
+            "command": "make tests && exit",
             "group": {
                 "kind": "build",
                 "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Build rbxm",
+            "detail": "Build rbxm library",
+            "command": "make 2d-adventurelib.rbxm && exit",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Clean",
+            "detail": "Clean builded",
+            "command": "make clean && exit",
+            "group": {
+                "kind": "build",
+                "isDefault": false
             }
         },
         {
