@@ -158,8 +158,8 @@ function Game.Up(self: Game)
 				["Position"] = UDim2.new(
 					self.Map.Image.Position.X,
 					UDim.new(
-						self.Map.Image.Position.Y.Scale,
-						self.Map.Image.Position.Y.Offset + self.Player.WalkSpeed
+						self.Map.Image.Position.Y.Scale + self.Player.WalkSpeed,
+						self.Map.Image.Position.Y.Offset
 					)
 				),
 			}
@@ -178,8 +178,8 @@ function Game.Down(self: Game)
 				["Position"] = UDim2.new(
 					self.Map.Image.Position.X,
 					UDim.new(
-						self.Map.Image.Position.Y.Scale,
-						self.Map.Image.Position.Y.Offset - self.Player.WalkSpeed
+						self.Map.Image.Position.Y.Scale - self.Player.WalkSpeed,
+						self.Map.Image.Position.Y.Offset
 					)
 				),
 			}
@@ -197,8 +197,8 @@ function Game.Left(self: Game)
 			{
 				["Position"] = UDim2.new(
 					UDim.new(
-						self.Map.Image.Position.X.Scale,
-						self.Map.Image.Position.X.Offset + self.Player.WalkSpeed
+						self.Map.Image.Position.X.Scale + self.Player.WalkSpeed,
+						self.Map.Image.Position.X.Offset
 					),
 					self.Map.Image.Position.Y
 				),
@@ -217,8 +217,8 @@ function Game.Right(self: Game)
 			{
 				["Position"] = UDim2.new(
 					UDim.new(
-						self.Map.Image.Position.X.Scale,
-						self.Map.Image.Position.X.Offset - self.Player.WalkSpeed
+						self.Map.Image.Position.X.Scale - self.Player.WalkSpeed,
+						self.Map.Image.Position.X.Offset
 					),
 					self.Map.Image.Position.Y
 				),
