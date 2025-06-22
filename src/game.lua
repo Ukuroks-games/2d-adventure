@@ -8,6 +8,7 @@ local cooldown = require(ReplicatedStorage.Packages.cooldown)
 local stdlib = require(ReplicatedStorage.Packages.stdlib)
 local defaultControls = require(script.Parent.defaultControls)
 local map = require(script.Parent.map)
+local physicObject = require(script.Parent.physicObject)
 local player = require(script.Parent.player)
 
 --[[
@@ -150,8 +151,8 @@ end
 function Game.Up(self: Game)
 	showAnimation(self, "WalkUp")
 
-	TweenService
-		:Create(
+	if self.Player.TouchedSide ~= physicObject.TouchedSide.Up then
+		TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),
 			{
@@ -163,15 +164,17 @@ function Game.Up(self: Game)
 					)
 				),
 			}
-		)
-		:Play()
+		):Play()
+	end
 end
 
 function Game.Down(self: Game)
 	showAnimation(self, "WalkDown")
 
-	TweenService
-		:Create(
+	if
+		self.Player._physicObject.TouchedSide ~= physicObject.TouchedSide.Down
+	then
+		TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),
 			{
@@ -183,15 +186,17 @@ function Game.Down(self: Game)
 					)
 				),
 			}
-		)
-		:Play()
+		):Play()
+	end
 end
 
 function Game.Left(self: Game)
 	showAnimation(self, "WalkLeft")
 
-	TweenService
-		:Create(
+	if
+		self.Player._physicObject.TouchedSide ~= physicObject.TouchedSide.Down
+	then
+		TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),
 			{
@@ -203,15 +208,17 @@ function Game.Left(self: Game)
 					self.Map.Image.Position.Y
 				),
 			}
-		)
-		:Play()
+		):Play()
+	end
 end
 
 function Game.Right(self: Game)
 	showAnimation(self, "WalkRight")
 
-	TweenService
-		:Create(
+	if
+		self.Player._physicObject.TouchedSide ~= physicObject.TouchedSide.Down
+	then
+		TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),
 			{
@@ -223,8 +230,8 @@ function Game.Right(self: Game)
 					self.Map.Image.Position.Y
 				),
 			}
-		)
-		:Play()
+		):Play()
+	end
 end
 
 --[[

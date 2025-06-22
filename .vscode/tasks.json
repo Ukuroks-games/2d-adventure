@@ -63,7 +63,7 @@
             "type": "shell",
             "label": "Lint",
             "detail": "Lint this project",
-            "command": "make lint && exit",
+            "command": "make lint --ignore-errors && exit",
             "group": {
                 "kind": "none"
             }

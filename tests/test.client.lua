@@ -16,15 +16,6 @@ GameFrame.Size = UDim2.fromScale(1, 1)
 
 local cam = camera2d.new(1)
 
--- entrace
-local Map = map.new(Vector2.new(1, 1), cam, "76803732961234", {
-	Object2d.new( -- door
-		Vector2.new(157, 196),
-		Vector2.new(28, 69),
-		ExImage.new("84486373084684")
-	),
-})
-
 local _game = Game.new(
 	GameFrame,
 	player.new(
@@ -56,11 +47,17 @@ local _game = Game.new(
 				giflib.Frame.new("82185418640948", 0.5), -- 1
 			},
 		},
-		1 / 10,
+		1.5 / 100,
 		{
-			X = 0.8,
+			X = 0.08,
 			Y = 0.16,
 		}
 	),
-	Map
+	map.new(Vector2.new(1, 1), cam, "76803732961234", {
+		Object2d.new( -- door
+			Vector2.new(157, 196),
+			Vector2.new(28, 69),
+			ExImage.new("84486373084684")
+		),
+	})
 )

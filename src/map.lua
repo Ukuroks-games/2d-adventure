@@ -52,17 +52,14 @@ function map.SetPlayerPos(self: Map, pos: Vector2)
 end
 
 function map.AddObject(self: Map, obj: physicObject.PhysicObject)
-	obj.Image.Parent = self.Image
+	obj.Image.Parent = self.Image.ImageInstance
 
 	table.insert(self.Objects, obj)
 end
 
 function map.CalcPositions(self: Map)
 	for _, v in pairs(self.Objects) do
-		if v.CalcSizeAndPos then -- if Object2d
-			v.Image.Parent = self.Image
-			v:CalcSizeAndPos(self.Image)
-		end
+		v:CalcSizeAndPos(self.Image)
 	end
 end
 
@@ -76,20 +73,21 @@ function map.CalcCollide(self: Map)
 
 	for _, v in pairs(Objects) do
 		local i = algorithm.find_if(Objects, function(value): boolean
-			return value ~= v and (
-				(
-					value.Image.AbsolutePosition.X
-						>= v.Image.AbsolutePosition.X
-					and value.Image.AbsolutePosition.X
-						<= (v.Image.AbsolutePosition.X + v.Image.AbsoluteSize.X)
-				) -- check if value in v
+			return value ~= v
 				and (
-					value.Image.AbsolutePosition.Y
-						>= v.Image.AbsolutePosition.Y
-					and value.Image.AbsolutePosition.Y
-						<= (v.Image.AbsolutePosition.Y + v.Image.AbsoluteSize.Y)
-				)
-			) -- обратная проверка не нужна т.к. и так проходим по всем
+					(
+						value.Image.AbsolutePosition.X
+							>= v.Image.AbsolutePosition.X
+						and value.Image.AbsolutePosition.X
+							<= (v.Image.AbsolutePosition.X + v.Image.AbsoluteSize.X)
+					) -- check if value in v
+					and (
+						value.Image.AbsolutePosition.Y
+							>= v.Image.AbsolutePosition.Y
+						and value.Image.AbsolutePosition.Y
+							<= (v.Image.AbsolutePosition.Y + v.Image.AbsoluteSize.Y)
+					)
+				) -- обратная проверка не нужна т.к. и так проходим по всем
 		end)
 
 		if i then
@@ -118,13 +116,13 @@ function map.new(
 	Size: Vector2,
 	cam: camera2d.Camera2d,
 	BackgroundImage: string,
-	Objects: { Object2d.Object2d }?
+	Objects: { [any]: Object2d.Object2d }?
 ): Map
 	local ObjectMovementEvent = Instance.new("BindableEvent")
 
 	local self: Map = {
 		Image = ExImage.new(BackgroundImage),
-		Objects = Objects or {},
+		Objects = {},
 		cam = cam,
 		ObjectMovement = ObjectMovementEvent.Event,
 		ObjectMovementEvent = ObjectMovementEvent,
@@ -134,6 +132,10 @@ function map.new(
 		CalcPositions = map.CalcPositions,
 		Destroy = map.Destroy,
 	}
+
+	for _, v in pairs(Objects) do
+		self:AddObject(v)
+	end
 
 	self.Image.Size = UDim2.fromScale(Size.X, Size.Y)
 	self.Image.ScaleType = Enum.ScaleType.Fit
