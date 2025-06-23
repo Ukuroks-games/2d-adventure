@@ -1,21 +1,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local stdlib = require(ReplicatedStorage.Packages.stdlib)
-
-local utility = stdlib.utility
-
 local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 
 local Object2d = {}
-
-Object2d.TouchSide = {
-	NoTouched = 0,
-	Up = 1,
-	Down = 2,
-	Right = 3,
-	Left = 4,
-}
 
 export type Object2d = {
 
@@ -34,8 +22,6 @@ export type Object2d = {
 	TouchedSide: number,
 
 	Image: ExImage.ExImage,
-
-	_physicObject: physicObject.PhysicObject,
 
 	CalcSizeAndPos: (self: Object2d, background: ExImage.ExImage) -> nil,
 } & physicObject.PhysicObject
@@ -125,8 +111,8 @@ function Object2d.CalcSizeAndPos(self: Object2d, background: ExImage.ExImage)
 	local p = Object2d.GetPosition(self, background)
 	local s = Object2d.GetSize(self, background)
 
-	self._physicObject.Image.Size = UDim2.fromOffset(s.X, s.Y)
-	self._physicObject.Image.Position = UDim2.fromOffset(p.X, p.Y)
+	self.Image.Size = UDim2.fromOffset(s.X, s.Y)
+	self.Image.Position = UDim2.fromOffset(p.X, p.Y)
 end
 
 --[[
@@ -138,19 +124,11 @@ function Object2d.new(
 	Image: ExImage.ExImage,
 	isButton: boolean?
 ): Object2d
-	local self = {
-		AnchorPosition = AnchorPosition,
-		Size = Size,
-		TouchedSide = Object2d.TouchSide.NoTouched, -- by default not touched
-		CalcSizeAndPos = Object2d.CalcSizeAndPos,
-		_physicObject = physicObject.new(Image),
-	}
+	local self = physicObject.new(Image)
 
-	setmetatable(self, {
-		__index = function(_self: typeof(self), key)
-			return self._physicObject[key]
-		end,
-	})
+	self.AnchorPosition = AnchorPosition
+	self.Size = Size
+	self.CalcSizeAndPos = Object2d.CalcSizeAndPos
 
 	self.Image.BackgroundTransparency = 1
 

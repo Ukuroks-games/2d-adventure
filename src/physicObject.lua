@@ -1,5 +1,23 @@
 local ExImage = require(script.Parent.ExImage)
+
+--[[
+	Physic object
+
+	interface for another classes, that can have physic
+]]
 local physicObject = {}
+
+export type TouchedSide = {
+	--[[
+		Right - true, left - false
+	]]
+	X: boolean,
+
+	--[[
+		Up - true, down - false
+	]]
+	Y: boolean,
+}
 
 export type PhysicObject = {
 
@@ -18,25 +36,41 @@ export type PhysicObject = {
 
 	TouchedEvent: BindableEvent,
 
-	TouchedSide: number,
+	TouchedSide: TouchedSide,
 
 	Image: Frame,
 
 	CanCollide: boolean,
 
 	CalcSizeAndPos: (self: PhysicObject, background: ExImage.ExImage) -> nil,
-}
 
-physicObject.TouchedSide = {
-	NotTouched = 0,
-	Up = 2,
-	Down = 1,
-	Left = 3,
-	Right = 4,
+	Points: { Vector2int16 },
 }
 
 function physicObject.Destroy(self: PhysicObject)
 	self.TouchedEvent:Destroy()
+	self.Image:Destroy()
+end
+
+function physicObject.CheckCollision(
+	self: PhysicObject,
+	other: PhysicObject
+): boolean
+	return other ~= self
+		and (
+			(
+				other.Image.AbsolutePosition.X
+					>= self.Image.AbsolutePosition.X
+				and other.Image.AbsolutePosition.X
+					<= (self.Image.AbsolutePosition.X + self.Image.AbsoluteSize.X)
+			) -- check if other in v
+			and (
+				other.Image.AbsolutePosition.Y
+					>= self.Image.AbsolutePosition.Y
+				and other.Image.AbsolutePosition.Y
+					<= (self.Image.AbsolutePosition.Y + self.Image.AbsoluteSize.Y)
+			)
+		) -- обратная проверка не нужна т.к. и так проходим по всем]]
 end
 
 function physicObject.new(
@@ -51,75 +85,36 @@ function physicObject.new(
 		TouchedEvent = TouchedEvent,
 		Image = image or error("image is nil"),
 		CanCollide = canCollide or true,
-		TouchedSide = physicObject.TouchedSide.NotTouched,
+		TouchedSide = {
+			X = nil,
+			Y = nil,
+		},
 
 		CalcSizeAndPos = function()
 			-- empty because its an interface
 		end,
 	}
 
-	setmetatable(this, {
-		__index = function(self: typeof(this), key)
-			local _, e = pcall(function()
-				return self.Image[key]
-			end)
-			return e or rawget(self, key)
-		end,
-		__newindex = function(self: typeof(this), key, value)
-			self.Image[key] = value
-		end,
-	})
-
 	if checkingTouchedSize then
 		this.Touched:Connect(function(obj: PhysicObject)
+			print(this, obj)
+
+			if type(obj.Image) == "table" then
+				setmetatable(obj.Image, { __index = obj.Image.ImageInstance })
+			end
+
 			local p1x = this.Image.AbsolutePosition.X
 				+ (this.Image.AbsoluteSize.X / 2)
 			local p1y = this.Image.AbsolutePosition.Y
 				+ (this.Image.AbsoluteSize.Y / 2)
-
-			--[[
-				idk why, but it fall on trying get `AbsolutePosition.X`
-
-				ExImage constructor must set __index, but it doesnt working here
-			]]
-			if typeof(obj.Image) ~= "Frame" then
-				setmetatable(
-					obj._physicObject.Image,
-					{ __index = obj._physicObject.Image.ImageInstance }
-				)
-				obj.Image = obj._physicObject.Image
-			end
 
 			local p2x = obj.Image.AbsolutePosition.X
 				+ (obj.Image.AbsoluteSize.X / 2)
 			local p2y = obj.Image.AbsolutePosition.Y
 				+ (obj.Image.AbsoluteSize.Y / 2)
 
-			local x = p1x - p2x
-			local y = p1y - p2y
-
-			-- угол
-			local a = y / x
-
-			if a > 1 then
-				if y > 0 then
-					this.TouchedSide = physicObject.TouchedSide.Up
-				elseif y < 0 then
-					this.TouchedSide = physicObject.TouchedSide.Down
-				else -- хз совпало
-					this.TouchedSide = physicObject.TouchedSide.NotTouched
-				end
-			elseif a <= 1 then
-				if x > 0 then
-					this.TouchedSide = physicObject.TouchedSide.Right
-				elseif x < 0 then
-					this.TouchedSide = physicObject.TouchedSide.Left
-				else -- хз совпало
-					this.TouchedSide = physicObject.TouchedSide.NotTouched
-				end
-			else
-				warn("wtf a: " .. a)
-			end
+			this.TouchedSide.X = p1x < p2x
+			this.TouchedSide.Y = p1y > p2y
 		end)
 	end
 

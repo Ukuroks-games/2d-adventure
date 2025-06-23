@@ -73,21 +73,7 @@ function map.CalcCollide(self: Map)
 
 	for _, v in pairs(Objects) do
 		local i = algorithm.find_if(Objects, function(value): boolean
-			return value ~= v
-				and (
-					(
-						value.Image.AbsolutePosition.X
-							>= v.Image.AbsolutePosition.X
-						and value.Image.AbsolutePosition.X
-							<= (v.Image.AbsolutePosition.X + v.Image.AbsoluteSize.X)
-					) -- check if value in v
-					and (
-						value.Image.AbsolutePosition.Y
-							>= v.Image.AbsolutePosition.Y
-						and value.Image.AbsolutePosition.Y
-							<= (v.Image.AbsolutePosition.Y + v.Image.AbsoluteSize.Y)
-					)
-				) -- обратная проверка не нужна т.к. и так проходим по всем
+			return physicObject.CheckCollision(v, value)
 		end)
 
 		if i then
@@ -96,7 +82,7 @@ function map.CalcCollide(self: Map)
 			local collided = Objects[i]
 
 			v.TouchedEvent:Fire(collided)
-			collided.TouchedEvent:Fire(v)
+			collided.TouchedEvent:Fire(self)
 		end
 	end
 end

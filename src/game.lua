@@ -151,7 +151,7 @@ end
 function Game.Up(self: Game)
 	showAnimation(self, "WalkUp")
 
-	if self.Player.TouchedSide ~= physicObject.TouchedSide.Up then
+	if self.Player.TouchedSide.Y ~= true then
 		TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),
@@ -171,9 +171,7 @@ end
 function Game.Down(self: Game)
 	showAnimation(self, "WalkDown")
 
-	if
-		self.Player._physicObject.TouchedSide ~= physicObject.TouchedSide.Down
-	then
+	if self.Player.TouchedSide.Y ~= false then
 		TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),
@@ -193,9 +191,7 @@ end
 function Game.Left(self: Game)
 	showAnimation(self, "WalkLeft")
 
-	if
-		self.Player._physicObject.TouchedSide ~= physicObject.TouchedSide.Down
-	then
+	if self.Player.TouchedSide.X ~= false then
 		TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),
@@ -215,9 +211,7 @@ end
 function Game.Right(self: Game)
 	showAnimation(self, "WalkRight")
 
-	if
-		self.Player._physicObject.TouchedSide ~= physicObject.TouchedSide.Down
-	then
+	if self.Player.TouchedSide.X ~= true then
 		TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),

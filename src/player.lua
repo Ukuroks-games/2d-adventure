@@ -40,8 +40,6 @@ export type Player2d = {
 		Текущяя анимация
 	]]
 	CurrentAnimation: giflib.Gif,
-
-	_physicObject: physicObject.PhysicObject,
 } & physicObject.PhysicObject
 
 function player.new(
@@ -70,17 +68,11 @@ function player.new(
 		CreatedAnimations[i] = gif
 	end
 
-	local self = {
-		Animations = CreatedAnimations,
-		WalkSpeed = WalkSpeed,
-		CurrentAnimation = CreatedAnimations.IDLE or nil,
-		_physicObject = physicObject.new(PlayerFrame, true, true),
-	}
-	setmetatable(self, {
-		__index = function(_self: typeof(self), key)
-			return self._physicObject[key]
-		end,
-	})
+	local self = physicObject.new(PlayerFrame, true, true)
+
+	self.Animations = CreatedAnimations
+	self.WalkSpeed = WalkSpeed
+	self.CurrentAnimation = CreatedAnimations.IDLE or nil
 
 	self.Touched:Connect(function(collided: physicObject.PhysicObject)
 		print("player touched", collided)
