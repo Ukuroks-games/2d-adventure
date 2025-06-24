@@ -19,8 +19,6 @@ export type Object2d = {
 	]]
 	Size: Vector2,
 
-	TouchedSide: number,
-
 	Image: ExImage.ExImage,
 
 	CalcSizeAndPos: (self: Object2d, background: ExImage.ExImage) -> nil,

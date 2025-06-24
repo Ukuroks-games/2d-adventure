@@ -72,6 +72,13 @@ function map.CalcCollide(self: Map)
 	end)
 
 	for _, v in pairs(Objects) do
+		v.TouchedSideMutex:lock()
+
+		v.TouchedSide.Up = false -- reset TouchedSide
+		v.TouchedSide.Down = false
+		v.TouchedSide.Left = false
+		v.TouchedSide.Right = false
+
 		local i = algorithm.find_if(Objects, function(value): boolean
 			return physicObject.CheckCollision(v, value)
 		end)
@@ -79,10 +86,9 @@ function map.CalcCollide(self: Map)
 		if i then
 			-- here checking side
 
-			local collided = Objects[i]
-
-			v.TouchedEvent:Fire(collided)
-			collided.TouchedEvent:Fire(self)
+			v.TouchedEvent:Fire(Objects[i])
+		else
+			v.TouchedSideMutex:unlock()
 		end
 	end
 end
