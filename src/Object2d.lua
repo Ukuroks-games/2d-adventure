@@ -1,21 +1,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local stdlib = require(ReplicatedStorage.Packages.stdlib)
-
-local utility = stdlib.utility
-
 local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 
 local Object2d = {}
-
-Object2d.TouchSide = {
-	NoTouched = 0,
-	Up = 1,
-	Down = 2,
-	Right = 3,
-	Left = 4,
-}
 
 export type Object2d = {
 
@@ -30,8 +18,6 @@ export type Object2d = {
 		то какого изначально объект размера
 	]]
 	Size: Vector2,
-
-	TouchedSide: number,
 
 	Image: ExImage.ExImage,
 
@@ -136,12 +122,11 @@ function Object2d.new(
 	Image: ExImage.ExImage,
 	isButton: boolean?
 ): Object2d
-	local self: Object2d = utility.merge({
-		AnchorPosition = AnchorPosition,
-		Size = Size,
-		TouchedSide = Object2d.TouchSide.NoTouched, -- by default not touched
-		CalcSizeAndPos = Object2d.CalcSizeAndPos,
-	}, physicObject.new(Image))
+	local self = physicObject.new(Image)
+
+	self.AnchorPosition = AnchorPosition
+	self.Size = Size
+	self.CalcSizeAndPos = Object2d.CalcSizeAndPos
 
 	self.Image.BackgroundTransparency = 1
 

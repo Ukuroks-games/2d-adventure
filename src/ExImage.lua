@@ -35,7 +35,11 @@ function ExImage.new(id: string, isButton: boolean?): ExImage
 
 	setmetatable(_self, {
 		__index = function(self: typeof(_self), key)
-			return self.ImageInstance[key]
+			local _, e = pcall(function()
+				return self.ImageInstance[key]
+			end)
+
+			return e or rawget(self, key)
 		end,
 		__newindex = function(self: typeof(_self), key, value)
 			if typeof(value) == typeof(_self) then

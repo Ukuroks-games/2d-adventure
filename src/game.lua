@@ -6,8 +6,11 @@ local UserInputService = game:GetService("UserInputService")
 local InputLib = require(ReplicatedStorage.Packages.InputLib)
 local cooldown = require(ReplicatedStorage.Packages.cooldown)
 local stdlib = require(ReplicatedStorage.Packages.stdlib)
+local mutex = stdlib.mutex
+
 local defaultControls = require(script.Parent.defaultControls)
 local map = require(script.Parent.map)
+local physicObject = require(script.Parent.physicObject)
 local player = require(script.Parent.player)
 
 --[[
@@ -40,11 +43,6 @@ export type Game = {
 	
 	]]
 	Destroying: RBXScriptSignal,
-
-	--[[
-		Sent here player move
-	]]
-	PlayerMove: RBXScriptSignal,
 
 	--[[
 	
@@ -98,10 +96,9 @@ export type Game = {
 	]]
 	CollideStepedEvent: BindableEvent,
 
-	--[[
-	
-	]]
-	PlayerMoveEvent: BindableEvent,
+	MoveTween: Tween,
+
+	CollideMutex: mutex.Mutex,
 }
 
 --[[
@@ -124,7 +121,7 @@ function Game.Destroy(self: Game)
 
 	self.Frame:Destroy()
 	self.CollideStepedEvent:Destroy()
-	self.PlayerMoveEvent:Destroy()
+	player.Destroy(self.Player)
 	self.DestroyingEvent:Destroy()
 end
 
@@ -134,6 +131,12 @@ local function showAnimation(self: Game, animationName: string)
 		and self.Player.CurrentAnimation.AnimationRunning
 			~= self.Player.Animations[animationName]
 	then
+		if self.MoveTween then
+			self.MoveTween:Cancel()
+			self.MoveTween:Destroy()
+			self.MoveTween = nil
+		end
+
 		self.Player.CurrentAnimation:StopAnimation()
 		self.Player.CurrentAnimation:Hide()
 	end
@@ -148,10 +151,11 @@ function Game.IDLE(self: Game)
 end
 
 function Game.Up(self: Game)
+	self.CollideMutex:wait()
 	showAnimation(self, "WalkUp")
 
-	TweenService
-		:Create(
+	if self.Player:GetTouchedSide().Up ~= true then
+		self.MoveTween = TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),
 			{
@@ -164,14 +168,17 @@ function Game.Up(self: Game)
 				),
 			}
 		)
-		:Play()
+
+		self.MoveTween:Play()
+	end
 end
 
 function Game.Down(self: Game)
+	self.CollideMutex:wait()
 	showAnimation(self, "WalkDown")
 
-	TweenService
-		:Create(
+	if self.Player:GetTouchedSide().Down ~= true then
+		self.MoveTween = TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),
 			{
@@ -184,14 +191,16 @@ function Game.Down(self: Game)
 				),
 			}
 		)
-		:Play()
+		self.MoveTween:Play()
+	end
 end
 
 function Game.Left(self: Game)
+	self.CollideMutex:wait()
 	showAnimation(self, "WalkLeft")
 
-	TweenService
-		:Create(
+	if self.Player:GetTouchedSide().Left ~= true then
+		self.MoveTween = TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),
 			{
@@ -204,14 +213,17 @@ function Game.Left(self: Game)
 				),
 			}
 		)
-		:Play()
+
+		self.MoveTween:Play()
+	end
 end
 
 function Game.Right(self: Game)
+	self.CollideMutex:wait()
 	showAnimation(self, "WalkRight")
 
-	TweenService
-		:Create(
+	if self.Player:GetTouchedSide().Right ~= true then
+		self.MoveTween = TweenService:Create(
 			self.Map.Image.ImageInstance,
 			TweenInfo.new(self.CooldownTime),
 			{
@@ -224,7 +236,9 @@ function Game.Right(self: Game)
 				),
 			}
 		)
-		:Play()
+
+		self.MoveTween:Play()
+	end
 end
 
 --[[
@@ -247,9 +261,11 @@ function Game.new(
 		DestroyingEvent = DestroyingEvent,
 		CollideSteped = CollideStepedEvent.Event,
 		CollideStepedEvent = CollideStepedEvent,
-		CooldownTime = cooldownTime or 0.016,
+		CooldownTime = cooldownTime or 0.012,
 		DestroyableObjects = {},
 		Connections = {},
+		MoveTween = nil,
+		CollideMutex = mutex.new(true),
 		IDLE = Game.IDLE,
 		Up = Game.Up,
 		Down = Game.Down,
@@ -295,6 +311,7 @@ function Game.new(
 	table.insert(
 		self.DestroyableObjects,
 		InputLib.WhileKeyPressed(function()
+			self.CollideMutex:lock()
 			Up:Call(self)
 		end, {
 			defaultControls.Keyboard.Up,
@@ -305,6 +322,7 @@ function Game.new(
 	table.insert(
 		self.DestroyableObjects,
 		InputLib.WhileKeyPressed(function()
+			self.CollideMutex:lock()
 			Down(self)
 		end, {
 			defaultControls.Keyboard.Down,
@@ -315,6 +333,7 @@ function Game.new(
 	table.insert(
 		self.DestroyableObjects,
 		InputLib.WhileKeyPressed(function()
+			self.CollideMutex:lock()
 			Left(self)
 		end, {
 			defaultControls.Keyboard.Left,
@@ -325,6 +344,7 @@ function Game.new(
 	table.insert(
 		self.DestroyableObjects,
 		InputLib.WhileKeyPressed(function()
+			self.CollideMutex:lock()
 			Right(self)
 		end, {
 			defaultControls.Keyboard.Right,
@@ -332,21 +352,18 @@ function Game.new(
 		})
 	)
 
-	local PlayerMoveEvent = stdlib.events.AnyEvent({
+	stdlib.events.AnyEvent({
 		Up.CallEvent.Event,
 		Down.CallEvent.Event,
 		Right.CallEvent.Event,
 		Left.CallEvent.Event,
-	})
-
-	self.PlayerMoveEvent = PlayerMoveEvent
-	self.PlayerMove = PlayerMoveEvent.Event
+	}, self.Player.MoveEvent)
 
 	local IdleRun = cooldown.new(4, self.IDLE)
-	local CollideStepRunEvent = stdlib.events.AnyEvent({
+	stdlib.events.AnyEvent({
 		self.Map.ObjectMovement,
-		self.PlayerMove,
-	})
+		self.Player.Move,
+	}, self.CollideStepedEvent)
 
 	--[[
 		
@@ -364,13 +381,13 @@ function Game.new(
 
 		local t
 
-		self.PlayerMoveEvent.Event:Connect(function()
+		self.Player.Move:Connect(function()
 			if t then
 				task.cancel(t)
 			end
 		end)
 
-		self.PlayerMove:Connect(function()
+		self.Player.Move:Connect(function()
 			t = task.spawn(function()
 				wait(4)
 
@@ -379,15 +396,14 @@ function Game.new(
 		end)
 	end)
 
-	CollideStepRunEvent.Event:Connect(function()
+	CollideStepedEvent.Event:Connect(function()
 		self.Map:CalcCollide()
-		self.CollideStepedEvent:Fire()
+		self.CollideMutex:unlock()
 	end)
 
 	self.Destroying:Connect(function()
 		task.cancel(IDLE_show_thread)
 		IdleRun:Destroy()
-		CollideStepRunEvent:Destroy()
 	end)
 
 	return self

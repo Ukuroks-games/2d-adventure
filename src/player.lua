@@ -36,11 +36,23 @@ export type Player2d = {
 	]]
 	WalkSpeed: number,
 
+	Move: RBXScriptSignal,
+
+	MoveEvent: BindableEvent,
+
 	--[[
 		Текущяя анимация
 	]]
 	CurrentAnimation: giflib.Gif,
 } & physicObject.PhysicObject
+
+function player.Destroy(self: Player2d)
+	for _, v in pairs(self.Animations) do
+		v:Destroy()
+	end
+
+	self.MoveEvent:Destroy()
+end
 
 function player.new(
 	Animations: { [string]: {} },
@@ -68,15 +80,13 @@ function player.new(
 		CreatedAnimations[i] = gif
 	end
 
-	local self: Player2d = utility.merge({
-		Animations = CreatedAnimations,
-		WalkSpeed = WalkSpeed,
-		CurrentAnimation = CreatedAnimations.IDLE or nil,
-	}, physicObject.new(PlayerFrame, true))
+	local self = physicObject.new(PlayerFrame, true, true)
 
-	self.Touched:Connect(function(collided: physicObject.PhysicObject)
-		print("player touched", collided)
-	end)
+	self.Animations = CreatedAnimations
+	self.WalkSpeed = WalkSpeed
+	self.CurrentAnimation = CreatedAnimations.IDLE or nil
+	self.MoveEvent = Instance.new("BindableEvent")
+	self.Move = self.MoveEvent.Event
 
 	return self
 end
