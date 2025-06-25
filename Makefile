@@ -11,7 +11,6 @@ RM = rm -rf
 	
 configure: ./build wally.toml src/*
 	$(CP) src/* build/
-	$(MV) build/$(LIBNAME).lua build/init.lua
 	$(CP) wally.toml build/
 
 package: configure
@@ -27,6 +26,7 @@ lint:
 	wally install
 
 $(LIBNAME).rbxm: configure
+	$(MV) build/init.lua build/$(LIBNAME).lua
 	rojo build library.project.json --output $@
 
 tests: ./Packages
