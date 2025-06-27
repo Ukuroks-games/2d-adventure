@@ -20,7 +20,7 @@ local _game = Game.new(
 	GameFrame,
 	player.new(
 		{
-			["IDLE"] = { -- IDLE animation frames
+			["IDLE"] = giflib.gif.new({ -- IDLE animation frames
 				giflib.Frame.new("123651728909570", 0.5), -- 1
 				giflib.Frame.new("73880862501758", 0.08), -- 2
 				giflib.Frame.new("76251571010833", 0.08), -- 3
@@ -33,19 +33,19 @@ local _game = Game.new(
 				giflib.Frame.new("82185418640948", 0.08), -- 10
 				giflib.Frame.new("131056695027889", 0.08), -- 11
 				giflib.Frame.new("82185418640948", 0.08), -- 12
-			},
-			["WalkUp"] = {
+			}),
+			["WalkUp"] = giflib.gif.new({
 				giflib.Frame.new("131056695027889", 0.5), -- 1
-			},
-			["WalkDown"] = {
+			}),
+			["WalkDown"] = giflib.gif.new({
 				giflib.Frame.new("108839932127938", 0.5), -- 1
-			},
-			["WalkLeft"] = {
+			}),
+			["WalkLeft"] = giflib.gif.new({
 				giflib.Frame.new("131056695027889", 0.5), -- 1
-			},
-			["WalkRight"] = {
+			}),
+			["WalkRight"] = giflib.gif.new({
 				giflib.Frame.new("82185418640948", 0.5), -- 1
-			},
+			}),
 		},
 		1 / 100,
 		{
@@ -59,5 +59,5 @@ local _game = Game.new(
 			Vector2.new(28, 69),
 			ExImage.new("84486373084684")
 		),
-	})
+	}, Vector2.new(100, 100))
 )

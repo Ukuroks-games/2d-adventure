@@ -15,7 +15,7 @@ local player = require(script.Parent.player)
 ]]
 local map = {}
 
-export type Map = {
+export type MapStruct = {
 	-- fields
 
 	Image: ExImage.ExImage,
@@ -28,42 +28,68 @@ export type Map = {
 
 	ObjectMovementEvent: BindableEvent,
 
-	-- function
-
-	SetPlayerPos: (self: Map, pos: Vector2) -> nil,
-
-	CalcCollide: (self: Map) -> nil,
-
-	Destroy: (self: Map) -> nil,
-
-	CalcPositions: (self: Map) -> nil,
-
-	AddObject: (self: Map, obj: physicObject.PhysicObject) -> nil,
+	StartPosition: Vector2?,
 }
 
-function map.SetPlayerPos(self: Map, pos: Vector2)
-	TweenService:Create(
-		self.Image,
-		TweenInfo.new(self.cam.CameraMoveSpeed / pos.Magnitude),
-		{
-			["Position"] = UDim2.fromScale(pos.X, pos.X),
-		}
-	):Play()
+export type Map = MapStruct & typeof(map)
+
+--[[
+	Calc position for move Player to position on the map
+]]
+function map.CalcPlayerPositionAbsolute(
+	self: MapStruct,
+	player: player.Player2d,
+	pos: Vector2
+): Vector2
+	return Vector2.new(
+		(self.Image.AbsoluteSize.X * ((1 - player.Image.Size.X.Scale) / 2))
+			- pos.X,
+		(self.Image.AbsoluteSize.Y * ((1 - player.Image.Size.Y.Scale) / 2))
+			- pos.Y
+	)
 end
 
-function map.AddObject(self: Map, obj: physicObject.PhysicObject)
+function map.CalcPlayerPosition(
+	self: MapStruct,
+	player: player.Player2d,
+	pos: Vector2
+): Vector2
+	return map.CalcPlayerPositionAbsolute(
+		self,
+		player,
+		Object2d.CalcPosition(pos, self.Image)
+	)
+end
+
+function map.GetSetPlayerPosTween(
+	self: MapStruct,
+	player: player.Player2d,
+	pos: Vector2
+): Tween
+	local p = map.CalcPlayerPosition(self, player, pos)
+
+	return TweenService:Create(
+		self.Image.ImageInstance,
+		TweenInfo.new(self.cam.CameraMoveSpeed / pos.Magnitude),
+		{
+			["Position"] = UDim2.fromOffset(p.X, p.X),
+		}
+	)
+end
+
+function map.AddObject(self: MapStruct, obj: physicObject.PhysicObject)
 	obj.Image.Parent = self.Image.ImageInstance
 
 	table.insert(self.Objects, obj)
 end
 
-function map.CalcPositions(self: Map)
+function map.CalcPositions(self: MapStruct)
 	for _, v in pairs(self.Objects) do
 		v:CalcSizeAndPos(self.Image)
 	end
 end
 
-function map.CalcCollide(self: Map)
+function map.CalcCollide(self: MapStruct)
 	--[[
 		Список объектов которые имеют колизию
 	]]
@@ -86,17 +112,29 @@ function map.CalcCollide(self: Map)
 		if i then
 			-- here checking side
 
-			v.TouchedEvent:Fire(Objects[i])
+			v.TouchedEvent:Fire(Objects[i]) -- connection defined in physicObject constructor must unlock mutex
 		else
 			v.TouchedSideMutex:unlock()
 		end
 	end
 end
 
-function map.Destroy(self: Map)
+function map.Destroy(self: MapStruct)
 	self.ObjectMovementEvent:Destroy()
 
 	table.clear(self)
+end
+
+--[[
+
+]]
+function map.SetPlayerPosition(
+	self: MapStruct,
+	player: player.Player2d,
+	pos: Vector2
+)
+	local p = map.CalcPlayerPosition(self, player, pos)
+	self.Image.Position = UDim2.fromOffset(p.X, p.Y)
 end
 
 --[[
@@ -108,29 +146,30 @@ function map.new(
 	Size: Vector2,
 	cam: camera2d.Camera2d,
 	BackgroundImage: string,
-	Objects: { [any]: Object2d.Object2d }?
+	Objects: { [any]: Object2d.Object2d }?,
+	startPosition: Vector2?
 ): Map
 	local ObjectMovementEvent = Instance.new("BindableEvent")
 
-	local self: Map = {
+	local self = {
 		Image = ExImage.new(BackgroundImage),
 		Objects = {},
 		cam = cam,
 		ObjectMovement = ObjectMovementEvent.Event,
 		ObjectMovementEvent = ObjectMovementEvent,
-		SetPlayerPos = map.SetPlayerPos,
-		CalcCollide = map.CalcCollide,
-		AddObject = map.AddObject,
-		CalcPositions = map.CalcPositions,
-		Destroy = map.Destroy,
+		StartPosition = startPosition,
 	}
 
-	for _, v in pairs(Objects) do
-		self:AddObject(v)
+	if Objects then
+		for _, v in pairs(Objects) do
+			map.AddObject(self, v)
+		end
 	end
 
 	self.Image.Size = UDim2.fromScale(Size.X, Size.Y)
 	self.Image.ScaleType = Enum.ScaleType.Fit
+
+	setmetatable(self, { __index = map })
 
 	return self
 end

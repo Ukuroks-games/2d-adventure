@@ -1,9 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local giflib = require(ReplicatedStorage.Packages.giflib)
-local stdlib = require(ReplicatedStorage.Packages.stdlib)
-
-local utility = stdlib.utility
 
 local physicObject = require(script.Parent.physicObject)
 
@@ -44,8 +41,11 @@ export type Player2d = {
 		Текущяя анимация
 	]]
 	CurrentAnimation: giflib.Gif,
-} & physicObject.PhysicObject
+} & physicObject.PhysicObject & typeof(player)
 
+--[[
+	Destroy player
+]]
 function player.Destroy(self: Player2d)
 	for _, v in pairs(self.Animations) do
 		v:Destroy()
@@ -54,8 +54,11 @@ function player.Destroy(self: Player2d)
 	self.MoveEvent:Destroy()
 end
 
+--[[
+	Player2d constructor
+]]
 function player.new(
-	Animations: { [string]: {} },
+	Animations: Animations,
 	WalkSpeed: number,
 	Size: { X: number, Y: number }
 ): Player2d
@@ -72,12 +75,10 @@ function player.new(
 	local CreatedAnimations = {}
 
 	for i, v in pairs(Animations) do
-		local gif = giflib.gif.new(PlayerFrame, v, true)
+		v:Hide()
+		v:SetBackgroundTransparency(1)
 
-		gif:Hide()
-		gif:SetBackgroundTransparency(1)
-
-		CreatedAnimations[i] = gif
+		CreatedAnimations[i] = v
 	end
 
 	local self = physicObject.new(PlayerFrame, true, true)
@@ -87,6 +88,8 @@ function player.new(
 	self.CurrentAnimation = CreatedAnimations.IDLE or nil
 	self.MoveEvent = Instance.new("BindableEvent")
 	self.Move = self.MoveEvent.Event
+
+	setmetatable(self, { __index = player })
 
 	return self
 end

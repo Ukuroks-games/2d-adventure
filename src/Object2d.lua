@@ -20,14 +20,12 @@ export type Object2d = {
 	Size: Vector2,
 
 	Image: ExImage.ExImage,
+} & physicObject.PhysicObject & typeof(Object2d)
 
-	CalcSizeAndPos: (self: Object2d, background: ExImage.ExImage) -> nil,
-} & physicObject.PhysicObject
-
---[[
-	Расчитывает координаты объекта
-]]
-function Object2d.GetPosition(self: Object2d, background: ExImage.ExImage)
+function Object2d.CalcPosition(
+	AnchorPosition: Vector2,
+	background: ExImage.ExImage
+): Vector2
 	if background.ScaleType == Enum.ScaleType.Fit then
 		--отношение текущих размеров
 		local currentSizes = background.AbsoluteSize.X
@@ -39,9 +37,9 @@ function Object2d.GetPosition(self: Object2d, background: ExImage.ExImage)
 				/ background.RealSize.X
 
 			return Vector2.new(
-				self.AnchorPosition.X
+				AnchorPosition.X
 					* (background.AbsoluteSize.X / background.RealSize.X),
-				self.AnchorPosition.Y * (h / background.RealSize.Y)
+				AnchorPosition.Y * (h / background.RealSize.Y)
 					+ ((background.AbsoluteSize.Y - h) / 2)
 			)
 		elseif currentSizes > 1 then -- поля справа и слева
@@ -50,26 +48,21 @@ function Object2d.GetPosition(self: Object2d, background: ExImage.ExImage)
 				/ background.RealSize.Y
 
 			return Vector2.new(
-				self.AnchorPosition.X * (w / background.RealSize.X)
+				AnchorPosition.X * (w / background.RealSize.X)
 					+ ((background.AbsoluteSize.X - w) / 2),
-				self.AnchorPosition.Y
+				AnchorPosition.Y
 					* (background.AbsoluteSize.Y / background.RealSize.Y)
 			)
 		end
 	end
 
 	return Vector2.new(
-		self.AnchorPosition.X
-			* (background.AbsoluteSize.X / background.RealSize.X),
-		self.AnchorPosition.Y
-			* (background.AbsoluteSize.Y / background.RealSize.Y)
+		AnchorPosition.X * (background.AbsoluteSize.X / background.RealSize.X),
+		AnchorPosition.Y * (background.AbsoluteSize.Y / background.RealSize.Y)
 	)
 end
 
---[[
-	Расчитывает размыеры объекта
-]]
-function Object2d.GetSize(self: Object2d, background: ExImage.ExImage)
+function Object2d.CalcSize(Size: Vector2, background: ExImage.ExImage): Vector2
 	if background.ScaleType == Enum.ScaleType.Fit then
 		-- отношение изначальных размеров
 
@@ -83,26 +76,41 @@ function Object2d.GetSize(self: Object2d, background: ExImage.ExImage)
 				/ background.RealSize.X
 
 			return Vector2.new(
-				self.Size.X
-					* (background.AbsoluteSize.X / background.RealSize.X),
-				self.Size.Y * (h / background.RealSize.Y)
+				Size.X * (background.AbsoluteSize.X / background.RealSize.X),
+				Size.Y * (h / background.RealSize.Y)
 			)
 		elseif currentSizes > 1 then -- поля справа и слева
 			local w = (background.RealSize.X * background.AbsoluteSize.Y)
 				/ background.RealSize.Y
 
 			return Vector2.new(
-				self.Size.X * (w / background.RealSize.X),
-				self.Size.Y
-					* (background.AbsoluteSize.Y / background.RealSize.Y)
+				Size.X * (w / background.RealSize.X),
+				Size.Y * (background.AbsoluteSize.Y / background.RealSize.Y)
 			)
 		end
 	end
 
 	return Vector2.new(
-		self.Size.X * (background.AbsoluteSize.X / background.RealSize.X),
-		self.Size.Y * (background.AbsoluteSize.Y / background.RealSize.Y)
+		Size.X * (background.AbsoluteSize.X / background.RealSize.X),
+		Size.Y * (background.AbsoluteSize.Y / background.RealSize.Y)
 	)
+end
+
+--[[
+	Расчитывает координаты объекта
+]]
+function Object2d.GetPosition(
+	self: Object2d,
+	background: ExImage.ExImage
+): Vector2
+	return Object2d.CalcPosition(self.AnchorPosition, background)
+end
+
+--[[
+	Расчитывает размыеры объекта
+]]
+function Object2d.GetSize(self: Object2d, background: ExImage.ExImage): Vector2
+	return Object2d.CalcSize(self.Size, background)
 end
 
 function Object2d.CalcSizeAndPos(self: Object2d, background: ExImage.ExImage)
@@ -126,9 +134,10 @@ function Object2d.new(
 
 	self.AnchorPosition = AnchorPosition
 	self.Size = Size
-	self.CalcSizeAndPos = Object2d.CalcSizeAndPos
 
 	self.Image.BackgroundTransparency = 1
+
+	setmetatable(self, { __index = Object2d })
 
 	return self
 end
