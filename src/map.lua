@@ -8,7 +8,7 @@ local algorithm = stdlib.algorithm
 local Object2d = require(script.Parent.Object2d)
 local camera2d = require(script.Parent.camera2d)
 local physicObject = require(script.Parent.physicObject)
-local player = require(script.Parent.player)
+local player2d = require(script.Parent.player)
 
 --[[
 	Map class
@@ -35,23 +35,26 @@ export type Map = MapStruct & typeof(map)
 
 --[[
 	Calc position for move Player to position on the map
+
+	Зечем? Игрок находится в центре а координаты от левого верхнего угла изображения
 ]]
 function map.CalcPlayerPositionAbsolute(
 	self: MapStruct,
-	player: player.Player2d,
+	player: player2d.Player2d,
 	pos: Vector2
 ): Vector2
 	return Vector2.new(
-		(self.Image.AbsoluteSize.X * ((1 - player.Image.Size.X.Scale) / 2))
-			- pos.X,
-		(self.Image.AbsoluteSize.Y * ((1 - player.Image.Size.Y.Scale) / 2))
-			- pos.Y
+		player.Image.AbsolutePosition.X - pos.X,
+		player.Image.AbsolutePosition.Y - pos.Y
 	)
 end
 
+--[[
+
+]]
 function map.CalcPlayerPosition(
 	self: MapStruct,
-	player: player.Player2d,
+	player: player2d.Player2d,
 	pos: Vector2
 ): Vector2
 	return map.CalcPlayerPositionAbsolute(
@@ -61,9 +64,12 @@ function map.CalcPlayerPosition(
 	)
 end
 
+--[[
+
+]]
 function map.GetSetPlayerPosTween(
 	self: MapStruct,
-	player: player.Player2d,
+	player: player2d.Player2d,
 	pos: Vector2
 ): Tween
 	local p = map.CalcPlayerPosition(self, player, pos)
@@ -130,7 +136,7 @@ end
 ]]
 function map.SetPlayerPosition(
 	self: MapStruct,
-	player: player.Player2d,
+	player: player2d.Player2d,
 	pos: Vector2
 )
 	local p = map.CalcPlayerPosition(self, player, pos)

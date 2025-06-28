@@ -1,5 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local gifInfo = require(script.Parent.gifInfo)
 local giflib = require(ReplicatedStorage.Packages.giflib)
 
 local physicObject = require(script.Parent.physicObject)
@@ -17,6 +18,18 @@ export type Animations = {
 	IDLE: giflib.Gif,
 
 	-- Other animations
+	[any]: giflib.Gif,
+}
+
+export type ConstructorAnimations = {
+	WalkUp: gifInfo.Func,
+	WalkDown: gifInfo.Func,
+	WalkRight: gifInfo.Func,
+	WalkLeft: gifInfo.Func,
+	IDLE: gifInfo.Func,
+
+	-- Other animations
+	[any]: gifInfo.Func,
 }
 
 --[[
@@ -58,7 +71,7 @@ end
 	Player2d constructor
 ]]
 function player.new(
-	Animations: Animations,
+	Animations: ConstructorAnimations,
 	WalkSpeed: number,
 	Size: { X: number, Y: number }
 ): Player2d
@@ -75,10 +88,12 @@ function player.new(
 	local CreatedAnimations = {}
 
 	for i, v in pairs(Animations) do
-		v:Hide()
-		v:SetBackgroundTransparency(1)
+		local gif = v(PlayerFrame)
 
-		CreatedAnimations[i] = v
+		gif:Hide()
+		gif:SetBackgroundTransparency(1)
+
+		CreatedAnimations[i] = gif
 	end
 
 	local self = physicObject.new(PlayerFrame, true, true)
@@ -89,7 +104,11 @@ function player.new(
 	self.MoveEvent = Instance.new("BindableEvent")
 	self.Move = self.MoveEvent.Event
 
-	setmetatable(self, { __index = player })
+	setmetatable(self, {
+		__index = function(_self, key)
+			return player[key] or physicObject[key]
+		end,
+	})
 
 	return self
 end

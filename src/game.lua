@@ -51,40 +51,13 @@ export type Game = {
 	CooldownTime: number,
 
 	--[[
-	
-	]]
-	Destroy: (self: Game) -> nil,
-
-	--[[
-		Player IDLE
-	]]
-	IDLE: (self: Game) -> nil,
-
-	--[[
-		Player move to up
-	]]
-	Up: (self: Game) -> nil,
-
-	--[[
-		Player move to down
-	]]
-	Down: (self: Game) -> nil,
-
-	--[[
-		Player move to Left
-	]]
-	Left: (self: Game) -> nil,
-
-	--[[
-		Player move to Right
-	]]
-	Right: (self: Game) -> nil,
-
-	--[[
 		List of objects that will be destroyed on Destroy call
 	]]
 	DestroyableObjects: {},
 
+	--[[
+	
+	]]
 	Connections: { RBXScriptConnection },
 
 	--[[
@@ -276,7 +249,7 @@ function Game.new(
 
 	table.insert(self.Map.Objects, self.Player) -- add player to objects for enable collision for player
 
-	self.Map:SetPlayerPosition(self.Player, self.Map.StartPosition)
+	self.Map:SetPlayerPosition(self.Player, self.Map.StartPosition or Vector2.new(0, 0))
 
 	--[[
 		обёртка для self.Map:CalcPositions
@@ -292,7 +265,7 @@ function Game.new(
 	]]
 	self.Frame:GetPropertyChangedSignal("Size"):Connect(CalcPositions)
 
-	self.Player.Animations.IDLE:SetFrame(1) -- set first IDLE frame as default
+	self.Player.Animations.IDLE:StartAnimation()
 
 	local Up = cooldown.new(self.CooldownTime, self.Up)
 

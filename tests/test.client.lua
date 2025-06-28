@@ -8,6 +8,7 @@ local camera2d = require(ReplicatedStorage.shared.camera2d)
 local map = require(ReplicatedStorage.shared.map)
 local player = require(ReplicatedStorage.shared.player)
 local Object2d = require(ReplicatedStorage.shared.Object2d)
+local gifInfo = require(ReplicatedStorage.shared.gifInfo)
 
 local GameFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
@@ -20,7 +21,7 @@ local _game = Game.new(
 	GameFrame,
 	player.new(
 		{
-			["IDLE"] = giflib.gif.new({ -- IDLE animation frames
+			["IDLE"] = gifInfo.new({ -- IDLE animation frames
 				giflib.Frame.new("123651728909570", 0.5), -- 1
 				giflib.Frame.new("73880862501758", 0.08), -- 2
 				giflib.Frame.new("76251571010833", 0.08), -- 3
@@ -33,19 +34,19 @@ local _game = Game.new(
 				giflib.Frame.new("82185418640948", 0.08), -- 10
 				giflib.Frame.new("131056695027889", 0.08), -- 11
 				giflib.Frame.new("82185418640948", 0.08), -- 12
-			}),
-			["WalkUp"] = giflib.gif.new({
+			}, true, true, giflib.gif.Mode.Replace),
+			["WalkUp"] = gifInfo.new({
 				giflib.Frame.new("131056695027889", 0.5), -- 1
-			}),
-			["WalkDown"] = giflib.gif.new({
+			}, true, false, giflib.gif.Mode.Replace),
+			["WalkDown"] = gifInfo.new({
 				giflib.Frame.new("108839932127938", 0.5), -- 1
-			}),
-			["WalkLeft"] = giflib.gif.new({
+			}, true, false, giflib.gif.Mode.Replace),
+			["WalkLeft"] = gifInfo.new({
 				giflib.Frame.new("131056695027889", 0.5), -- 1
-			}),
-			["WalkRight"] = giflib.gif.new({
+			}, true, false, giflib.gif.Mode.Replace),
+			["WalkRight"] = gifInfo.new({
 				giflib.Frame.new("82185418640948", 0.5), -- 1
-			}),
+			}, true, false, giflib.gif.Mode.Replace),
 		},
 		1 / 100,
 		{
@@ -59,5 +60,5 @@ local _game = Game.new(
 			Vector2.new(28, 69),
 			ExImage.new("84486373084684")
 		),
-	}, Vector2.new(100, 100))
+	}, Vector2.new(100, 200))
 )
