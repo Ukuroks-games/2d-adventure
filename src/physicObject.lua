@@ -47,11 +47,7 @@ export type PhysicObject = {
 	Image: Frame,
 
 	CanCollide: boolean,
-
-	CalcSizeAndPos: (self: PhysicObject, background: ExImage.ExImage) -> nil,
-
-	GetTouchedSide: (self: PhysicObject) -> TouchedSide,
-}
+} & typeof(physicObject)
 
 function physicObject.Destroy(self: PhysicObject)
 	self.TouchedEvent:Destroy()
@@ -101,6 +97,14 @@ end
 
 function physicObject.CalcSizeAndPos()
 	-- empty because its an interface
+end
+
+function physicObject.GetPosition(self: PhysicObject): Vector2
+	return self.Image.AbsolutePosition
+end
+
+function physicObject.GetSize(self: PhysicObject): Vector2
+	return self.Image.AbsoluteSize
 end
 
 function physicObject.new(
@@ -158,6 +162,10 @@ function physicObject.new(
 				this.TouchedSide.Down = this.TouchedSide.Down or true
 			end
 
+			this.TouchedSideMutex:unlock()
+		end)
+	else
+		this.Touched:Connect(function()
 			this.TouchedSideMutex:unlock()
 		end)
 	end
