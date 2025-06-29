@@ -96,13 +96,14 @@ function player.new(
 		CreatedAnimations[i] = gif
 	end
 
-	local self = physicObject.new(PlayerFrame, true, true)
+	local self = physicObject.new(PlayerFrame, true, true, false)
 
 	self.Animations = CreatedAnimations
 	self.WalkSpeed = WalkSpeed
 	self.CurrentAnimation = CreatedAnimations.IDLE or nil
 	self.MoveEvent = Instance.new("BindableEvent")
 	self.Move = self.MoveEvent.Event
+	self.Anchored = false
 
 	setmetatable(self, {
 		__index = function(_self, key)

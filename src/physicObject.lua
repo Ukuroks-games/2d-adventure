@@ -23,7 +23,7 @@ export type TouchedSide = {
 	Down: boolean,
 }
 
-export type PhysicObject = {
+export type PhysicObjectStruct = {
 
 	--[[
 		fire where PhysicObject touched another PhysicObject
@@ -31,7 +31,7 @@ export type PhysicObject = {
 
 		example:
 		```lua
-		obj.Touched:Connect(function(obj: PhysicObject )
+		obj.Touched:Connect(function(obj: PhysicObject)
 
 		end)
 		```
@@ -47,16 +47,20 @@ export type PhysicObject = {
 	Image: Frame,
 
 	CanCollide: boolean,
-} & typeof(physicObject)
 
-function physicObject.Destroy(self: PhysicObject)
+	Anchored: boolean,
+}
+
+export type PhysicObject = PhysicObjectStruct & typeof(physicObject)
+
+function physicObject.Destroy(self: PhysicObjectStruct)
 	self.TouchedEvent:Destroy()
 	self.Image:Destroy()
 end
 
 function physicObject.CheckCollision(
-	self: PhysicObject,
-	other: PhysicObject
+	self: PhysicObjectStruct,
+	other: PhysicObjectStruct
 ): boolean
 	local function Check(a, b)
 		return (
@@ -90,7 +94,7 @@ function physicObject.CheckCollision(
 		)
 end
 
-function physicObject.GetTouchedSide(self: PhysicObject): TouchedSide
+function physicObject.GetTouchedSide(self: PhysicObjectStruct): TouchedSide
 	self.TouchedSideMutex:wait()
 	return self.TouchedSide
 end
@@ -99,22 +103,23 @@ function physicObject.CalcSizeAndPos()
 	-- empty because its an interface
 end
 
-function physicObject.GetPosition(self: PhysicObject): Vector2
+function physicObject.GetPosition(self: PhysicObjectStruct): Vector2
 	return self.Image.AbsolutePosition
 end
 
-function physicObject.GetSize(self: PhysicObject): Vector2
+function physicObject.GetSize(self: PhysicObjectStruct): Vector2
 	return self.Image.AbsoluteSize
 end
 
 function physicObject.new(
 	image: Frame,
 	canCollide: boolean?,
-	checkingTouchedSize: boolean?
+	checkingTouchedSize: boolean?,
+	anchored: boolean?
 ): PhysicObject
 	local TouchedEvent = Instance.new("BindableEvent")
 
-	local this = {
+	local this: PhysicObjectStruct = {
 		Touched = TouchedEvent.Event,
 		TouchedEvent = TouchedEvent,
 		Image = image or error("image is nil"),
@@ -126,6 +131,7 @@ function physicObject.new(
 			Up = false,
 			Down = false,
 		},
+		Anchored = anchored or true,
 	}
 
 	setmetatable(this, { __index = physicObject })
@@ -146,20 +152,52 @@ function physicObject.new(
 			local p2y = obj.Image.AbsolutePosition.Y
 				+ (obj.Image.AbsoluteSize.Y / 2)
 
-			if p1x < p2x then
-				this.TouchedSide.Right = this.TouchedSide.Right or true
-				this.TouchedSide.Left = this.TouchedSide.Left or false
-			else
-				this.TouchedSide.Right = this.TouchedSide.Right or false
-				this.TouchedSide.Left = this.TouchedSide.Left or true
+			local w = (function()
+				if
+					this.Image.AbsolutePosition.X > obj.Image.AbsolutePosition.X
+				then
+					return obj.Image.AbsolutePosition.X
+						+ obj.Image.AbsoluteSize.X
+						- this.Image.AbsolutePosition.X
+				else
+					return this.Image.AbsolutePosition.X
+						+ this.Image.AbsoluteSize.X
+						- obj.Image.AbsolutePosition.X
+				end
+			end)()
+
+			local h = (function()
+				if
+					this.Image.AbsolutePosition.Y > obj.Image.AbsolutePosition.Y
+				then
+					return obj.Image.AbsolutePosition.Y
+						+ obj.Image.AbsoluteSize.Y
+						- this.Image.AbsolutePosition.Y
+				else
+					return this.Image.AbsolutePosition.Y
+						+ this.Image.AbsoluteSize.Y
+						- obj.Image.AbsolutePosition.Y
+				end
+			end)()
+
+			if h >= w then
+				if p1x < p2x then
+					this.TouchedSide.Right = this.TouchedSide.Right or true
+					this.TouchedSide.Left = this.TouchedSide.Left or false
+				else
+					this.TouchedSide.Right = this.TouchedSide.Right or false
+					this.TouchedSide.Left = this.TouchedSide.Left or true
+				end
 			end
 
-			if p1y > p2y then
-				this.TouchedSide.Up = this.TouchedSide.Up or true
-				this.TouchedSide.Down = this.TouchedSide.Down or false
-			else
-				this.TouchedSide.Up = this.TouchedSide.Up or false
-				this.TouchedSide.Down = this.TouchedSide.Down or true
+			if h <= w then
+				if p1y > p2y then
+					this.TouchedSide.Up = this.TouchedSide.Up or true
+					this.TouchedSide.Down = this.TouchedSide.Down or false
+				else
+					this.TouchedSide.Up = this.TouchedSide.Up or false
+					this.TouchedSide.Down = this.TouchedSide.Down or true
+				end
 			end
 
 			this.TouchedSideMutex:unlock()
@@ -169,6 +207,76 @@ function physicObject.new(
 			this.TouchedSideMutex:unlock()
 		end)
 	end
+
+	this.Touched:Connect(function(obj: PhysicObject)
+		if not this.Anchored then
+			this.TouchedSideMutex:wait()
+
+			if type(obj.Image) == "table" then
+				setmetatable(obj.Image, { __index = obj.Image.ImageInstance })
+			end
+
+			if this.TouchedSide.Up then
+				this.Image.Position = UDim2.new(
+					this.Image.Position.X,
+					UDim.new(
+						this.Image.Position.Y.Scale,
+						this.Image.Position.Y.Offset
+							+ (
+								obj.Image.AbsolutePosition.Y
+								+ obj.Image.AbsoluteSize.Y
+								- this.Image.AbsolutePosition.Y
+							)
+					)
+				)
+			end
+
+			if this.TouchedSide.Down then
+				this.Image.Position = UDim2.new(
+					this.Image.Position.X,
+					UDim.new(
+						this.Image.Position.Y.Scale,
+						this.Image.Position.Y.Offset
+							- (
+								this.Image.AbsolutePosition.Y
+								+ this.Image.AbsoluteSize.Y
+								- obj.Image.AbsolutePosition.Y
+							)
+					)
+				)
+			end
+
+			if this.TouchedSide.Left then
+				this.Image.Position = UDim2.new(
+					UDim.new(
+						this.Image.Position.X.Scale,
+						this.Image.Position.X.Offset
+							+ (
+								obj.Image.AbsolutePosition.X
+								+ obj.Image.AbsoluteSize.X
+								- this.Image.AbsolutePosition.X
+							)
+					),
+					this.Image.Position.Y
+				)
+			end
+
+			if this.TouchedSide.Right then
+				this.Image.Position = UDim2.new(
+					UDim.new(
+						this.Image.Position.X.Scale,
+						this.Image.Position.X.Offset
+							- (
+								this.Image.AbsolutePosition.X
+								+ this.Image.AbsoluteSize.X
+								- obj.Image.AbsolutePosition.X
+							)
+					),
+					this.Image.Position.Y
+				)
+			end
+		end
+	end)
 
 	return this
 end
