@@ -127,7 +127,7 @@ function player2d.new(
 ): Player2d
 	local PlayerFrame = Instance.new("Frame")
 	local CreatedAnimations = {}
-	local self = physicObject.new(PlayerFrame, true, true)
+	local self = physicObject.new(PlayerFrame, true, true, false)
 
 	for i, v in pairs(Animations) do
 		local gif = v(PlayerFrame)
@@ -138,13 +138,16 @@ function player2d.new(
 		CreatedAnimations[i] = gif
 	end
 
+
 	PlayerFrame.BackgroundTransparency = 1
+
 
 	self.Animations = CreatedAnimations
 	self.WalkSpeed = WalkSpeed
 	self.CurrentAnimation = CreatedAnimations.IDLE or nil
 	self.MoveEvent = Instance.new("BindableEvent")
-	self.Move = self.MoveEvent.Event
+	self.Move = self.MoveEvent.Even
+	self.Anchored = false
 	self.Size = Size
 
 	setmetatable(self, {
