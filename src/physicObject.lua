@@ -136,8 +136,8 @@ function physicObject.new(
 
 	setmetatable(this, { __index = physicObject })
 
-	if checkingTouchedSize then
-		this.Touched:Connect(function(obj: PhysicObject)
+	this.Touched:Connect(function(obj: PhysicObject)
+		if not this.Anchored or checkingTouchedSize then
 			if type(obj.Image) == "table" then
 				setmetatable(obj.Image, { __index = obj.Image.ImageInstance })
 			end
@@ -201,12 +201,8 @@ function physicObject.new(
 			end
 
 			this.TouchedSideMutex:unlock()
-		end)
-	else
-		this.Touched:Connect(function()
-			this.TouchedSideMutex:unlock()
-		end)
-	end
+		end
+	end)
 
 	this.Touched:Connect(function(obj: PhysicObject)
 		if not this.Anchored then
