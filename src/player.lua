@@ -1,14 +1,17 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local AssetService = game:GetService("AssetService")
 
 local gifInfo = require(script.Parent.gifInfo)
 local giflib = require(ReplicatedStorage.Packages.giflib)
 
 local physicObject = require(script.Parent.physicObject)
+local Object2d = require(script.Parent.Object2d)
+local ExImage = require(script.Parent.ExImage)
 
 --[[
 	Player class
 ]]
-local player = {}
+local player2d = {}
 
 export type Animations = {
 	WalkUp: giflib.Gif,
@@ -35,7 +38,7 @@ export type ConstructorAnimations = {
 --[[
 	Класс игрока
 ]]
-export type Player2d = {
+export type Player2dStruct = {
 	--[[
 		Анимации игрока
 	]]
@@ -54,12 +57,16 @@ export type Player2d = {
 		Текущяя анимация
 	]]
 	CurrentAnimation: giflib.Gif,
-} & physicObject.PhysicObject & typeof(player)
+
+	Size: Vector2,
+} & physicObject.PhysicObject
+
+export type Player2d = Player2dStruct & typeof(player2d)
 
 --[[
 	Destroy player
 ]]
-function player.Destroy(self: Player2d)
+function player2d.Destroy(self: Player2dStruct)
 	for _, v in pairs(self.Animations) do
 		v:Destroy()
 	end
@@ -67,25 +74,60 @@ function player.Destroy(self: Player2d)
 	self.MoveEvent:Destroy()
 end
 
+function player2d.CalcSize(
+	self: Player2dStruct,
+	mapImage: ExImage.ExImage,
+	overrideSize: Vector2?
+)
+	local Resolution: Vector2
+
+	if self.Size.X == -1 or self.Size.Y == -1 then
+		Resolution = overrideSize
+			or AssetService:CreateEditableImageAsync(
+				self.CurrentAnimation.Frames[1].Image.Image
+			).Size
+	end
+
+	if self.Size.X == -1 and self.Size.Y == -1 then
+		local s = Object2d.CalcSize(Resolution, mapImage)
+		self.Image.Size = UDim2.fromOffset(s.X, s.Y)
+	elseif self.Size.X == -1 then
+		self.Image.Size = UDim2.new(
+			0,
+			Object2d.CalcSize(Resolution, mapImage).X,
+			self.Size.Y,
+			0
+		)
+	elseif self.Size.Y == -1 then
+		self.Image.Size = UDim2.new(
+			self.Size.X,
+			0,
+			0,
+			Object2d.CalcSize(Resolution, mapImage).X
+		)
+	else
+		self.Image.Size = UDim2.fromScale(self.Size.X, self.Size.Y)
+	end
+
+	self.Image.Position = UDim2.new(
+		0.5,
+		-self.Image.AbsoluteSize.X / 2,
+		0.5,
+		-self.Image.AbsoluteSize.Y / 2
+	) -- move to center PlayerFrame
+end
+
 --[[
 	Player2d constructor
 ]]
-function player.new(
+function player2d.new(
 	Animations: ConstructorAnimations,
 	WalkSpeed: number,
 	Size: { X: number, Y: number }
 ): Player2d
 	local PlayerFrame = Instance.new("Frame")
-	PlayerFrame.BackgroundTransparency = 1
-	PlayerFrame.Size = UDim2.fromScale(Size.X, Size.Y)
-	PlayerFrame.Position = UDim2.new(
-		0.5,
-		-PlayerFrame.AbsoluteSize.X / 2,
-		0.5,
-		-PlayerFrame.AbsoluteSize.Y / 2
-	) -- move to center PlayerFrame
-
 	local CreatedAnimations = {}
+	local self = physicObject.new(PlayerFrame, true, true)
 
 	for i, v in pairs(Animations) do
 		local gif = v(PlayerFrame)
@@ -96,21 +138,22 @@ function player.new(
 		CreatedAnimations[i] = gif
 	end
 
-	local self = physicObject.new(PlayerFrame, true, true)
+	PlayerFrame.BackgroundTransparency = 1
 
 	self.Animations = CreatedAnimations
 	self.WalkSpeed = WalkSpeed
 	self.CurrentAnimation = CreatedAnimations.IDLE or nil
 	self.MoveEvent = Instance.new("BindableEvent")
 	self.Move = self.MoveEvent.Event
+	self.Size = Size
 
 	setmetatable(self, {
 		__index = function(_self, key)
-			return player[key] or physicObject[key]
+			return player2d[key] or physicObject[key]
 		end,
 	})
 
 	return self
 end
 
-return player
+return player2d

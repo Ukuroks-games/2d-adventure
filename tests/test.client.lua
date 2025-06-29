@@ -50,8 +50,8 @@ local _game = Game.new(
 		},
 		1 / 100,
 		{
-			X = 0.08,
-			Y = 0.16,
+			X = -1,
+			Y = -1,
 		}
 	),
 	map.new(Vector2.new(1, 1), cam, "76803732961234", {
@@ -60,5 +60,5 @@ local _game = Game.new(
 			Vector2.new(28, 69),
 			ExImage.new("84486373084684")
 		),
-	}, Vector2.new(100, 200))
+	}, Vector2.new(80, 300))
 )
