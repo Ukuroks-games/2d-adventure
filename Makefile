@@ -8,8 +8,11 @@ RM = rm -rf
 
 ./build: 
 	mkdir build
+
+./Packages: wally.toml
+	wally install
 	
-configure: ./build wally.toml src/*
+configure: clean ./build wally.toml src/%.lua
 	$(CP) src/* build/
 	$(CP) wally.toml build/
 
@@ -22,26 +25,32 @@ publish: configure
 lint:
 	selene src/ tests/
 
-./Packages: wally.toml
-	wally install
+
 
 $(LIBNAME).rbxm: configure
 	$(MV) build/init.lua build/$(LIBNAME).lua
 	rojo build library.project.json --output $@
 
-tests: ./Packages
+tests.rbxl: ./Packages
 	rojo build tests.project.json --output tests.rbxl
 
-tests.rbxl: tests
+tests: clean-tests tests.rbxl
 
 sourcemap.json: ./Packages
 	rojo sourcemap tests.project.json --output $@
 
-delete-sourcemap: 
+# Re gen sourcemap
+sourcemap: clean-sourcemap sourcemap.json
+
+
+clean-sourcemap: 
 	$(RM) sourcemap.json
 
-# Re gen sourcemap
-sourcemap: delete-sourcemap sourcemap.json
+clean-rbxm:
+	$(RM) $(LIBNAME).rbxm 
 
-clean:
-	$(RM) build $(PACKAGE_NAME) $(LIBNAME).rbxm
+clean-tests:
+	$(RM) tests.rbxl
+
+clean: clean-tests clean-rbxm
+	$(RM) build $(PACKAGE_NAME) 

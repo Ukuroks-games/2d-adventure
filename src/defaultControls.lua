@@ -8,11 +8,11 @@ local DefaultControls: ControlType.Control = {
 		Left = Enum.KeyCode.A,
 	},
 	Gamepad = {
-		Up = Enum.KeyCode.ButtonA,
-		Down = Enum.KeyCode.ButtonB,
-		Right = Enum.KeyCode.ButtonR1,
-		Left = Enum.KeyCode.ButtonR2,
-	}
+		Up = Enum.KeyCode.DPadUp,
+		Down = Enum.KeyCode.DPadDown,
+		Right = Enum.KeyCode.DPadRight,
+		Left = Enum.KeyCode.DPadLeft,
+	},
 }
 
 return DefaultControls
