@@ -1,9 +1,7 @@
-local ContextActionService = game:GetService("ContextActionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
-local Object2d = require(script.Parent.Object2d)
 local InputLib = require(ReplicatedStorage.Packages.InputLib)
 local cooldown = require(ReplicatedStorage.Packages.cooldown)
 local stdlib = require(ReplicatedStorage.Packages.stdlib)
@@ -11,7 +9,6 @@ local mutex = stdlib.mutex
 
 local defaultControls = require(script.Parent.defaultControls)
 local map = require(script.Parent.map)
-local physicObject = require(script.Parent.physicObject)
 local player = require(script.Parent.player)
 
 --[[
@@ -19,7 +16,7 @@ local player = require(script.Parent.player)
 ]]
 local Game = {}
 
-export type Game = {
+export type GameStruct = {
 	--[[
 		Game background
 	]]
@@ -73,12 +70,14 @@ export type Game = {
 	MoveTween: Tween,
 
 	CollideMutex: mutex.Mutex,
-} & typeof(Game)
+}
+
+export type Game = GameStruct & typeof(Game)
 
 --[[
 
 ]]
-function Game.Destroy(self: Game)
+function Game.Destroy(self: GameStruct)
 	self.DestroyingEvent:Fire()
 
 	for _, v in pairs(self.DestroyableObjects) do
@@ -99,7 +98,7 @@ function Game.Destroy(self: Game)
 	self.DestroyingEvent:Destroy()
 end
 
-local function showAnimation(self: Game, animationName: string)
+local function showAnimation(self: GameStruct, animationName: string)
 	if
 		self.Player.CurrentAnimation.AnimationRunning
 		and self.Player.CurrentAnimation.AnimationRunning
@@ -108,7 +107,7 @@ local function showAnimation(self: Game, animationName: string)
 		if self.MoveTween then
 			self.MoveTween:Cancel()
 			self.MoveTween:Destroy()
-			self.MoveTween = nil
+			self.MoveTween = nil -- set to nil for this IF can working
 		end
 
 		self.Player.CurrentAnimation:StopAnimation()
@@ -120,99 +119,81 @@ local function showAnimation(self: Game, animationName: string)
 	self.Player.CurrentAnimation = self.Player.Animations[animationName]
 end
 
-function Game.IDLE(self: Game)
+function Game.IDLE(self: GameStruct)
 	showAnimation(self, "IDLE")
 end
 
-function Game.Up(self: Game)
-	self.CollideMutex:wait()
-	showAnimation(self, "WalkUp")
-
-	if self.Player:GetTouchedSide().Up ~= true then
-		self.MoveTween = TweenService:Create(
-			self.Map.Image.ImageInstance,
-			TweenInfo.new(self.CooldownTime),
-			{
-				["Position"] = UDim2.new(
-					self.Map.Image.Position.X,
-					UDim.new(
-						self.Map.Image.Position.Y.Scale + self.Player.WalkSpeed,
-						self.Map.Image.Position.Y.Offset
-					)
-				),
-			}
-		)
-
-		self.MoveTween:Play()
-	end
+function Game.Up(self: GameStruct)
+	Game.Move(self, 0, 1)
 end
 
-function Game.Down(self: Game)
-	self.CollideMutex:wait()
-	showAnimation(self, "WalkDown")
-
-	if self.Player:GetTouchedSide().Down ~= true then
-		self.MoveTween = TweenService:Create(
-			self.Map.Image.ImageInstance,
-			TweenInfo.new(self.CooldownTime),
-			{
-				["Position"] = UDim2.new(
-					self.Map.Image.Position.X,
-					UDim.new(
-						self.Map.Image.Position.Y.Scale - self.Player.WalkSpeed,
-						self.Map.Image.Position.Y.Offset
-					)
-				),
-			}
-		)
-		self.MoveTween:Play()
-	end
+function Game.Down(self: GameStruct)
+	Game.Move(self, 0, -1)
 end
 
-function Game.Left(self: Game)
-	self.CollideMutex:wait()
-	showAnimation(self, "WalkLeft")
-
-	if self.Player:GetTouchedSide().Left ~= true then
-		self.MoveTween = TweenService:Create(
-			self.Map.Image.ImageInstance,
-			TweenInfo.new(self.CooldownTime),
-			{
-				["Position"] = UDim2.new(
-					UDim.new(
-						self.Map.Image.Position.X.Scale + self.Player.WalkSpeed,
-						self.Map.Image.Position.X.Offset
-					),
-					self.Map.Image.Position.Y
-				),
-			}
-		)
-
-		self.MoveTween:Play()
-	end
+function Game.Left(self: GameStruct)
+	Game.Move(self, -1, 0)
 end
 
-function Game.Right(self: Game)
+function Game.Right(self: GameStruct)
+	Game.Move(self, 1, 0)
+end
+
+function Game.Move(self: GameStruct, X: number, Y: number)
+	print("move to", X, Y)
 	self.CollideMutex:wait()
-	showAnimation(self, "WalkRight")
+	local touchedSide = self.Player:GetTouchedSide()
 
-	if self.Player:GetTouchedSide().Right ~= true then
-		self.MoveTween = TweenService:Create(
-			self.Map.Image.ImageInstance,
-			TweenInfo.new(self.CooldownTime),
-			{
-				["Position"] = UDim2.new(
-					UDim.new(
-						self.Map.Image.Position.X.Scale - self.Player.WalkSpeed,
-						self.Map.Image.Position.X.Offset
-					),
-					self.Map.Image.Position.Y
-				),
-			}
-		)
+	X = -X
 
-		self.MoveTween:Play()
+	if
+		((X < 0) and (touchedSide.Right == true))
+		or ((X > 0) and (touchedSide.Left == true))
+	then
+		X = 0
 	end
+
+	if
+		((Y > 0) and (touchedSide.Up == true))
+		or ((Y < 0) and (touchedSide.Down == true))
+	then
+		Y = 0
+	end
+
+	if math.abs(X / Y) > 1 then -- X bigger
+		if X > 0 then
+			showAnimation(self, "WalkLeft")
+		else
+			showAnimation(self, "WalkRight")
+		end
+	else -- Y bigger
+		if Y > 0 then
+			showAnimation(self, "WalkUp")
+		else
+			showAnimation(self, "WalkDown")
+		end
+	end
+
+	self.MoveTween = TweenService:Create(
+		self.Map.Image.ImageInstance,
+		TweenInfo.new(self.CooldownTime),
+		{
+			["Position"] = UDim2.new(
+				UDim.new(
+					self.Map.Image.Position.X.Scale
+						+ (X * self.Player.WalkSpeed),
+					self.Map.Image.Position.X.Offset
+				),
+				UDim.new(
+					self.Map.Image.Position.Y.Scale
+						+ (Y * self.Player.WalkSpeed),
+					self.Map.Image.Position.Y.Offset
+				)
+			),
+		}
+	)
+
+	self.MoveTween:Play()
 end
 
 --[[
@@ -227,7 +208,7 @@ function Game.new(
 	local DestroyingEvent = Instance.new("BindableEvent")
 	local CollideStepedEvent = Instance.new("BindableEvent")
 
-	local self = {
+	local self: GameStruct = {
 		Frame = GameFrame,
 		Player = Player,
 		Map = Map,
@@ -242,14 +223,15 @@ function Game.new(
 		CollideMutex = mutex.new(true),
 	}
 
-	setmetatable(self, { __index = Game })
-
 	self.Map.Image.Parent = self.Frame
 	self.Player.Image.Parent = self.Frame
 
 	table.insert(self.Map.Objects, self.Player) -- add player to objects for enable collision for player
 
-	self.Map:SetPlayerPosition(self.Player, self.Map.StartPosition or Vector2.new(0, 0))
+	self.Map:SetPlayerPosition(
+		self.Player,
+		self.Map.StartPosition or Vector2.new(0, 0)
+	)
 
 	--[[
 		обёртка для self.Map:CalcPositions
@@ -267,13 +249,17 @@ function Game.new(
 
 	self.Player.Animations.IDLE:StartAnimation()
 
-	local Up = cooldown.new(self.CooldownTime, self.Up)
+	-- Keyboard controls
 
-	local Down = cooldown.new(self.CooldownTime, self.Down)
+	local Up = cooldown.new(self.CooldownTime, Game.Up)
 
-	local Left = cooldown.new(self.CooldownTime, self.Left)
+	local Down = cooldown.new(self.CooldownTime, Game.Down)
 
-	local Right = cooldown.new(self.CooldownTime, self.Right)
+	local Left = cooldown.new(self.CooldownTime, Game.Left)
+
+	local Right = cooldown.new(self.CooldownTime, Game.Right)
+
+	local Move = cooldown.new(self.CooldownTime, Game.Move)
 
 	table.insert(self.DestroyableObjects, Up)
 	table.insert(self.DestroyableObjects, Down)
@@ -283,55 +269,79 @@ function Game.new(
 	table.insert(
 		self.DestroyableObjects,
 		InputLib.WhileKeyPressed(function()
-			self.CollideMutex:lock()
-			Up:Call(self)
+			Up(self)
 		end, {
 			defaultControls.Keyboard.Up,
 			defaultControls.Gamepad.Up,
+			Enum.KeyCode.Up,
 		})
 	)
 
 	table.insert(
 		self.DestroyableObjects,
 		InputLib.WhileKeyPressed(function()
-			self.CollideMutex:lock()
 			Down(self)
 		end, {
 			defaultControls.Keyboard.Down,
 			defaultControls.Gamepad.Down,
+			Enum.KeyCode.Down,
 		})
 	)
 
 	table.insert(
 		self.DestroyableObjects,
 		InputLib.WhileKeyPressed(function()
-			self.CollideMutex:lock()
 			Left(self)
 		end, {
 			defaultControls.Keyboard.Left,
 			defaultControls.Gamepad.Left,
+			Enum.KeyCode.Left,
 		})
 	)
 
 	table.insert(
 		self.DestroyableObjects,
 		InputLib.WhileKeyPressed(function()
-			self.CollideMutex:lock()
 			Right(self)
 		end, {
 			defaultControls.Keyboard.Right,
 			defaultControls.Gamepad.Right,
+			Enum.KeyCode.Right,
 		})
 	)
+
+	-- gamepad input
+
+	local GamepadThumbStick1 = Instance.new("Vector3Value")
+
+	table.insert(
+		self.Connections,
+		UserInputService.InputChanged:Connect(
+			function(input: InputObject, a1: boolean)
+				if input.KeyCode == Enum.KeyCode.Thumbstick1 then
+					GamepadThumbStick1.Value = input.Position
+				end
+			end
+		)
+	)
+
+	local GamepadControlThread = task.spawn(function()
+		while GamepadThumbStick1.Changed:Wait() do -- не через changed потому, что Есть CollideMutex и его нужно ждать
+			Move(self, GamepadThumbStick1.Value.X, GamepadThumbStick1.Value.Y)
+		end
+	end)
+
+	-- other
 
 	stdlib.events.AnyEvent({
 		Up.CallEvent.Event,
 		Down.CallEvent.Event,
 		Right.CallEvent.Event,
 		Left.CallEvent.Event,
+		GamepadThumbStick1.Changed,
 	}, self.Player.MoveEvent)
 
-	local IdleRun = cooldown.new(4, self.IDLE)
+	local IdleRun = cooldown.new(4, Game.IDLE)
 	stdlib.events.AnyEvent({
 		self.Map.ObjectMovement,
 		self.Player.Move,
@@ -375,8 +385,12 @@ function Game.new(
 
 	self.Destroying:Connect(function()
 		task.cancel(IDLE_show_thread)
+		task.cancel(GamepadControlThread)
 		IdleRun:Destroy()
+		GamepadThumbStick1:Destroy()
 	end)
+
+	setmetatable(self, { __index = Game })
 
 	return self
 end
