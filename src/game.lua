@@ -227,19 +227,20 @@ function Game.new(
 
 	table.insert(self.Map.Objects, self.Player) -- add player to objects for enable collision for player
 
-	self.Map:SetPlayerPosition(
-		self.Player,
-		self.Map.StartPosition or Vector2.new(0, 0)
-	)
-
 	--[[
 		обёртка для self.Map:CalcPositions
 	]]
 	local function CalcPositions()
+		self.Player:CalcSize(self.Map.Image, self.Map.PlayerSize)
 		self.Map:CalcPositions()
 	end
 
-	CalcPositions() -- превоночальный расет
+	CalcPositions() -- превоночальный расчет
+
+	self.Map:SetPlayerPosition(
+		self.Player,
+		self.Map.StartPosition or Vector2.new(0, 0)
+	)
 
 	--[[
 		расчет после изменения фрейма игры
