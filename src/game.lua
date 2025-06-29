@@ -140,7 +140,6 @@ function Game.Right(self: GameStruct)
 end
 
 function Game.Move(self: GameStruct, X: number, Y: number)
-	print("move to", X, Y)
 	self.CollideMutex:wait()
 	local touchedSide = self.Player:GetTouchedSide()
 
