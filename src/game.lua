@@ -223,15 +223,16 @@ function Game.new(
 	}
 
 	self.Map.Image.Parent = self.Frame
-	self.Player.Image.Parent = self.Frame
+	self.Player:SetParent(self.Frame)
 
 	table.insert(self.Map.Objects, self.Player) -- add player to objects for enable collision for player
+
+	self.Player.Size = self.Map.PlayerSize or self.Player.Size
 
 	--[[
 		обёртка для self.Map:CalcPositions
 	]]
 	local function CalcPositions()
-		self.Player:CalcSize(self.Map.Image, self.Map.PlayerSize)
 		self.Map:CalcPositions()
 	end
 
