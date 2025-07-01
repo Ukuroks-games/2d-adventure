@@ -86,7 +86,7 @@ function map.GetSetPlayerPosTween(
 end
 
 function map.AddObject(self: MapStruct, obj: physicObject.PhysicObject)
-	obj.Image.Parent = self.Image.ImageInstance
+	obj:SetParent(self.Image)
 
 	table.insert(self.Objects, obj)
 end

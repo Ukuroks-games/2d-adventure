@@ -44,7 +44,11 @@ export type PhysicObjectStruct = {
 
 	TouchedSideMutex: mutex.Mutex,
 
-	Image: Frame,
+	physicImage: Frame,
+
+	Image: Frame | ExImage.ExImage,
+
+	Size: Vector3,
 
 	CanCollide: boolean,
 
@@ -55,33 +59,33 @@ export type PhysicObject = PhysicObjectStruct & typeof(physicObject)
 
 function physicObject.Destroy(self: PhysicObjectStruct)
 	self.TouchedEvent:Destroy()
-	self.Image:Destroy()
+	self.physicImage:Destroy()
 end
 
 function physicObject.CheckCollision(
 	self: PhysicObjectStruct,
 	other: PhysicObjectStruct
 ): boolean
-	local function Check(a, b)
+	local function Check(a: Frame, b: Frame)
 		return (
 			( -- тут тупо смотрим находится ли верхняя точка self где-то в other
 				(
-					a.Image.AbsolutePosition.X
-					<= (b.Image.AbsolutePosition.X + b.Image.AbsoluteSize.X)
+					a.AbsolutePosition.X
+					<= (b.AbsolutePosition.X + b.AbsoluteSize.X)
 				)
 				and (
-					(a.Image.AbsolutePosition.X + a.Image.AbsoluteSize.X)
-					>= b.Image.AbsolutePosition.X
+					(a.AbsolutePosition.X + a.AbsoluteSize.X)
+					>= b.AbsolutePosition.X
 				)
 			)
 			and (
 				(
-					a.Image.AbsolutePosition.Y
-					<= (b.Image.AbsolutePosition.Y + b.Image.AbsoluteSize.Y)
+					a.AbsolutePosition.Y
+					<= (b.AbsolutePosition.Y + b.AbsoluteSize.Y)
 				)
 				and (
-					(a.Image.AbsolutePosition.Y + a.Image.AbsoluteSize.Y)
-					>= b.Image.AbsolutePosition.Y
+					(a.AbsolutePosition.Y + a.AbsoluteSize.Y)
+					>= b.AbsolutePosition.Y
 				)
 			)
 		)
@@ -89,8 +93,8 @@ function physicObject.CheckCollision(
 
 	return other ~= self
 		and (
-			Check(self, other)
-			or Check(other, self) -- если наооборот верхня левая точка other находится в self
+			Check(self.physicImage, other.physicImage)
+			or Check(other.physicImage, self.physicImage) -- если наооборот верхня левая точка other находится в self
 		)
 end
 
@@ -99,8 +103,12 @@ function physicObject.GetTouchedSide(self: PhysicObjectStruct): TouchedSide
 	return self.TouchedSide
 end
 
-function physicObject.CalcSizeAndPos()
-	-- empty because its an interface
+function physicObject.CalcSizeAndPos(
+	self: Object2d,
+	background: ExImage.ExImage
+)
+	self:SetSize(self:GetSize(background))
+	self:SetPosition(self:GetPosition(background))
 end
 
 function physicObject.GetPosition(self: PhysicObjectStruct): Vector2
@@ -111,8 +119,38 @@ function physicObject.GetSize(self: PhysicObjectStruct): Vector2
 	return self.Image.AbsoluteSize
 end
 
+function physicObject.CalcSize(self: PhysicObjectStruct, size: Vector3)
+	self.physicImage.Size = UDim2.fromOffset(size.X, size.Z)
+end
+
+function physicObject.SetParent(
+	self: PhysicObjectStruct,
+	parent: GuiObject | ExImage.ExImage
+)
+	if typeof(parent) == "table" then
+		self.physicImage.Parent = parent.ImageInstance
+	else
+		self.physicImage.Parent = parent
+	end
+end
+
+function physicObject.SetPosition(self: PhysicObjectStruct, pos: Vector2)
+	self.physicImage.Position = UDim2.fromOffset(
+		pos.X,
+		pos.Y + self.Image.AbsoluteSize.Y - self.physicImage.AbsoluteSize.Y
+	)
+end
+
+function physicObject.SetSize(self: PhysicObjectStruct, size: Vector3)
+	self.Image.Size = UDim2.new(0, size.X, 0, size.Y)
+
+	self.Image.Position = UDim2.new(0, 0, 0, size.Z - size.Y)
+
+	physicObject.CalcSize(self, size)
+end
+
 function physicObject.new(
-	image: Frame,
+	Image: GuiObject | ExImage.ExImage,
 	canCollide: boolean?,
 	checkingTouchedSize: boolean?,
 	anchored: boolean?
@@ -122,7 +160,7 @@ function physicObject.new(
 	local this: PhysicObjectStruct = {
 		Touched = TouchedEvent.Event,
 		TouchedEvent = TouchedEvent,
-		Image = image or error("image is nil"),
+		physicImage = Instance.new("Frame"),
 		CanCollide = canCollide or true,
 		TouchedSideMutex = mutex.new(false),
 		TouchedSide = {
@@ -132,51 +170,54 @@ function physicObject.new(
 			Down = false,
 		},
 		Anchored = anchored or true,
+		Size = Vector3.new(),
+		Image = Image,
 	}
+
+	Image.Parent = this.physicImage
+	this.physicImage.BackgroundTransparency = 1
 
 	setmetatable(this, { __index = physicObject })
 
 	this.Touched:Connect(function(obj: PhysicObject)
 		if not this.Anchored or checkingTouchedSize then
-			if type(obj.Image) == "table" then
-				setmetatable(obj.Image, { __index = obj.Image.ImageInstance })
-			end
+			local p1x = this.physicImage.AbsolutePosition.X
+				+ (this.physicImage.AbsoluteSize.X / 2)
+			local p1y = this.physicImage.AbsolutePosition.Y
+				+ (this.physicImage.AbsoluteSize.Y / 2)
 
-			local p1x = this.Image.AbsolutePosition.X
-				+ (this.Image.AbsoluteSize.X / 2)
-			local p1y = this.Image.AbsolutePosition.Y
-				+ (this.Image.AbsoluteSize.Y / 2)
-
-			local p2x = obj.Image.AbsolutePosition.X
-				+ (obj.Image.AbsoluteSize.X / 2)
-			local p2y = obj.Image.AbsolutePosition.Y
-				+ (obj.Image.AbsoluteSize.Y / 2)
+			local p2x = obj.physicImage.AbsolutePosition.X
+				+ (obj.physicImage.AbsoluteSize.X / 2)
+			local p2y = obj.physicImage.AbsolutePosition.Y
+				+ (obj.physicImage.AbsoluteSize.Y / 2)
 
 			local w = (function()
 				if
-					this.Image.AbsolutePosition.X > obj.Image.AbsolutePosition.X
+					this.physicImage.AbsolutePosition.X
+					> obj.physicImage.AbsolutePosition.X
 				then
-					return obj.Image.AbsolutePosition.X
-						+ obj.Image.AbsoluteSize.X
-						- this.Image.AbsolutePosition.X
+					return obj.physicImage.AbsolutePosition.X
+						+ obj.physicImage.AbsoluteSize.X
+						- this.physicImage.AbsolutePosition.X
 				else
-					return this.Image.AbsolutePosition.X
-						+ this.Image.AbsoluteSize.X
-						- obj.Image.AbsolutePosition.X
+					return this.physicImage.AbsolutePosition.X
+						+ this.physicImage.AbsoluteSize.X
+						- obj.physicImage.AbsolutePosition.X
 				end
 			end)()
 
 			local h = (function()
 				if
-					this.Image.AbsolutePosition.Y > obj.Image.AbsolutePosition.Y
+					this.physicImage.AbsolutePosition.Y
+					> obj.physicImage.AbsolutePosition.Y
 				then
-					return obj.Image.AbsolutePosition.Y
-						+ obj.Image.AbsoluteSize.Y
-						- this.Image.AbsolutePosition.Y
+					return obj.physicImage.AbsolutePosition.Y
+						+ obj.physicImage.AbsoluteSize.Y
+						- this.physicImage.AbsolutePosition.Y
 				else
-					return this.Image.AbsolutePosition.Y
-						+ this.Image.AbsoluteSize.Y
-						- obj.Image.AbsolutePosition.Y
+					return this.physicImage.AbsolutePosition.Y
+						+ this.physicImage.AbsoluteSize.Y
+						- obj.physicImage.AbsolutePosition.Y
 				end
 			end)()
 
@@ -208,67 +249,63 @@ function physicObject.new(
 		if not this.Anchored then
 			this.TouchedSideMutex:wait()
 
-			if type(obj.Image) == "table" then
-				setmetatable(obj.Image, { __index = obj.Image.ImageInstance })
-			end
-
 			if this.TouchedSide.Up then
-				this.Image.Position = UDim2.new(
-					this.Image.Position.X,
+				this.physicImage.Position = UDim2.new(
+					this.physicImage.Position.X,
 					UDim.new(
-						this.Image.Position.Y.Scale,
-						this.Image.Position.Y.Offset
+						this.physicImage.Position.Y.Scale,
+						this.physicImage.Position.Y.Offset
 							+ (
-								obj.Image.AbsolutePosition.Y
-								+ obj.Image.AbsoluteSize.Y
-								- this.Image.AbsolutePosition.Y
+								obj.physicImage.AbsolutePosition.Y
+								+ obj.physicImage.AbsoluteSize.Y
+								- this.physicImage.AbsolutePosition.Y
 							)
 					)
 				)
 			end
 
 			if this.TouchedSide.Down then
-				this.Image.Position = UDim2.new(
-					this.Image.Position.X,
+				this.physicImage.Position = UDim2.new(
+					this.physicImage.Position.X,
 					UDim.new(
-						this.Image.Position.Y.Scale,
-						this.Image.Position.Y.Offset
+						this.physicImage.Position.Y.Scale,
+						this.physicImage.Position.Y.Offset
 							- (
-								this.Image.AbsolutePosition.Y
-								+ this.Image.AbsoluteSize.Y
-								- obj.Image.AbsolutePosition.Y
+								this.physicImage.AbsolutePosition.Y
+								+ this.physicImage.AbsoluteSize.Y
+								- obj.physicImage.AbsolutePosition.Y
 							)
 					)
 				)
 			end
 
 			if this.TouchedSide.Left then
-				this.Image.Position = UDim2.new(
+				this.physicImage.Position = UDim2.new(
 					UDim.new(
-						this.Image.Position.X.Scale,
-						this.Image.Position.X.Offset
+						this.physicImage.Position.X.Scale,
+						this.physicImage.Position.X.Offset
 							+ (
-								obj.Image.AbsolutePosition.X
-								+ obj.Image.AbsoluteSize.X
-								- this.Image.AbsolutePosition.X
+								obj.physicImage.AbsolutePosition.X
+								+ obj.physicImage.AbsoluteSize.X
+								- this.physicImage.AbsolutePosition.X
 							)
 					),
-					this.Image.Position.Y
+					this.physicImage.Position.Y
 				)
 			end
 
 			if this.TouchedSide.Right then
-				this.Image.Position = UDim2.new(
+				this.physicImage.Position = UDim2.new(
 					UDim.new(
-						this.Image.Position.X.Scale,
-						this.Image.Position.X.Offset
+						this.physicImage.Position.X.Scale,
+						this.physicImage.Position.X.Offset
 							- (
-								this.Image.AbsolutePosition.X
-								+ this.Image.AbsoluteSize.X
-								- obj.Image.AbsolutePosition.X
+								this.physicImage.AbsolutePosition.X
+								+ this.physicImage.AbsoluteSize.X
+								- obj.physicImage.AbsolutePosition.X
 							)
 					),
-					this.Image.Position.Y
+					this.physicImage.Position.Y
 				)
 			end
 		end

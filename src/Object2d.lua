@@ -14,14 +14,12 @@ export type Object2d = {
 	]]
 	AnchorPosition: Vector2,
 
-	--[[
-		то какого изначально объект размера
-	]]
-	Size: Vector2,
-
 	Image: ExImage.ExImage,
 } & physicObject.PhysicObject & typeof(Object2d)
 
+--[[
+
+]]
 function Object2d.CalcPosition(
 	AnchorPosition: Vector2,
 	background: ExImage.ExImage
@@ -62,7 +60,10 @@ function Object2d.CalcPosition(
 	)
 end
 
-function Object2d.CalcSize(Size: Vector2, background: ExImage.ExImage): Vector2
+--[[
+
+]]
+function Object2d.CalcSize(Size: Vector3, background: ExImage.ExImage): Vector3
 	if background.ScaleType == Enum.ScaleType.Fit then
 		-- отношение изначальных размеров
 
@@ -75,24 +76,27 @@ function Object2d.CalcSize(Size: Vector2, background: ExImage.ExImage): Vector2
 			local h = (background.RealSize.Y * background.AbsoluteSize.X)
 				/ background.RealSize.X
 
-			return Vector2.new(
+			return Vector3.new(
 				Size.X * (background.AbsoluteSize.X / background.RealSize.X),
-				Size.Y * (h / background.RealSize.Y)
+				Size.Y * (h / background.RealSize.Y),
+				Size.Z * (h / background.RealSize.Y)
 			)
 		elseif currentSizes > 1 then -- поля справа и слева
 			local w = (background.RealSize.X * background.AbsoluteSize.Y)
 				/ background.RealSize.Y
 
-			return Vector2.new(
+			return Vector3.new(
 				Size.X * (w / background.RealSize.X),
-				Size.Y * (background.AbsoluteSize.Y / background.RealSize.Y)
+				Size.Y * (background.AbsoluteSize.Y / background.RealSize.Y),
+				Size.Z * (background.AbsoluteSize.Y / background.RealSize.Y)
 			)
 		end
 	end
 
-	return Vector2.new(
+	return Vector3.new(
 		Size.X * (background.AbsoluteSize.X / background.RealSize.X),
-		Size.Y * (background.AbsoluteSize.Y / background.RealSize.Y)
+		Size.Y * (background.AbsoluteSize.Y / background.RealSize.Y),
+		Size.Z * (background.AbsoluteSize.Y / background.RealSize.Y)
 	)
 end
 
@@ -109,16 +113,13 @@ end
 --[[
 	Расчитывает размыеры объекта
 ]]
-function Object2d.GetSize(self: Object2d, background: ExImage.ExImage): Vector2
+function Object2d.GetSize(self: Object2d, background: ExImage.ExImage): Vector3
 	return Object2d.CalcSize(self.Size, background)
 end
 
 function Object2d.CalcSizeAndPos(self: Object2d, background: ExImage.ExImage)
-	local p = Object2d.GetPosition(self, background)
-	local s = Object2d.GetSize(self, background)
-
-	self.Image.Size = UDim2.fromOffset(s.X, s.Y)
-	self.Image.Position = UDim2.fromOffset(p.X, p.Y)
+	self:SetSize(self:GetSize(background))
+	self:SetPosition(self:GetPosition(background))
 end
 
 --[[
@@ -126,7 +127,7 @@ end
 ]]
 function Object2d.new(
 	AnchorPosition: Vector2,
-	Size: Vector2,
+	Size: Vector3,
 	Image: ExImage.ExImage,
 	isButton: boolean?
 ): Object2d
@@ -135,9 +136,15 @@ function Object2d.new(
 	self.AnchorPosition = AnchorPosition
 	self.Size = Size
 
+	self.Image = Image
+
 	self.Image.BackgroundTransparency = 1
 
-	setmetatable(self, { __index = Object2d })
+	setmetatable(self, {
+		__index = function(_self: Object2d, key)
+			return Object2d[key] or physicObject[key]
+		end,
+	})
 
 	return self
 end

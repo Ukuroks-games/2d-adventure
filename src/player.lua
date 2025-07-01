@@ -58,7 +58,7 @@ export type Player2dStruct = {
 	]]
 	CurrentAnimation: giflib.Gif,
 
-	Size: Vector2,
+	Image: Frame,
 } & physicObject.PhysicObject
 
 export type Player2d = Player2dStruct & typeof(player2d)
@@ -74,47 +74,42 @@ function player2d.Destroy(self: Player2dStruct)
 	self.MoveEvent:Destroy()
 end
 
-function player2d.CalcSize(
-	self: Player2dStruct,
-	mapImage: ExImage.ExImage,
-	overrideSize: Vector2?
-)
-	local Resolution: Vector2
+function player2d.CalcSize(self: Player2dStruct, mapImage: ExImage.ExImage)
+	local Resolution: Vector3
 
 	if self.Size.X == -1 or self.Size.Y == -1 then
-		Resolution = overrideSize
-			or AssetService:CreateEditableImageAsync(
-				self.CurrentAnimation.Frames[1].Image.Image
-			).Size
+		local a = AssetService:CreateEditableImageAsync(
+			self.CurrentAnimation.Frames[1].Image.Image
+		).Size
+		Resolution = Vector3.new(a.X, a.Y, self.Size.Z)
 	end
 
-	if self.Size.X == -1 and self.Size.Y == -1 then
-		local s = Object2d.CalcSize(Resolution, mapImage)
-		self.Image.Size = UDim2.fromOffset(s.X, s.Y)
+	local pos: Vector3 = Object2d.CalcSize(Resolution, mapImage)
+
+	self:SetSize(pos) -- обязаетльно чтобы размер self.Image применился
+
+	--[[if self.Size.X == -1 and self.Size.Y == -1 then
 	elseif self.Size.X == -1 then
-		self.Image.Size = UDim2.new(
-			0,
-			Object2d.CalcSize(Resolution, mapImage).X,
-			self.Size.Y,
-			0
-		)
+		self.physicImage.Size = UDim2.new(0, pos.X, self.Size.Y, 0)
 	elseif self.Size.Y == -1 then
-		self.Image.Size = UDim2.new(
-			self.Size.X,
-			0,
-			0,
-			Object2d.CalcSize(Resolution, mapImage).X
-		)
+		self.physicImage.Size = UDim2.new(self.Size.X, 0, 0, pos.Y)
 	else
-		self.Image.Size = UDim2.fromScale(self.Size.X, self.Size.Y)
-	end
+		self.physicImage.Size = UDim2.fromScale(self.Size.X, self.Size.Y)
+	end]]
+end
 
-	self.Image.Position = UDim2.new(
+function player2d.CalcPosition(self: Player2dStruct)
+	self.physicImage.Position = UDim2.new(
 		0.5,
-		-self.Image.AbsoluteSize.X / 2,
+		-self.physicImage.AbsoluteSize.X / 2,
 		0.5,
-		-self.Image.AbsoluteSize.Y / 2
+		-self.physicImage.AbsoluteSize.Y / 2
 	) -- move to center PlayerFrame
+end
+
+function player2d.CalcSizeAndPos(self: Player2d, background: ExImage.ExImage)
+	self:CalcSize(background)
+	self:CalcPosition()
 end
 
 --[[
@@ -123,7 +118,7 @@ end
 function player2d.new(
 	Animations: ConstructorAnimations,
 	WalkSpeed: number,
-	Size: { X: number, Y: number }
+	Size: Vector3
 ): Player2d
 	local PlayerFrame = Instance.new("Frame")
 	local CreatedAnimations = {}
@@ -138,15 +133,14 @@ function player2d.new(
 		CreatedAnimations[i] = gif
 	end
 
-
 	PlayerFrame.BackgroundTransparency = 1
 
-
+	self.Image = PlayerFrame
 	self.Animations = CreatedAnimations
 	self.WalkSpeed = WalkSpeed
 	self.CurrentAnimation = CreatedAnimations.IDLE or nil
 	self.MoveEvent = Instance.new("BindableEvent")
-	self.Move = self.MoveEvent.Even
+	self.Move = self.MoveEvent.Event
 	self.Anchored = false
 	self.Size = Size
 
