@@ -74,23 +74,19 @@ function player2d.Destroy(self: Player2dStruct)
 	self.MoveEvent:Destroy()
 end
 
-function player2d.CalcSize(
-	self: Player2dStruct,
-	mapImage: ExImage.ExImage,
-)
+function player2d.CalcSize(self: Player2dStruct, mapImage: ExImage.ExImage)
 	local Resolution: Vector3
 
 	if self.Size.X == -1 or self.Size.Y == -1 then
-		local a = overrideSize
-			or AssetService:CreateEditableImageAsync(
-				self.CurrentAnimation.Frames[1].Image.Image
-			).Size
+		local a = AssetService:CreateEditableImageAsync(
+			self.CurrentAnimation.Frames[1].Image.Image
+		).Size
 		Resolution = Vector3.new(a.X, a.Y, self.Size.Z)
 	end
 
 	local pos: Vector3 = Object2d.CalcSize(Resolution, mapImage)
 
-	self:SetSize(pos)	-- обязаетльно чтобы размер self.Image применился
+	self:SetSize(pos) -- обязаетльно чтобы размер self.Image применился
 
 	--[[if self.Size.X == -1 and self.Size.Y == -1 then
 	elseif self.Size.X == -1 then
@@ -111,11 +107,8 @@ function player2d.CalcPosition(self: Player2dStruct)
 	) -- move to center PlayerFrame
 end
 
-function player2d.CalcSizeAndPos(
-	self: Player2d,
-	background: ExImage.ExImage,
-)
-	self:CalcSize(background, overrideSize)
+function player2d.CalcSizeAndPos(self: Player2d, background: ExImage.ExImage)
+	self:CalcSize(background)
 	self:CalcPosition()
 end
 

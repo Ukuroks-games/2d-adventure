@@ -50,7 +50,7 @@ local _game = Game.new(
 	map.new(Vector2.new(1, 1), cam, "76803732961234", {
 		Object2d.new( -- door
 			Vector2.new(157, 196),
-			Vector3.new(28, 69, 4),
+			Vector3.new(28, 69, 8),
 			ExImage.new("84486373084684")
 		),
 	}, Vector2.new(80, 300))

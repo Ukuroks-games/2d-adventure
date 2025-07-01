@@ -135,18 +135,16 @@ function physicObject.SetParent(
 end
 
 function physicObject.SetPosition(self: PhysicObjectStruct, pos: Vector2)
-	self.physicImage.Position = UDim2.fromOffset(pos.X, pos.Y)
+	self.physicImage.Position = UDim2.fromOffset(
+		pos.X,
+		pos.Y + self.Image.AbsoluteSize.Y - self.physicImage.AbsoluteSize.Y
+	)
 end
 
 function physicObject.SetSize(self: PhysicObjectStruct, size: Vector3)
 	self.Image.Size = UDim2.new(0, size.X, 0, size.Y)
 
-	self.Image.Position = UDim2.new(
-		0,
-		0,
-		0,
-		self.physicImage.AbsolutePosition.Y - self.Image.AbsoluteSize.Y
-	)
+	self.Image.Position = UDim2.new(0, 0, 0, size.Z - size.Y)
 
 	physicObject.CalcSize(self, size)
 end
@@ -177,6 +175,7 @@ function physicObject.new(
 	}
 
 	Image.Parent = this.physicImage
+	this.physicImage.BackgroundTransparency = 1
 
 	setmetatable(this, { __index = physicObject })
 
