@@ -4,5 +4,7 @@ return {
 	Player2d = require(script.player),
 	PhysicObject = require(script.physicObject),
 	Map = require(script.map),
-	Camera2d = require(script.camera2d)
+	Camera2d = require(script.camera2d),
+	GifInfo = requiure(script.gifInfo),
+	ExImage = require(script.ExImage),
 }

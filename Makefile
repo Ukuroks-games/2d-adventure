@@ -1,6 +1,6 @@
 LIBNAME = 2d-adventure
 
-PACKAGE_NAME = $(LIBNAME).zip
+PACKAGE_NAME = $(LIBNAME)lib.zip
 
 CP = cp -rf
 MV = mv -f
@@ -12,7 +12,7 @@ RM = rm -rf
 ./Packages: wally.toml
 	wally install
 	
-configure: clean ./build wally.toml src/%.lua
+configure: clean ./build wally.toml
 	$(CP) src/* build/
 	$(CP) wally.toml build/
 
@@ -27,12 +27,12 @@ lint:
 
 
 
-$(LIBNAME).rbxm: configure
+$(LIBNAME)lib.rbxm: configure
 	$(MV) build/init.lua build/$(LIBNAME).lua
 	rojo build library.project.json --output $@
 
 tests.rbxl: ./Packages
-	rojo build tests.project.json --output tests.rbxl
+	rojo build tests.project.json --output $@
 
 tests: clean-tests tests.rbxl
 
