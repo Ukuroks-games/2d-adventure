@@ -53,5 +53,5 @@ local _game = Game.new(
 			Vector3.new(28, 69, 8),
 			ExImage.new("84486373084684")
 		),
-	}, Vector2.new(80, 300))
+	}, Vector2.new(80, 300), Vector3.new(22, 48, 8))
 )

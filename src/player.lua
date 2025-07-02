@@ -74,7 +74,10 @@ function player2d.Destroy(self: Player2dStruct)
 	self.MoveEvent:Destroy()
 end
 
-function player2d.CalcSize(self: Player2dStruct, mapImage: ExImage.ExImage)
+function player2d.CalcSize(
+	self: Player2dStruct,
+	mapImage: ExImage.ExImage
+): Vector3
 	local Resolution: Vector3
 
 	if self.Size.X == -1 or self.Size.Y == -1 then
@@ -84,32 +87,16 @@ function player2d.CalcSize(self: Player2dStruct, mapImage: ExImage.ExImage)
 		Resolution = Vector3.new(a.X, a.Y, self.Size.Z)
 	end
 
-	local pos: Vector3 = Object2d.CalcSize(Resolution, mapImage)
-
-	self:SetSize(pos) -- обязаетльно чтобы размер self.Image применился
-
-	--[[if self.Size.X == -1 and self.Size.Y == -1 then
-	elseif self.Size.X == -1 then
-		self.physicImage.Size = UDim2.new(0, pos.X, self.Size.Y, 0)
-	elseif self.Size.Y == -1 then
-		self.physicImage.Size = UDim2.new(self.Size.X, 0, 0, pos.Y)
-	else
-		self.physicImage.Size = UDim2.fromScale(self.Size.X, self.Size.Y)
-	end]]
+	return Object2d.CalcSize(Resolution or self.Size, mapImage)
 end
 
-function player2d.CalcPosition(self: Player2dStruct)
+function player2d.SetPosition(self: Player2dStruct, pos: Vector2)
 	self.physicImage.Position = UDim2.new(
 		0.5,
 		-self.physicImage.AbsoluteSize.X / 2,
 		0.5,
 		-self.physicImage.AbsoluteSize.Y / 2
 	) -- move to center PlayerFrame
-end
-
-function player2d.CalcSizeAndPos(self: Player2d, background: ExImage.ExImage)
-	self:CalcSize(background)
-	self:CalcPosition()
 end
 
 --[[

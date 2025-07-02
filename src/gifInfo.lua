@@ -10,16 +10,23 @@ function gifInfo.new(
 	frames,
 	loopAnimation: boolean?,
 	showFirstFrameBeforeStart: boolean?,
-	mode: number
+	mode: number?,
+	resampleMode: Enum.ResamplerMode?
 ): Func
 	return function(parent: Frame?)
-		return giflib.gif.new(
+		local gif = giflib.gif.new(
 			frames,
 			parent,
 			loopAnimation,
 			showFirstFrameBeforeStart,
 			mode
 		)
+
+		if resampleMode then
+			gif:SetResampleMode(resampleMode)
+		end
+
+		return gif
 	end
 end
 

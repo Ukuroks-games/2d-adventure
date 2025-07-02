@@ -1,5 +1,3 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
 local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 

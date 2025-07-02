@@ -30,7 +30,7 @@ export type MapStruct = {
 
 	StartPosition: Vector2?,
 
-	PlayerSize: Vector2?,
+	PlayerSize: Vector3?,
 }
 
 export type Map = MapStruct & typeof(map)
@@ -156,7 +156,7 @@ function map.new(
 	BackgroundImage: string,
 	Objects: { [any]: Object2d.Object2d }?,
 	startPosition: Vector2?,
-	playerSize: Vector2?
+	playerSize: Vector3?
 ): Map
 	local ObjectMovementEvent = Instance.new("BindableEvent")
 

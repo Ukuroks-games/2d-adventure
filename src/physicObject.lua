@@ -104,19 +104,23 @@ function physicObject.GetTouchedSide(self: PhysicObjectStruct): TouchedSide
 end
 
 function physicObject.CalcSizeAndPos(
-	self: Object2d,
+	self: PhysicObject,
 	background: ExImage.ExImage
 )
 	self:SetSize(self:GetSize(background))
 	self:SetPosition(self:GetPosition(background))
 end
 
-function physicObject.GetPosition(self: PhysicObjectStruct): Vector2
+function physicObject.GetPosition(self: PhysicObjectStruct, any): Vector2
 	return self.Image.AbsolutePosition
 end
 
-function physicObject.GetSize(self: PhysicObjectStruct): Vector2
-	return self.Image.AbsoluteSize
+function physicObject.GetSize(self: PhysicObjectStruct, any): Vector3
+	return Vector3.new(
+		self.Image.AbsoluteSize.X,
+		self.Image.AbsoluteSize.Y,
+		self.physicImage.AbsoluteSize.Y
+	)
 end
 
 function physicObject.CalcSize(self: PhysicObjectStruct, size: Vector3)
