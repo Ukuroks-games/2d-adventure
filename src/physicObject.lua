@@ -14,12 +14,24 @@ local physicObject = {}
 
 export type TouchedSide = {
 
+	--[[
+		Touched right side
+	]]
 	Right: boolean,
 
+	--[[
+		Touched left side
+	]]
 	Left: boolean,
 
+	--[[
+		Touched up side
+	]]
 	Up: boolean,
 
+	--[[
+		Touched bottom side
+	]]
 	Down: boolean,
 }
 
@@ -57,11 +69,17 @@ export type PhysicObjectStruct = {
 
 export type PhysicObject = PhysicObjectStruct & typeof(physicObject)
 
+--[[
+
+]]
 function physicObject.Destroy(self: PhysicObjectStruct)
 	self.TouchedEvent:Destroy()
 	self.physicImage:Destroy()
 end
 
+--[[
+
+]]
 function physicObject.CheckCollision(
 	self: PhysicObjectStruct,
 	other: PhysicObjectStruct
@@ -98,11 +116,17 @@ function physicObject.CheckCollision(
 		)
 end
 
+--[[
+
+]]
 function physicObject.GetTouchedSide(self: PhysicObjectStruct): TouchedSide
 	self.TouchedSideMutex:wait()
 	return self.TouchedSide
 end
 
+--[[
+
+]]
 function physicObject.CalcSizeAndPos(
 	self: PhysicObject,
 	background: ExImage.ExImage
@@ -111,11 +135,23 @@ function physicObject.CalcSizeAndPos(
 	self:SetPosition(self:GetPosition(background))
 end
 
-function physicObject.GetPosition(self: PhysicObjectStruct, any): Vector2
-	return self.Image.AbsolutePosition
+--[[
+
+]]
+function physicObject.GetPosition(
+	self: PhysicObject,
+	background: ExImage.ExImage | Frame
+): Vector2
+	return self:CalcPosition(background)
 end
 
-function physicObject.GetSize(self: PhysicObjectStruct, any): Vector3
+--[[
+
+]]
+function physicObject.CalcSize(
+	self: PhysicObjectStruct,
+	background: ExImage.ExImage | Frame
+): Vector3
 	return Vector3.new(
 		self.Image.AbsoluteSize.X,
 		self.Image.AbsoluteSize.Y,
@@ -123,10 +159,29 @@ function physicObject.GetSize(self: PhysicObjectStruct, any): Vector3
 	)
 end
 
-function physicObject.CalcSize(self: PhysicObjectStruct, size: Vector3)
-	self.physicImage.Size = UDim2.fromOffset(size.X, size.Z)
+--[[
+
+]]
+function physicObject.CalcPosition(
+	self: PhysicObjectStruct,
+	background: ExImage.ExImage | Frame
+): Vector2
+	return self.Image.AbsolutePosition
 end
 
+--[[
+
+]]
+function physicObject.GetSize(
+	self: PhysicObject,
+	background: ExImage.ExImage | Frame
+): Vector3
+	return self:CalcSize(background)
+end
+
+--[[
+
+]]
 function physicObject.SetParent(
 	self: PhysicObjectStruct,
 	parent: GuiObject | ExImage.ExImage
@@ -138,6 +193,9 @@ function physicObject.SetParent(
 	end
 end
 
+--[[
+
+]]
 function physicObject.SetPosition(self: PhysicObjectStruct, pos: Vector2)
 	self.physicImage.Position = UDim2.fromOffset(
 		pos.X,
@@ -145,14 +203,20 @@ function physicObject.SetPosition(self: PhysicObjectStruct, pos: Vector2)
 	)
 end
 
+--[[
+
+]]
 function physicObject.SetSize(self: PhysicObjectStruct, size: Vector3)
 	self.Image.Size = UDim2.new(0, size.X, 0, size.Y)
 
 	self.Image.Position = UDim2.new(0, 0, 0, size.Z - size.Y)
 
-	physicObject.CalcSize(self, size)
+	self.physicImage.Size = UDim2.fromOffset(size.X, size.Z)
 end
 
+--[[
+	Physic object constructor
+]]
 function physicObject.new(
 	Image: GuiObject | ExImage.ExImage,
 	canCollide: boolean?,
@@ -184,6 +248,16 @@ function physicObject.new(
 	setmetatable(this, { __index = physicObject })
 
 	this.Touched:Connect(function(obj: PhysicObject)
+		--[[
+			Кароч в чем смысол алгоритма:
+
+			находим центральные точки твух прямоугольников и смотрим как они расположены относительно друг друга
+
+			А для конечного пределения по какой оси было касание (вверх-низ, право-лево, обе) смотрим отношение 
+			сторон области пересечения. 
+
+			Касание по двум осям возможно если область пересения - квадрат.
+		]]
 		if not this.Anchored or checkingTouchedSize then
 			local p1x = this.physicImage.AbsolutePosition.X
 				+ (this.physicImage.AbsoluteSize.X / 2)
