@@ -58,7 +58,7 @@ export type PhysicObjectStruct = {
 
 	physicImage: Frame,
 
-	Image: Frame | ExImage.ExImage,
+	Image: Frame,
 
 	Size: Vector3,
 
@@ -212,6 +212,11 @@ function physicObject.SetSize(self: PhysicObjectStruct, size: Vector3)
 	self.Image.Position = UDim2.new(0, 0, 0, size.Z - size.Y)
 
 	self.physicImage.Size = UDim2.fromOffset(size.X, size.Z)
+end
+
+function physicObject.SetZIndex(self: PhysicObjectStruct, ZIndex: number)
+	self.physicImage.ZIndex = ZIndex
+	self.Image.ZIndex = ZIndex
 end
 
 --[[

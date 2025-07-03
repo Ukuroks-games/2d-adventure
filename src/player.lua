@@ -99,6 +99,16 @@ function player2d.SetPosition(self: Player2dStruct, pos: Vector2)
 	) -- move to center PlayerFrame
 end
 
+function player2d.SetZIndex(self: Player2dStruct, ZIndex: number)
+	physicObject.SetZIndex(self, ZIndex)
+
+	for _, animation in pairs(self.Animations) do
+		for _, frame in pairs(animation.Frames) do
+			frame.Image.ZIndex = ZIndex
+		end
+	end
+end
+
 --[[
 	Player2d constructor
 ]]

@@ -22,8 +22,6 @@ export type MapStruct = {
 
 	Objects: { physicObject.PhysicObject },
 
-	PlayerIndex: number?,
-
 	cam: camera2d.Camera2d,
 
 	ObjectMovement: RBXScriptSignal,
@@ -131,9 +129,9 @@ function map.CalcCollide(self: MapStruct)
 	end
 end
 
-function map.Destroy(self: Map)
+function map.Destroy(self: Map, Player: player2d.Player2d)
 	self.ObjectMovementEvent:Destroy()
-	self:Done()
+	self:Done(Player)
 
 	table.clear(self)
 end
@@ -153,6 +151,7 @@ end
 function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 	local function CalcPositions()
 		self:CalcPositions()
+		self:CalcZIndexs()
 	end
 
 	self.Image.Parent = GameFrame
@@ -162,7 +161,8 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 	Player.Size = self.PlayerSize or Player.Size
 
 	table.insert(self.Objects, Player) -- add player to objects for enable collision for player
-	self.PlayerIndex = #self.Objects
+
+	Player:SetPosition(Vector2.new())
 
 	CalcPositions() -- превоночальный расчет
 
@@ -177,18 +177,34 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 	)
 end
 
-function map.Done(self: Map)
+function map.Done(self: Map, Player: player2d.Player2d)
 	self.Image.Visible = false
 
-	if self.PlayerIndex then
-		self.Objects[self.PlayerIndex] = nil
-		self.PlayerIndex = nil
+	local p = table.find(self.Objects, Player)
+	if p then
+		self.Objects[p] = nil
 	end
 
 	for _, v in pairs(self.Connections) do
 		if v then
 			v:Disconnect()
 		end
+	end
+end
+
+function map.CalcZIndexs(self: MapStruct)
+	table.sort(
+		self.Objects,
+		function(
+			a: physicObject.PhysicObject,
+			b: physicObject.PhysicObject
+		): boolean
+			return a.Image.AbsolutePosition.Y < b.Image.AbsolutePosition.Y
+		end
+	)
+
+	for i, v in pairs(self.Objects) do
+		v:SetZIndex(i+1)
 	end
 end
 
