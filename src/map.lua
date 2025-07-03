@@ -22,6 +22,8 @@ export type MapStruct = {
 
 	Objects: { physicObject.PhysicObject },
 
+	PlayerIndex: number?,
+
 	cam: camera2d.Camera2d,
 
 	ObjectMovement: RBXScriptSignal,
@@ -31,6 +33,8 @@ export type MapStruct = {
 	StartPosition: Vector2?,
 
 	PlayerSize: Vector3?,
+
+	Connections: { RBXScriptConnection },
 }
 
 export type Map = MapStruct & typeof(map)
@@ -127,8 +131,9 @@ function map.CalcCollide(self: MapStruct)
 	end
 end
 
-function map.Destroy(self: MapStruct)
+function map.Destroy(self: Map)
 	self.ObjectMovementEvent:Destroy()
+	self:Done()
 
 	table.clear(self)
 end
@@ -143,6 +148,48 @@ function map.SetPlayerPosition(
 )
 	local p = map.CalcPlayerPosition(self, player, pos)
 	self.Image.Position = UDim2.fromOffset(p.X, p.Y)
+end
+
+function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
+	local function CalcPositions()
+		self:CalcPositions()
+	end
+
+	self.Image.Parent = GameFrame
+
+	self.Image.Visible = true
+
+	Player.Size = self.PlayerSize or Player.Size
+
+	table.insert(self.Objects, Player) -- add player to objects for enable collision for player
+	self.PlayerIndex = #self.Objects
+
+	CalcPositions() -- превоночальный расчет
+
+	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
+
+	--[[
+		расчет после изменения фрейма игры
+	]]
+	table.insert(
+		self.Connections,
+		GameFrame:GetPropertyChangedSignal("Size"):Connect(CalcPositions)
+	)
+end
+
+function map.Done(self: Map)
+	self.Image.Visible = false
+
+	if self.PlayerIndex then
+		self.Objects[self.PlayerIndex] = nil
+		self.PlayerIndex = nil
+	end
+
+	for _, v in pairs(self.Connections) do
+		if v then
+			v:Disconnect()
+		end
+	end
 end
 
 --[[
@@ -168,6 +215,8 @@ function map.new(
 		ObjectMovementEvent = ObjectMovementEvent,
 		StartPosition = startPosition,
 		PlayerSize = playerSize,
+		Connections = {},
+		PlayerIndex = nil,
 	}
 
 	if Objects then
