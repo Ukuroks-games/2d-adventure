@@ -158,9 +158,7 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 
 	self.Image.Visible = true
 
-	Player.Size = self.PlayerSize or Player.Size
-
-	table.insert(self.Objects, Player) -- add player to objects for enable collision for player
+	self:SetPlayer(Player)
 
 	Player:SetPosition(Vector2.new())
 
@@ -180,10 +178,7 @@ end
 function map.Done(self: Map, Player: player2d.Player2d)
 	self.Image.Visible = false
 
-	local p = table.find(self.Objects, Player)
-	if p then
-		self.Objects[p] = nil
-	end
+	self:DeletePlayer(Player)
 
 	for _, v in pairs(self.Connections) do
 		if v then
@@ -204,8 +199,29 @@ function map.CalcZIndexs(self: MapStruct)
 	)
 
 	for i, v in pairs(self.Objects) do
-		v:SetZIndex(i+1)
+		v:SetZIndex(i + 1)
 	end
+end
+
+function map.DeletePlayer(self: MapStruct, Player: player2d.Player2d)
+	local p = table.find(self.Objects, Player)
+	if p then
+		self.Objects[p] = nil
+	end
+end
+
+function map.SetPlayer(
+	self: Map,
+	newPlayer: player2d.Player2d,
+	oldPlayer: player2d.Player2d?
+)
+	if oldPlayer then
+		self:DeletePlayer(oldPlayer)
+	end
+
+	newPlayer.Size = self.PlayerSize or newPlayer.Size
+
+	table.insert(self.Objects, newPlayer) -- add player to objects for enable collision for player
 end
 
 --[[

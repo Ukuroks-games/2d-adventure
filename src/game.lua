@@ -196,9 +196,14 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 end
 
 function Game.SetMap(self: Game, newMap: map.Map)
-	self.Map:Done()
+	self.Map:Done(self.Player)
 	self.Map = newMap
 	newMap:Init(self.Player, self.Frame)
+end
+
+function Game.SetPlayer(self: Game, newPlayer: player.Player2d)
+	self.Map:SetPlayer(newPlayer, self.Player)
+	self.Player = newPlayer
 end
 
 --[[
