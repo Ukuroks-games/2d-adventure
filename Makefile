@@ -6,14 +6,22 @@ CP = cp -rf
 MV = mv -f
 RM = rm -rf
 
-./build: 
-	mkdir build
+BUILD_DIR = build
+LIB_BUILD_DIR = $(BUILD_DIR)
+
+$(BUILD_DIR): 
+	mkdir $@
+
+$(LIB_BUILD_DIR):
+	mkdir $@
 
 ./Packages: wally.toml
 	wally install
 	
-configure: clean ./build wally.toml
-	$(CP) src/* build/
+
+
+configure: clean-build $(BUILD_DIR)
+	$(CP) src/* $(BUILD_DIR)
 	$(CP) wally.toml build/
 
 package: configure
@@ -26,15 +34,20 @@ lint:
 	selene src/ tests/
 
 
+rbxm-configure-copy: ./Packages $(LIB_BUILD_DIR)
+	$(CP) Packages $(BUILD_DIR)
+	$(CP) src/* $(LIB_BUILD_DIR)
 
-$(LIBNAME)lib.rbxm: configure
-	$(MV) build/init.lua build/$(LIBNAME).lua
+rbxm-configure: $(BUILD_DIR)
+	make "LIB_BUILD_DIR = $(BUILD_DIR)/$(LIBNAME)" rbxm-configure-copy
+
+$(LIBNAME)lib.rbxm: clean-build rbxm-configure
 	rojo build library.project.json --output $@
 
 tests.rbxl: ./Packages
 	rojo build tests.project.json --output $@
 
-tests: clean-tests tests.rbxl
+tests: clean-tests clean-build tests.rbxl
 
 sourcemap.json: ./Packages
 	rojo sourcemap tests.project.json --output $@
@@ -52,5 +65,8 @@ clean-rbxm:
 clean-tests:
 	$(RM) tests.rbxl
 
-clean: clean-tests clean-rbxm
-	$(RM) build $(PACKAGE_NAME) 
+clean-build:
+	$(RM) $(BUILD_DIR)
+
+clean: clean-tests clean-build clean-rbxm
+	$(RM) $(PACKAGE_NAME) 
