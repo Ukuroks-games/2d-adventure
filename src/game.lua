@@ -195,6 +195,17 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 	self.MoveTween:Play()
 end
 
+function Game.SetMap(self: Game, newMap: map.Map)
+	self.Map:Done(self.Player)
+	self.Map = newMap
+	newMap:Init(self.Player, self.Frame)
+end
+
+function Game.SetPlayer(self: Game, newPlayer: player.Player2d)
+	self.Map:SetPlayer(newPlayer, self.Player)
+	self.Player = newPlayer
+end
+
 --[[
 	Game constructor
 ]]
@@ -222,31 +233,9 @@ function Game.new(
 		CollideMutex = mutex.new(true),
 	}
 
-	self.Map.Image.Parent = self.Frame
 	self.Player:SetParent(self.Frame)
 
-	table.insert(self.Map.Objects, self.Player) -- add player to objects for enable collision for player
-
-	self.Player.Size = self.Map.PlayerSize or self.Player.Size
-
-	--[[
-		обёртка для self.Map:CalcPositions
-	]]
-	local function CalcPositions()
-		self.Map:CalcPositions()
-	end
-
-	CalcPositions() -- превоночальный расчет
-
-	self.Map:SetPlayerPosition(
-		self.Player,
-		self.Map.StartPosition or Vector2.new(0, 0)
-	)
-
-	--[[
-		расчет после изменения фрейма игры
-	]]
-	self.Frame:GetPropertyChangedSignal("Size"):Connect(CalcPositions)
+	self.Map:Init(self.Player, self.Frame)
 
 	self.Player.Animations.IDLE:StartAnimation()
 

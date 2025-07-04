@@ -31,6 +31,8 @@ export type MapStruct = {
 	StartPosition: Vector2?,
 
 	PlayerSize: Vector3?,
+
+	Connections: { RBXScriptConnection },
 }
 
 export type Map = MapStruct & typeof(map)
@@ -127,8 +129,9 @@ function map.CalcCollide(self: MapStruct)
 	end
 end
 
-function map.Destroy(self: MapStruct)
+function map.Destroy(self: Map, Player: player2d.Player2d)
 	self.ObjectMovementEvent:Destroy()
+	self:Done(Player)
 
 	table.clear(self)
 end
@@ -143,6 +146,82 @@ function map.SetPlayerPosition(
 )
 	local p = map.CalcPlayerPosition(self, player, pos)
 	self.Image.Position = UDim2.fromOffset(p.X, p.Y)
+end
+
+function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
+	local function CalcPositions()
+		self:CalcPositions()
+		self:CalcZIndexs()
+	end
+
+	self.Image.Parent = GameFrame
+
+	self.Image.Visible = true
+
+	self:SetPlayer(Player)
+
+	Player:SetPosition(Vector2.new())
+
+	CalcPositions() -- превоночальный расчет
+
+	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
+
+	--[[
+		расчет после изменения фрейма игры
+	]]
+	table.insert(
+		self.Connections,
+		GameFrame:GetPropertyChangedSignal("Size"):Connect(CalcPositions)
+	)
+end
+
+function map.Done(self: Map, Player: player2d.Player2d)
+	self.Image.Visible = false
+
+	self:DeletePlayer(Player)
+
+	for _, v in pairs(self.Connections) do
+		if v then
+			v:Disconnect()
+		end
+	end
+end
+
+function map.CalcZIndexs(self: MapStruct)
+	table.sort(
+		self.Objects,
+		function(
+			a: physicObject.PhysicObject,
+			b: physicObject.PhysicObject
+		): boolean
+			return a.Image.AbsolutePosition.Y < b.Image.AbsolutePosition.Y
+		end
+	)
+
+	for i, v in pairs(self.Objects) do
+		v:SetZIndex(i + 1)
+	end
+end
+
+function map.DeletePlayer(self: MapStruct, Player: player2d.Player2d)
+	local p = table.find(self.Objects, Player)
+	if p then
+		self.Objects[p] = nil
+	end
+end
+
+function map.SetPlayer(
+	self: Map,
+	newPlayer: player2d.Player2d,
+	oldPlayer: player2d.Player2d?
+)
+	if oldPlayer then
+		self:DeletePlayer(oldPlayer)
+	end
+
+	newPlayer.Size = self.PlayerSize or newPlayer.Size
+
+	table.insert(self.Objects, newPlayer) -- add player to objects for enable collision for player
 end
 
 --[[
@@ -168,6 +247,8 @@ function map.new(
 		ObjectMovementEvent = ObjectMovementEvent,
 		StartPosition = startPosition,
 		PlayerSize = playerSize,
+		Connections = {},
+		PlayerIndex = nil,
 	}
 
 	if Objects then

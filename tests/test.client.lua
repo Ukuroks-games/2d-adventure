@@ -17,6 +17,23 @@ GameFrame.Size = UDim2.fromScale(1, 1)
 
 local cam = camera2d.new(1)
 
+local changeMap = Object2d.new(
+	Vector2.new(300, 180),
+	Vector3.new(28, 69, 196),
+	ExImage.new("84486373084684")
+)
+
+local map1 = map.new(Vector2.new(1, 1), cam, "76803732961234", {
+	Object2d.new( -- door
+		Vector2.new(157, 196),
+		Vector3.new(28, 69, 8),
+		ExImage.new("84486373084684")
+	),
+	changeMap,
+}, Vector2.new(80, 300), Vector3.new(22, 48, 8))
+
+local map2 = map.new(Vector2.new(1, 1), cam, "131246783435400")
+
 local _game = Game.new(
 	GameFrame,
 	player.new({
@@ -47,11 +64,9 @@ local _game = Game.new(
 			giflib.Frame.new("82185418640948", 0.5), -- 1
 		}, true, false, giflib.gif.Mode.Replace),
 	}, 1 / 100, Vector3.new(-1, -1, 4)),
-	map.new(Vector2.new(1, 1), cam, "76803732961234", {
-		Object2d.new( -- door
-			Vector2.new(157, 196),
-			Vector3.new(28, 69, 8),
-			ExImage.new("84486373084684")
-		),
-	}, Vector2.new(80, 300), Vector3.new(22, 48, 8))
+	map1
 )
+
+changeMap.Touched:Connect(function()
+	_game:SetMap(map2)
+end)
