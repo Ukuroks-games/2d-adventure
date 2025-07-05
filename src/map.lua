@@ -1,8 +1,7 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
 local ExImage = require(script.Parent.ExImage)
-local stdlib = require(ReplicatedStorage.Packages.stdlib)
+local stdlib = require(script.Parent.Parent.stdlib)
 local algorithm = stdlib.algorithm
 
 local Object2d = require(script.Parent.Object2d)

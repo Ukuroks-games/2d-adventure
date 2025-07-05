@@ -1,8 +1,7 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AssetService = game:GetService("AssetService")
 
 local gifInfo = require(script.Parent.gifInfo)
-local giflib = require(ReplicatedStorage.Packages.giflib)
+local giflib = require(script.Parent.Parent.giflib)
 
 local physicObject = require(script.Parent.physicObject)
 local Object2d = require(script.Parent.Object2d)
@@ -13,6 +12,9 @@ local ExImage = require(script.Parent.ExImage)
 ]]
 local player2d = {}
 
+--[[
+	Animations list
+]]
 export type Animations = {
 	WalkUp: giflib.Gif,
 	WalkDown: giflib.Gif,
@@ -74,6 +76,9 @@ function player2d.Destroy(self: Player2dStruct)
 	self.MoveEvent:Destroy()
 end
 
+--[[
+
+]]
 function player2d.CalcSize(
 	self: Player2dStruct,
 	mapImage: ExImage.ExImage
@@ -90,6 +95,11 @@ function player2d.CalcSize(
 	return Object2d.CalcSize(Resolution or self.Size, mapImage)
 end
 
+--[[
+	Set player position.
+
+	It ignore any changes. player always on centre
+]]
 function player2d.SetPosition(self: Player2dStruct, pos: Vector2)
 	self.physicImage.Position = UDim2.new(
 		0.5,
@@ -99,6 +109,9 @@ function player2d.SetPosition(self: Player2dStruct, pos: Vector2)
 	) -- move to center PlayerFrame
 end
 
+--[[
+	Set ZIndex for player
+]]
 function player2d.SetZIndex(self: Player2dStruct, ZIndex: number)
 	physicObject.SetZIndex(self, ZIndex)
 

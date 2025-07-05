@@ -1,6 +1,4 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local giflib = require(ReplicatedStorage.Packages.giflib)
+local giflib = require(script.Parent.Parent.giflib)
 
 local gifInfo = {}
 

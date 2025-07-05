@@ -1,10 +1,9 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
-local InputLib = require(ReplicatedStorage.Packages.InputLib)
-local cooldown = require(ReplicatedStorage.Packages.cooldown)
-local stdlib = require(ReplicatedStorage.Packages.stdlib)
+local InputLib = require(script.Parent.Parent.InputLib)
+local cooldown = require(script.Parent.Parent.cooldown)
+local stdlib = require(script.Parent.Parent.stdlib)
 local mutex = stdlib.mutex
 
 local defaultControls = require(script.Parent.defaultControls)

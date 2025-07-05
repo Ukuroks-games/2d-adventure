@@ -54,7 +54,7 @@
             "type": "shell",
             "label": "Generate sourcemap",
             "detail": "Generate sourcemap for project",
-            "command": "rojo sourcemap tests.project.json --output sourcemap.json && exit",
+            "command": "make sourcemap && exit",
             "group": {
                 "kind": "none"
             }

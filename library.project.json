@@ -1,6 +1,9 @@
 {
-	"name": "ReplicatedStorage",
+	"name": "Packages",
 	"tree": {
-		"$path": "build"
+		"$path": "Packages",
+		"2d-adventure": {
+			"$path": "src"
+		}
 	}
 }

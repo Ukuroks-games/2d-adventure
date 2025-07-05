@@ -1,6 +1,4 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local stdlib = require(ReplicatedStorage.Packages.stdlib)
+local stdlib = require(script.Parent.Parent.stdlib)
 local ExImage = require(script.Parent.ExImage)
 
 local mutex = stdlib.mutex

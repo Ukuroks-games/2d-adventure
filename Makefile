@@ -7,12 +7,10 @@ MV = mv -f
 RM = rm -rf
 
 BUILD_DIR = build
-LIB_BUILD_DIR = $(BUILD_DIR)
+
+RBXM_BUILD = $(LIBNAME)lib.rbxm
 
 $(BUILD_DIR): 
-	mkdir $@
-
-$(LIB_BUILD_DIR):
 	mkdir $@
 
 ./Packages: wally.toml
@@ -20,36 +18,28 @@ $(LIB_BUILD_DIR):
 	
 
 
-configure: clean-build $(BUILD_DIR)
+configure: clean-build $(BUILD_DIR) wally.toml
 	$(CP) src/* $(BUILD_DIR)
 	$(CP) wally.toml build/
 
 package: configure
-	wally package --output $(PACKAGE_NAME) --project-path build
+	wally package --output $(PACKAGE_NAME) --project-path $(BUILD_DIR)
 
 publish: configure
-	wally publish --project-path build
+	wally publish --project-path $(BUILD_DIR)
 
 lint:
 	selene src/ tests/
 
-
-rbxm-configure-copy: ./Packages $(LIB_BUILD_DIR)
-	$(CP) Packages $(BUILD_DIR)
-	$(CP) src/* $(LIB_BUILD_DIR)
-
-rbxm-configure: $(BUILD_DIR)
-	make "LIB_BUILD_DIR = $(BUILD_DIR)/$(LIBNAME)" rbxm-configure-copy
-
-$(LIBNAME)lib.rbxm: clean-build rbxm-configure
+$(RBXM_BUILD): library.project.json
 	rojo build library.project.json --output $@
 
-tests.rbxl: ./Packages
+tests.rbxl: ./Packages tests.project.json
 	rojo build tests.project.json --output $@
 
 tests: clean-tests clean-build tests.rbxl
 
-sourcemap.json: ./Packages
+sourcemap.json: ./Packages tests.project.json
 	rojo sourcemap tests.project.json --output $@
 
 # Re gen sourcemap
@@ -60,7 +50,7 @@ clean-sourcemap:
 	$(RM) sourcemap.json
 
 clean-rbxm:
-	$(RM) $(LIBNAME).rbxm 
+	$(RM) $(RBXM_BUILD)
 
 clean-tests:
 	$(RM) tests.rbxl

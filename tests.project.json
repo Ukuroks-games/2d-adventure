@@ -5,10 +5,10 @@
 		"ReplicatedStorage": {
 			"$className": "ReplicatedStorage",
 			"Packages": {
-				"$path": "Packages"
-			},
-			"shared": {
-				"$path": "src"
+				"$path": "Packages",
+				"2d-adventure": {
+					"$path": "src"
+				}
 			}
 		},
 		"Workspace": {
