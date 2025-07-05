@@ -212,6 +212,9 @@ function physicObject.SetSize(self: PhysicObjectStruct, size: Vector3)
 	self.physicImage.Size = UDim2.fromOffset(size.X, size.Z)
 end
 
+--[[
+	Set ZIndex for physic object
+]]
 function physicObject.SetZIndex(self: PhysicObjectStruct, ZIndex: number)
 	self.physicImage.ZIndex = ZIndex
 	self.Image.ZIndex = ZIndex

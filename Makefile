@@ -10,6 +10,18 @@ BUILD_DIR = build
 
 RBXM_BUILD = $(LIBNAME)lib.rbxm
 
+SOURCES =	src/init.lua			\
+			src/player.lua			\
+			src/Object2d.lua		\
+			src/map.lua				\
+			src/physicObject.lua	\
+			src/gifInfo.lua			\
+			src/ExImage.lua			\
+			src/camera2d.lua		\
+			src/ControlClass.lua	\
+			src/ControlType.lua		\
+			src/defaultControls.lua	\
+
 $(BUILD_DIR): 
 	mkdir $@
 
@@ -18,26 +30,26 @@ $(BUILD_DIR):
 	
 
 
-configure: clean-build $(BUILD_DIR) wally.toml
+configure: clean-build $(BUILD_DIR) wally.toml $(SOURCES)
 	$(CP) src/* $(BUILD_DIR)
 	$(CP) wally.toml build/
 
-package: configure
+package: configure $(SOURCES)
 	wally package --output $(PACKAGE_NAME) --project-path $(BUILD_DIR)
 
-publish: configure
+publish: configure $(SOURCES)
 	wally publish --project-path $(BUILD_DIR)
 
 lint:
 	selene src/ tests/
 
-$(RBXM_BUILD): library.project.json
+$(RBXM_BUILD): library.project.json	$(SOURCES)
 	rojo build library.project.json --output $@
 
-tests.rbxl: ./Packages tests.project.json
+tests.rbxl: ./Packages tests.project.json $(SOURCES) tests/test.client.lua
 	rojo build tests.project.json --output $@
 
-tests: clean-tests clean-build tests.rbxl
+tests: clean-tests tests.rbxl
 
 sourcemap.json: ./Packages tests.project.json
 	rojo sourcemap tests.project.json --output $@

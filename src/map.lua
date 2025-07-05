@@ -147,6 +147,9 @@ function map.SetPlayerPosition(
 	self.Image.Position = UDim2.fromOffset(p.X, p.Y)
 end
 
+--[[
+	Init map
+]]
 function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 	local function CalcPositions()
 		self:CalcPositions()
@@ -165,15 +168,27 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 
 	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
 
+	local speed = Object2d.CalcSize(Vector3.new(Player.WalkSpeed.X, Player.WalkSpeed.Y, 0), self.Image)
+
+	Player.WalkSpeed.Calculated = {
+		X = speed.X,
+		Y = speed.Y
+	}
+	
 	--[[
 		расчет после изменения фрейма игры
 	]]
 	table.insert(
 		self.Connections,
-		GameFrame:GetPropertyChangedSignal("Size"):Connect(CalcPositions)
+		GameFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(CalcPositions)
 	)
 end
 
+--[[
+	Done map.
+
+	It needed for change map. After `Init` map must call `Done` method
+]]
 function map.Done(self: Map, Player: player2d.Player2d)
 	self.Image.Visible = false
 
@@ -186,6 +201,9 @@ function map.Done(self: Map, Player: player2d.Player2d)
 	end
 end
 
+--[[
+	Calc ZIndex for all objects on map
+]]
 function map.CalcZIndexs(self: MapStruct)
 	table.sort(
 		self.Objects,

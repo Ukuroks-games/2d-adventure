@@ -172,24 +172,28 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 		end
 	end
 
-	self.MoveTween = TweenService:Create(
-		self.Map.Image.ImageInstance,
-		TweenInfo.new(self.CooldownTime),
-		{
-			["Position"] = UDim2.new(
-				UDim.new(
-					self.Map.Image.Position.X.Scale
-						+ (X * self.Player.WalkSpeed),
-					self.Map.Image.Position.X.Offset
+	if self.Player.WalkSpeed.Calculated then
+		self.MoveTween = TweenService:Create(
+			self.Map.Image.ImageInstance,
+			TweenInfo.new(self.CooldownTime),
+			{
+				["Position"] = UDim2.new(
+					UDim.new(
+						self.Map.Image.Position.X.Scale,
+						self.Map.Image.Position.X.Offset
+							+ (X * self.Player.WalkSpeed.Calculated.X)
+					),
+					UDim.new(
+						self.Map.Image.Position.Y.Scale,
+						self.Map.Image.Position.Y.Offset
+							+ (Y * self.Player.WalkSpeed.Calculated.Y)
+					)
 				),
-				UDim.new(
-					self.Map.Image.Position.Y.Scale
-						+ (Y * self.Player.WalkSpeed),
-					self.Map.Image.Position.Y.Offset
-				)
-			),
-		}
-	)
+			}
+		)
+	else
+		warn("self.Player.WalkSpeed hasn't been calculate yet")
+	end
 
 	self.MoveTween:Play()
 end
