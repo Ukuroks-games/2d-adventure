@@ -65,7 +65,7 @@ local _game = Game.new(
 		["WalkRight"] = gifInfo.new({
 			giflib.Frame.new("82185418640948", 0.5), -- 1
 		}, true, false, giflib.gif.Mode.Replace),
-	}, 1 / 100, Vector3.new(-1, -1, 4)),
+	}, {X = 10, Y = 9}, Vector3.new(-1, -1, 4)),
 	map1
 )
 

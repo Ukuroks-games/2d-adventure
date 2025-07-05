@@ -37,6 +37,12 @@ export type ConstructorAnimations = {
 	[any]: gifInfo.Func,
 }
 
+export type PlayerSpeed = {
+	X: number,
+	Y: number,
+	Calculated: PlayerSpeed?
+}
+
 --[[
 	Класс игрока
 ]]
@@ -49,7 +55,7 @@ export type Player2dStruct = {
 	--[[
 		Скорость ходьбы
 	]]
-	WalkSpeed: number,
+	WalkSpeed: PlayerSpeed,
 
 	Move: RBXScriptSignal,
 
@@ -127,7 +133,7 @@ end
 ]]
 function player2d.new(
 	Animations: ConstructorAnimations,
-	WalkSpeed: number,
+	WalkSpeed: PlayerSpeed,
 	Size: Vector3
 ): Player2d
 	local PlayerFrame = Instance.new("Frame")
