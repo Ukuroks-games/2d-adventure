@@ -31,6 +31,10 @@ export type ConstructorAnimations = {
 	WalkDown: gifInfo.Func,
 	WalkRight: gifInfo.Func,
 	WalkLeft: gifInfo.Func,
+	WalkLeftUp: gifInfo.Func,
+	WalkLeftDown: gifInfo.Func,
+	WalkRightUp: gifInfo.Func,
+	WalkRightDown: gifInfo.Func,
 	IDLE: gifInfo.Func,
 
 	-- Other animations
@@ -40,7 +44,7 @@ export type ConstructorAnimations = {
 export type PlayerSpeed = {
 	X: number,
 	Y: number,
-	Calculated: PlayerSpeed?
+	Calculated: PlayerSpeed?,
 }
 
 --[[
@@ -128,6 +132,21 @@ function player2d.SetZIndex(self: Player2dStruct, ZIndex: number)
 	end
 end
 
+function player2d.SetAnimation(self: Player2dStruct, animationName: string)
+	player2d.StopAnimations(self)
+
+	self.CurrentAnimation = self.Animations[animationName]
+
+	self.Animations[animationName]:StartAnimation()
+end
+
+function player2d.StopAnimations(self: Player2dStruct)
+	for _, v in pairs(self.Animations) do
+		v:StopAnimation()
+		v:Hide()
+	end
+end
+
 --[[
 	Player2d constructor
 ]]
@@ -154,7 +173,7 @@ function player2d.new(
 	self.Image = PlayerFrame
 	self.Animations = CreatedAnimations
 	self.WalkSpeed = WalkSpeed
-	self.CurrentAnimation = CreatedAnimations.IDLE or nil
+	self.CurrentAnimation = nil
 	self.MoveEvent = Instance.new("BindableEvent")
 	self.Move = self.MoveEvent.Event
 	self.Anchored = false

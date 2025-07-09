@@ -69,6 +69,8 @@ export type GameStruct = {
 	MoveTween: Tween,
 
 	CollideMutex: mutex.Mutex,
+
+	MoveMutex: mutex.Mutex
 }
 
 export type Game = GameStruct & typeof(Game)
@@ -98,24 +100,15 @@ function Game.Destroy(self: GameStruct)
 end
 
 local function showAnimation(self: GameStruct, animationName: string)
-	if
-		self.Player.CurrentAnimation.AnimationRunning
-		and self.Player.CurrentAnimation.AnimationRunning
-			~= self.Player.Animations[animationName]
-	then
-		if self.MoveTween then
-			self.MoveTween:Cancel()
-			self.MoveTween:Destroy()
-			self.MoveTween = nil -- set to nil for this IF can working
-		end
-
-		self.Player.CurrentAnimation:StopAnimation()
-		self.Player.CurrentAnimation:Hide()
+	if self.MoveTween then
+		self.MoveTween:Cancel()
+		self.MoveTween:Destroy()
+		self.MoveTween = nil -- set to nil for this IF can working
+	else
+		print("bbb")
 	end
 
-	self.Player.Animations[animationName]:StartAnimation()
-
-	self.Player.CurrentAnimation = self.Player.Animations[animationName]
+	self.Player:SetAnimation(animationName)
 end
 
 function Game.IDLE(self: GameStruct)
@@ -138,7 +131,25 @@ function Game.Right(self: GameStruct)
 	Game.Move(self, 1, 0)
 end
 
+function Game.LeftUp(self: GameStruct)
+	Game.Move(self, -0.5, 0.5)
+end
+
+function Game.LeftDown(self: GameStruct)
+	Game.Move(self, -0.5, -0.5)
+end
+
+function Game.RightUp(self: GameStruct)
+	Game.Move(self, 0.5, 0.5)
+end
+
+function Game.RightDown(self: GameStruct)
+	Game.Move(self, 0.5, -0.5)
+end
+
 function Game.Move(self: GameStruct, X: number, Y: number)
+	self.MoveMutex:wait()
+	self.MoveMutex:lock()
 	self.CollideMutex:wait()
 	local touchedSide = self.Player:GetTouchedSide()
 
@@ -158,19 +169,33 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 		Y = 0
 	end
 
-	if math.abs(X / Y) > 1 then -- X bigger
-		if X > 0 then
-			showAnimation(self, "WalkLeft")
-		else
-			showAnimation(self, "WalkRight")
-		end
-	else -- Y bigger
+	local r = math.abs(X / Y)
+
+	local animationName = "Walk"
+
+	local function SetY()
 		if Y > 0 then
-			showAnimation(self, "WalkUp")
+			animationName ..= "Up"
 		else
-			showAnimation(self, "WalkDown")
+			animationName ..= "Down"
 		end
 	end
+
+	if r > 0.75 then -- X bigger
+		if X > 0 then
+			animationName ..= "Left"
+		else
+			animationName ..= "Right"
+		end
+
+		if r <= 1 then
+			SetY()
+		end
+	else -- Y bigger
+		SetY()
+	end
+
+	showAnimation(self, animationName)
 
 	if self.Player.WalkSpeed.Calculated then
 		self.MoveTween = TweenService:Create(
@@ -196,6 +221,7 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 	end
 
 	self.MoveTween:Play()
+	self.MoveMutex:unlock()
 end
 
 function Game.SetMap(self: Game, newMap: map.Map)
@@ -234,13 +260,14 @@ function Game.new(
 		Connections = {},
 		MoveTween = nil,
 		CollideMutex = mutex.new(true),
+		MoveMutex = mutex.new(false)
 	}
 
 	self.Player:SetParent(self.Frame)
 
 	self.Map:Init(self.Player, self.Frame)
 
-	self.Player.Animations.IDLE:StartAnimation()
+	showAnimation(self, "IDLE")
 
 	-- Keyboard controls
 
