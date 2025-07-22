@@ -1,6 +1,8 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
+local switch = require(ReplicatedStorage.Packages.switch)
 local InputLib = require(script.Parent.Parent.InputLib)
 local cooldown = require(script.Parent.Parent.cooldown)
 local stdlib = require(script.Parent.Parent.stdlib)
@@ -70,7 +72,9 @@ export type GameStruct = {
 
 	CollideMutex: mutex.Mutex,
 
-	MoveMutex: mutex.Mutex
+	Moving: boolean,
+
+	MoveStopConnection: RBXScriptConnection?,
 }
 
 export type Game = GameStruct & typeof(Game)
@@ -101,7 +105,6 @@ end
 
 local function showAnimation(self: GameStruct, animationName: string)
 	if self.MoveTween then
-		self.MoveTween:Cancel()
 		self.MoveTween:Destroy()
 		self.MoveTween = nil -- set to nil for this IF can working
 	else
@@ -148,80 +151,92 @@ function Game.RightDown(self: GameStruct)
 end
 
 function Game.Move(self: GameStruct, X: number, Y: number)
-	self.MoveMutex:wait()
-	self.MoveMutex:lock()
-	self.CollideMutex:wait()
-	local touchedSide = self.Player:GetTouchedSide()
+	if not self.Moving then
+		self.Moving = true
 
-	X = -X
-
-	if
-		((X < 0) and (touchedSide.Right == true))
-		or ((X > 0) and (touchedSide.Left == true))
-	then
-		X = 0
-	end
-
-	if
-		((Y > 0) and (touchedSide.Up == true))
-		or ((Y < 0) and (touchedSide.Down == true))
-	then
-		Y = 0
-	end
-
-	local r = math.abs(X / Y)
-
-	local animationName = "Walk"
-
-	local function SetY()
-		if Y > 0 then
-			animationName ..= "Up"
-		else
-			animationName ..= "Down"
-		end
-	end
-
-	if r > 0.75 then -- X bigger
-		if X > 0 then
-			animationName ..= "Left"
-		else
-			animationName ..= "Right"
+		if self.MoveStopConnection then
+			self.MoveStopConnection:Disconnect()
 		end
 
-		if r <= 1 then
+		self.CollideMutex:wait()
+		local touchedSide = self.Player:GetTouchedSide()
+
+		X = -X
+
+		if
+			((X < 0) and (touchedSide.Right == true))
+			or ((X > 0) and (touchedSide.Left == true))
+		then
+			X = 0
+		end
+
+		if
+			((Y > 0) and (touchedSide.Up == true))
+			or ((Y < 0) and (touchedSide.Down == true))
+		then
+			Y = 0
+		end
+
+		local r = math.abs(X / Y)
+
+		local animationName = "Walk"
+
+		local function SetY()
+			if Y > 0 then
+				animationName ..= "Up"
+			else
+				animationName ..= "Down"
+			end
+		end
+
+		if r > 0.75 then -- X bigger
+			if X > 0 then
+				animationName ..= "Left"
+			else
+				animationName ..= "Right"
+			end
+
+			if r <= 1 then
+				SetY()
+			end
+		else -- Y bigger
 			SetY()
 		end
-	else -- Y bigger
-		SetY()
-	end
 
-	showAnimation(self, animationName)
+		showAnimation(self, animationName)
 
-	if self.Player.WalkSpeed.Calculated then
-		self.MoveTween = TweenService:Create(
-			self.Map.Image.ImageInstance,
-			TweenInfo.new(self.CooldownTime),
-			{
-				["Position"] = UDim2.new(
-					UDim.new(
-						self.Map.Image.Position.X.Scale,
-						self.Map.Image.Position.X.Offset
-							+ (X * self.Player.WalkSpeed.Calculated.X)
+		if self.Player.WalkSpeed.Calculated then
+			self.MoveTween = TweenService:Create(
+				self.Map.Image.ImageInstance,
+				TweenInfo.new(self.CooldownTime),
+				{
+					["Position"] = UDim2.new(
+						UDim.new(
+							self.Map.Image.Position.X.Scale,
+							self.Map.Image.Position.X.Offset
+								+ (X * self.Player.WalkSpeed.Calculated.X)
+						),
+						UDim.new(
+							self.Map.Image.Position.Y.Scale,
+							self.Map.Image.Position.Y.Offset
+								+ (Y * self.Player.WalkSpeed.Calculated.Y)
+						)
 					),
-					UDim.new(
-						self.Map.Image.Position.Y.Scale,
-						self.Map.Image.Position.Y.Offset
-							+ (Y * self.Player.WalkSpeed.Calculated.Y)
-					)
-				),
-			}
-		)
-	else
-		warn("self.Player.WalkSpeed hasn't been calculate yet")
-	end
+				}
+			)
+		else
+			warn("self.Player.WalkSpeed hasn't been calculate yet")
+		end
 
-	self.MoveTween:Play()
-	self.MoveMutex:unlock()
+		self.MoveTween:Play()
+		self.Moving = false
+
+		self.MoveStopConnection = self.MoveTween.Completed:Connect(
+			function(a0: Enum.PlaybackState)
+				self.Player.Animations[self.Player.CurrentAnimation]:StopAnimation()
+			end
+		)
+	end
 end
 
 function Game.SetMap(self: Game, newMap: map.Map)
@@ -255,12 +270,12 @@ function Game.new(
 		DestroyingEvent = DestroyingEvent,
 		CollideSteped = CollideStepedEvent.Event,
 		CollideStepedEvent = CollideStepedEvent,
-		CooldownTime = cooldownTime or 0.012,
+		CooldownTime = cooldownTime or 0.1,
 		DestroyableObjects = {},
 		Connections = {},
 		MoveTween = nil,
 		CollideMutex = mutex.new(true),
-		MoveMutex = mutex.new(false)
+		Moving = false,
 	}
 
 	self.Player:SetParent(self.Frame)
@@ -271,64 +286,55 @@ function Game.new(
 
 	-- Keyboard controls
 
-	local Up = cooldown.new(self.CooldownTime, Game.Up)
+	local Up = InputLib.watchKey({
+		defaultControls.Keyboard.Up,
+		defaultControls.Gamepad.Up,
+		Enum.KeyCode.Up,
+	})
 
-	local Down = cooldown.new(self.CooldownTime, Game.Down)
+	local Down = InputLib.watchKey({
+		defaultControls.Keyboard.Down,
+		defaultControls.Gamepad.Down,
+		Enum.KeyCode.Down,
+	})
 
-	local Left = cooldown.new(self.CooldownTime, Game.Left)
+	local Right = InputLib.watchKey({
+		defaultControls.Keyboard.Left,
+		defaultControls.Gamepad.Left,
+		Enum.KeyCode.Left,
+	})
 
-	local Right = cooldown.new(self.CooldownTime, Game.Right)
+	local Left = InputLib.watchKey({
+		defaultControls.Keyboard.Right,
+		defaultControls.Gamepad.Right,
+		Enum.KeyCode.Right,
+	})
 
-	local Move = cooldown.new(self.CooldownTime, Game.Move)
+	local Move = cooldown.new(
+		self.CooldownTime,
+		function(_self, YPos: number?, XPos: number?)
+			if Up.Value then
+				Game.Up(_self)
+			elseif Down.Value then
+				Game.Down(_self)
+			elseif Left.Value then
+				Game.Left(_self)
+			elseif Right.Value then
+				Game.Right(_self)
+			elseif YPos and XPos then
+				Game.Move(_self, YPos, XPos)
+			else
+				warn(
+					"No key pressed and positions of X and Y are not indicated"
+				)
+			end
+		end
+	)
 
 	table.insert(self.DestroyableObjects, Up)
 	table.insert(self.DestroyableObjects, Down)
 	table.insert(self.DestroyableObjects, Left)
 	table.insert(self.DestroyableObjects, Right)
-
-	table.insert(
-		self.DestroyableObjects,
-		InputLib.WhileKeyPressed(function()
-			Up(self)
-		end, {
-			defaultControls.Keyboard.Up,
-			defaultControls.Gamepad.Up,
-			Enum.KeyCode.Up,
-		})
-	)
-
-	table.insert(
-		self.DestroyableObjects,
-		InputLib.WhileKeyPressed(function()
-			Down(self)
-		end, {
-			defaultControls.Keyboard.Down,
-			defaultControls.Gamepad.Down,
-			Enum.KeyCode.Down,
-		})
-	)
-
-	table.insert(
-		self.DestroyableObjects,
-		InputLib.WhileKeyPressed(function()
-			Left(self)
-		end, {
-			defaultControls.Keyboard.Left,
-			defaultControls.Gamepad.Left,
-			Enum.KeyCode.Left,
-		})
-	)
-
-	table.insert(
-		self.DestroyableObjects,
-		InputLib.WhileKeyPressed(function()
-			Right(self)
-		end, {
-			defaultControls.Keyboard.Right,
-			defaultControls.Gamepad.Right,
-			Enum.KeyCode.Right,
-		})
-	)
 
 	-- gamepad input
 
@@ -346,7 +352,7 @@ function Game.new(
 	)
 
 	local GamepadControlThread = task.spawn(function()
-		while GamepadThumbStick1.Changed:Wait() do -- не через changed потому, что Есть CollideMutex и его нужно ждать
+		while GamepadThumbStick1.Changed:Wait() do -- не через Changed потому, что Есть CollideMutex и его нужно ждать
 			Move(self, GamepadThumbStick1.Value.X, GamepadThumbStick1.Value.Y)
 		end
 	end)
@@ -354,14 +360,18 @@ function Game.new(
 	-- other
 
 	stdlib.events.AnyEvent({
-		Up.CallEvent.Event,
-		Down.CallEvent.Event,
-		Right.CallEvent.Event,
-		Left.CallEvent.Event,
+		Up.Changed,
+		Down.Changed,
+		Right.Changed,
+		Left.Changed,
 		GamepadThumbStick1.Changed,
 	}, self.Player.MoveEvent)
 
-	local IdleRun = cooldown.new(4, Game.IDLE)
+	local IdleRun = cooldown.new(4, function(...)
+		--Game.IDLE
+		print("Start IDLE")
+	end)
+
 	stdlib.events.AnyEvent({
 		self.Map.ObjectMovement,
 		self.Player.Move,

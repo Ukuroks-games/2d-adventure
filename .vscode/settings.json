@@ -4,8 +4,10 @@
 	
 	"cSpell.enabled": true,
 	"cSpell.words": [
+		"Resampler",
 		"Roblox",
 		"rojo",
+		"setmetatable"
 	],
 
 	"cSpell.ignorePaths": [
@@ -17,5 +19,6 @@
 	],
 
 	"luau-lsp.sourcemap.rojoProjectFile": "tests.project.json",
-	"luau-lsp.platform.type": "roblox"
+	"luau-lsp.platform.type": "roblox",
+	"makefile.configureOnOpen": false
 }
