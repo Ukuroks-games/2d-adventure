@@ -429,6 +429,10 @@ function Game.new(
 		self.CollideMutex:unlock()
 	end)
 
+	CollideStepedEvent.Event:Connect(function() 
+		self.Map:CalcZIndexs()
+	end)
+
 	self.Destroying:Connect(function()
 		task.cancel(IDLE_show_thread)
 		task.cancel(GamepadControlThread)

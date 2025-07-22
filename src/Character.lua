@@ -49,7 +49,7 @@ export type ConstructorAnimations = {
 export type CharacterSpeed = {
 	X: number,
 	Y: number,
-	Calculated: CharacterSpeed,
+	Calculated: Vector2?,
 }
 
 --[[

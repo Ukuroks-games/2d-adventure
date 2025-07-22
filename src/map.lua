@@ -170,10 +170,7 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 
 	local speed = Object2d.CalcSize(Vector3.new(Player.WalkSpeed.X, Player.WalkSpeed.Y, 0), self.Image)
 
-	Player.WalkSpeed.Calculated = {
-		X = speed.X,
-		Y = speed.Y
-	}
+	Player.WalkSpeed.Calculated = Vector2.new(speed.X, speed.Y)
 	
 	--[[
 		расчет после изменения фрейма игры
