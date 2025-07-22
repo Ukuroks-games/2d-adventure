@@ -1,5 +1,7 @@
 local AssetService = game:GetService("AssetService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local stdlib = require(ReplicatedStorage.Packages.stdlib)
 local gifInfo = require(script.Parent.gifInfo)
 local giflib = require(script.Parent.Parent.giflib)
 
@@ -21,6 +23,10 @@ export type Animations = {
 	WalkRight: giflib.Gif,
 	WalkLeft: giflib.Gif,
 	IDLE: giflib.Gif,
+	WalkLeftUp: giflib.Gif,
+	WalkLeftDown: giflib.Gif,
+	WalkRightUp: giflib.Gif,
+	WalkRightDown: giflib.Gif,
 
 	-- Other animations
 	[any]: giflib.Gif,
@@ -68,7 +74,7 @@ export type Player2dStruct = {
 	--[[
 		Текущяя анимация
 	]]
-	CurrentAnimation: giflib.Gif,
+	CurrentAnimation: string,
 
 	Image: Frame,
 } & physicObject.PhysicObject
@@ -97,7 +103,7 @@ function player2d.CalcSize(
 
 	if self.Size.X == -1 or self.Size.Y == -1 then
 		local a = AssetService:CreateEditableImageAsync(
-			self.CurrentAnimation.Frames[1].Image.Image
+			self.Animations[self.CurrentAnimation].Frames[1].Image.Image
 		).Size
 		Resolution = Vector3.new(a.X, a.Y, self.Size.Z)
 	end
@@ -132,19 +138,51 @@ function player2d.SetZIndex(self: Player2dStruct, ZIndex: number)
 	end
 end
 
+--[[
+	Set current animation
+]]
 function player2d.SetAnimation(self: Player2dStruct, animationName: string)
-	player2d.StopAnimations(self)
+	if self.Animations[self.CurrentAnimation] and self.CurrentAnimation ~= animationName then
+		print("Hide:", self.CurrentAnimation)
+		self.Animations[self.CurrentAnimation]:StopAnimation()
+		self.Animations[self.CurrentAnimation]:Hide()
 
-	self.CurrentAnimation = self.Animations[animationName]
+		print("show", animationName)
 
-	self.Animations[animationName]:StartAnimation()
+
+		self.CurrentAnimation = animationName
+
+		self.Animations[self.CurrentAnimation]:RestartAnimation()
+	else
+		print("current animation = animationName")
+	end
+
+	print(self)
 end
 
+--[[
+	Stop all animations
+]]
 function player2d.StopAnimations(self: Player2dStruct)
 	for _, v in pairs(self.Animations) do
 		v:StopAnimation()
 		v:Hide()
 	end
+end
+
+local function CreateAnimationsFromConstructor(Animations: ConstructorAnimations, PlayerFrame: Frame): Animations
+	local CreatedAnimations = {}
+
+	for i, v in pairs(Animations) do
+		local gif = v(PlayerFrame)
+
+		gif:Hide()
+		gif:SetBackgroundTransparency(1)
+
+		CreatedAnimations[i] = gif
+	end
+
+	return CreatedAnimations
 end
 
 --[[
@@ -156,24 +194,17 @@ function player2d.new(
 	Size: Vector3
 ): Player2d
 	local PlayerFrame = Instance.new("Frame")
-	local CreatedAnimations = {}
+	local CreatedAnimations = CreateAnimationsFromConstructor(Animations, PlayerFrame)
+
 	local self = physicObject.new(PlayerFrame, true, true, false)
 
-	for i, v in pairs(Animations) do
-		local gif = v(PlayerFrame)
-
-		gif:Hide()
-		gif:SetBackgroundTransparency(1)
-
-		CreatedAnimations[i] = gif
-	end
-
+	
 	PlayerFrame.BackgroundTransparency = 1
 
 	self.Image = PlayerFrame
 	self.Animations = CreatedAnimations
 	self.WalkSpeed = WalkSpeed
-	self.CurrentAnimation = nil
+	self.CurrentAnimation = "IDLE"
 	self.MoveEvent = Instance.new("BindableEvent")
 	self.Move = self.MoveEvent.Event
 	self.Anchored = false

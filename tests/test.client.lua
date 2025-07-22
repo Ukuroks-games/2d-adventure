@@ -64,7 +64,7 @@ local _game = Game.new(
 		["WalkLeft"] = gifInfo.new({
 			giflib.Frame.new("131056695027889", 0.2), -- 1
 			giflib.Frame.new("130325387410477", 0.2), -- 2
-			giflib.Frame.new("134555323130510", 0.2), -- 3
+			--giflib.Frame.new("134555323130510", 0.2), -- 3
 			giflib.Frame.new("129026456910746", 0.23), -- 4
 		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
 		["WalkRight"] = gifInfo.new({

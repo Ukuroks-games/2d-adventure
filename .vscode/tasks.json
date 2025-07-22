@@ -13,7 +13,7 @@
         {
             "type": "shell",
             "label": "Load depends",
-            "command": "make ./Package && exit",
+            "command": "make ./Packages && exit",
             "group": {
                 "kind": "none"
             },
