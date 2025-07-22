@@ -286,40 +286,48 @@ function Game.new(
 
 	-- Keyboard controls
 
-	local Up = InputLib.watchKey({
+	local Up = InputLib.WhileKeyPressed(task.wait, {
 		defaultControls.Keyboard.Up,
 		defaultControls.Gamepad.Up,
 		Enum.KeyCode.Up,
 	})
 
-	local Down = InputLib.watchKey({
+	local Down = InputLib.WhileKeyPressed(task.wait, {
 		defaultControls.Keyboard.Down,
 		defaultControls.Gamepad.Down,
 		Enum.KeyCode.Down,
 	})
 
-	local Right = InputLib.watchKey({
+	local Right = InputLib.WhileKeyPressed(task.wait, {
 		defaultControls.Keyboard.Left,
 		defaultControls.Gamepad.Left,
-		Enum.KeyCode.Left,
+		Enum.KeyCode.Right,
 	})
 
-	local Left = InputLib.watchKey({
+	local Left = InputLib.WhileKeyPressed(task.wait, {
 		defaultControls.Keyboard.Right,
 		defaultControls.Gamepad.Right,
-		Enum.KeyCode.Right,
+		Enum.KeyCode.Left,
 	})
 
 	local Move = cooldown.new(
 		self.CooldownTime,
 		function(_self, YPos: number?, XPos: number?)
-			if Up.Value then
+			if Up.State.Value and Right.State.Value then --	Right Up
+				Game.RightUp(_self)
+			elseif Down.State.Value and Right.State.Value then -- Right Down
+				Game.RightDown(_self)
+			elseif Down.State.Value and Left.State.Value then --	Left Down
+				Game.LeftDown(_self)
+			elseif Up.State.Value and Left.State.Value then --	Left Up
+				Game.LeftUp(_self)
+			elseif Up.State.Value then --	Up
 				Game.Up(_self)
-			elseif Down.Value then
+			elseif Down.State.Value then --	Down
 				Game.Down(_self)
-			elseif Left.Value then
+			elseif Left.State.Value then --	Left
 				Game.Left(_self)
-			elseif Right.Value then
+			elseif Right.State.Value then --	Right
 				Game.Right(_self)
 			elseif YPos and XPos then
 				Game.Move(_self, YPos, XPos)
@@ -335,6 +343,17 @@ function Game.new(
 	table.insert(self.DestroyableObjects, Down)
 	table.insert(self.DestroyableObjects, Left)
 	table.insert(self.DestroyableObjects, Right)
+
+	local KeyboardMoveEvent = stdlib.events.AnyEvent({
+		Up.Called,
+		Down.Called,
+		Right.Called,
+		Left.Called,
+	})
+
+	KeyboardMoveEvent.Event:Connect(function(...: any)
+		Move(self)
+	end)
 
 	-- gamepad input
 
@@ -360,10 +379,7 @@ function Game.new(
 	-- other
 
 	stdlib.events.AnyEvent({
-		Up.Changed,
-		Down.Changed,
-		Right.Changed,
-		Left.Changed,
+		KeyboardMoveEvent.Event,
 		GamepadThumbStick1.Changed,
 	}, self.Player.MoveEvent)
 
