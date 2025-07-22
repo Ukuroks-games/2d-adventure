@@ -99,7 +99,7 @@ function Game.Destroy(self: GameStruct)
 
 	self.Frame:Destroy()
 	self.CollideStepedEvent:Destroy()
-	player.Destroy(self.Player)
+	self.Player:Destroy()
 	self.DestroyingEvent:Destroy()
 end
 
