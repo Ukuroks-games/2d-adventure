@@ -1,3 +1,5 @@
+local AssetService = game:GetService("AssetService")
+local ContentProvider = game:GetService("ContentProvider")
 local TweenService = game:GetService("TweenService")
 
 local ExImage = require(script.Parent.ExImage)
@@ -168,16 +170,20 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 
 	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
 
-	local speed = Object2d.CalcSize(Vector3.new(Player.WalkSpeed.X, Player.WalkSpeed.Y, 0), self.Image)
+	local speed = Object2d.CalcSize(
+		Vector3.new(Player.WalkSpeed.X, Player.WalkSpeed.Y, 0),
+		self.Image
+	)
 
 	Player.WalkSpeed.Calculated = Vector2.new(speed.X, speed.Y)
-	
+
 	--[[
 		расчет после изменения фрейма игры
 	]]
 	table.insert(
 		self.Connections,
-		GameFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(CalcPositions)
+		GameFrame:GetPropertyChangedSignal("AbsoluteSize")
+			:Connect(CalcPositions)
 	)
 end
 
@@ -236,6 +242,22 @@ function map.SetPlayer(
 	newPlayer.Size = self.PlayerSize or newPlayer.Size
 
 	table.insert(self.Objects, newPlayer) -- add player to objects for enable collision for player
+end
+
+function map.Loading(self: MapStruct, Progress: NumberValue)
+	for i, v in pairs(self.Objects) do
+		if v.Animations then
+			for _, b in pairs(v.Animations) do
+				b:Preload()
+			end
+		end
+
+		if typeof(v.Image) == "ImageLabel" then
+			ContentProvider:PreloadAsync(v.Image.Image)
+		end
+
+		Progress.Value = i / (#self.Objects + 1)
+	end
 end
 
 --[[

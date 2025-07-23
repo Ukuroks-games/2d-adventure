@@ -63,8 +63,8 @@ local _game = Game.new(
 		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
 		["WalkLeft"] = gifInfo.new({
 			giflib.Frame.new("131056695027889", 0.2), -- 1
-			giflib.Frame.new("130325387410477", 0.2), -- 2
-			--giflib.Frame.new("134555323130510", 0.2), -- 3
+			--giflib.Frame.new("130325387410477", 0.2), -- 2
+			giflib.Frame.new("134555323130510", 0.2), -- 3
 			giflib.Frame.new("129026456910746", 0.23), -- 4
 		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
 		["WalkRight"] = gifInfo.new({
@@ -100,6 +100,10 @@ local _game = Game.new(
 	}, { X = 10, Y = 9 }, Vector3.new(-1, -1, 4)),
 	map1
 )
+
+_game:Loading().Done:Wait()
+
+_game:Start()
 
 changeMap.Touched:Connect(function()
 	_game:SetMap(map2)
