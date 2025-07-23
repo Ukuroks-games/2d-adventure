@@ -1,11 +1,4 @@
-local AssetService = game:GetService("AssetService")
-
-local gifInfo = require(script.Parent.gifInfo)
-local giflib = require(script.Parent.Parent.giflib)
-
 local physicObject = require(script.Parent.physicObject)
-local Object2d = require(script.Parent.Object2d)
-local ExImage = require(script.Parent.ExImage)
 
 --[[
 	Player class

@@ -19,7 +19,7 @@ authors = ["Egor00f <velikiydolbayeb@gmail.com>"]
 private = false
 
 [dependencies]
-giflib = "egor00f/giflib@>=0.3.2"
+giflib = "egor00f/giflib@>=0.3.3"
 stdlib = "egor00f/stdlib@>=0.1.15"
 switch = "egor00f/switch@>=0.1.0"
 cooldown = "egor00f/cooldownlib@>=0.1.1"

@@ -90,7 +90,7 @@ function animatedObject.SetAnimation(
 
 		self.CurrentAnimation = animationName
 
-		self.Animations[self.CurrentAnimation]:RestartAnimation()
+		self.Animations[self.CurrentAnimation]:RestartAnimation(true)
 	end
 end
 
