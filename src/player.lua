@@ -1,18 +1,16 @@
+local AnimatedObject = require(script.Parent.AnimatedObject)
+local BaseCharacter = require(script.Parent.BaseCharacter)
 local Character = require(script.Parent.Character)
 
-local physicObject = require(script.Parent.physicObject)
 --[[
 	Player class
 ]]
-local player2d = {}
-
+local player2d = setmetatable({}, { __index = Character })
 
 --[[
 	Класс игрока
 ]]
-export type Player2dStruct = {
-	
-} & Character.Character2d
+export type Player2dStruct = {} & Character.Character2d
 
 export type Player2d = Player2dStruct & typeof(player2d)
 
@@ -30,21 +28,18 @@ function player2d.SetPosition(self: Player2dStruct, pos: Vector2)
 	) -- move to center PlayerFrame
 end
 
-
 --[[
 	Player2d constructor
 ]]
 function player2d.new(
-	Animations: Character.ConstructorAnimations,
-	WalkSpeed: Character.CharacterSpeed,
+	Animations: AnimatedObject.ConstructorAnimations,
+	WalkSpeed: BaseCharacter.CharacterSpeed,
 	Size: Vector3
 ): Player2d
 	local self = Character.new(Animations, WalkSpeed, Size)
 
 	setmetatable(self, {
-		__index = function(_self, key)
-			return Character[key] or player2d[key] or physicObject[key]
-		end,
+		__index = player2d,
 	})
 
 	return self
