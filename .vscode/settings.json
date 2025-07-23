@@ -11,7 +11,8 @@
 		"Resampler",
 		"Roblox",
 		"rojo",
-		"setmetatable"
+		"setmetatable",
+		"stdlib"
 	],
 	"cSpell.ignorePaths": [
 		"vscode-extension",

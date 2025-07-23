@@ -1,0 +1,82 @@
+local AssetService = game:GetService("AssetService")
+
+local gifInfo = require(script.Parent.gifInfo)
+local giflib = require(script.Parent.Parent.giflib)
+
+local physicObject = require(script.Parent.physicObject)
+local Object2d = require(script.Parent.Object2d)
+local ExImage = require(script.Parent.ExImage)
+
+--[[
+	Player class
+]]
+local BaseCharacter2d = setmetatable({}, {
+	__index = physicObject,
+})
+
+export type CharacterSpeed = {
+	X: number,
+	Y: number,
+	Calculated: Vector2?,
+}
+
+--[[
+	Базовый класс персонажа
+]]
+export type BaseCharacter2dStruct = {
+
+	--[[
+		Скорость ходьбы
+	]]
+	WalkSpeed: CharacterSpeed,
+
+	Move: RBXScriptSignal,
+
+	MoveEvent: BindableEvent,
+
+	Image: Frame,
+} & physicObject.PhysicObject
+
+export type BaseCharacter2d = BaseCharacter2dStruct & typeof(BaseCharacter2d)
+
+--[[
+	Destroy player
+]]
+function BaseCharacter2d.Destroy(self: BaseCharacter2dStruct)
+	self.MoveEvent:Destroy()
+	physicObject.Destroy(self)
+end
+
+--[[
+	Set ZIndex for player
+]]
+function BaseCharacter2d.SetZIndex(self: BaseCharacter2dStruct, ZIndex: number)
+	physicObject.SetZIndex(self, ZIndex)
+end
+
+--[[
+	BaseCharacter2d constructor
+]]
+function BaseCharacter2d.new(
+	WalkSpeed: CharacterSpeed,
+	Size: Vector3
+): BaseCharacter2d
+	local PlayerFrame = Instance.new("Frame")
+	PlayerFrame.BackgroundTransparency = 1
+
+	local self = physicObject.new(PlayerFrame, true, true, false)
+
+	self.WalkSpeed = WalkSpeed
+	self.MoveEvent = Instance.new("BindableEvent")
+	self.Move = self.MoveEvent.Event
+	self.Anchored = false
+	self.Size = Size
+
+	setmetatable(self, {
+		__index = BaseCharacter2d,
+	})
+
+	return self
+end
+
+return BaseCharacter2d

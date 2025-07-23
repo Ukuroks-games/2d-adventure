@@ -1,7 +1,7 @@
 local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 
-local Object2d = {}
+local Object2d = setmetatable({}, { __index = physicObject })
 
 export type Object2d = {
 
@@ -139,9 +139,7 @@ function Object2d.new(
 	self.Image.BackgroundTransparency = 1
 
 	setmetatable(self, {
-		__index = function(_self: Object2d, key)
-			return Object2d[key] or physicObject[key]
-		end,
+		__index = Object2d,
 	})
 
 	return self
