@@ -1,8 +1,6 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
-local switch = require(ReplicatedStorage.Packages.switch)
 local InputLib = require(script.Parent.Parent.InputLib)
 local cooldown = require(script.Parent.Parent.cooldown)
 local stdlib = require(script.Parent.Parent.stdlib)
@@ -79,7 +77,7 @@ export type GameStruct = {
 	ControlThread: thread
 }
 
-export type Game = GameStruct & typeof(Game)
+export type Game = typeof(setmetatable({} :: GameStruct, {__index = Game}))
 
 --[[
 

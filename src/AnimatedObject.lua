@@ -1,7 +1,5 @@
-
 local gifInfo = require(script.Parent.gifInfo)
 local giflib = require(script.Parent.Parent.giflib)
-
 
 local animatedObject = {}
 
@@ -41,20 +39,22 @@ export type ConstructorAnimations = {
 --[[
 	Animations controller
 ]]
-export type AnimatedObject = {
---[[
-		Анимации
-	]]
-	Animations: Animations,
+export type AnimatedObject = typeof(setmetatable(
+	{} :: {
+		--[[
+			Анимации
+		]]
+		Animations: Animations,
 
+		--[[
+			Текущяя анимация
+		]]
+		CurrentAnimation: string,
 
-	--[[
-		Текущяя анимация
-	]]
-	CurrentAnimation: string,
-
-	Image: Frame
-} & typeof(animatedObject)
+		Image: Frame,
+	},
+	{ __index = animatedObject }
+))
 
 local function CreateAnimationsFromConstructor(
 	Animations: ConstructorAnimations,
@@ -104,18 +104,19 @@ function animatedObject.StopAnimations(self: AnimatedObject)
 	end
 end
 
-function animatedObject.new(Animations: ConstructorAnimations, Parent: Frame): AnimatedObject
-
+function animatedObject.new(
+	Animations: ConstructorAnimations,
+	Parent: Frame
+): AnimatedObject
 	local self = {
 		Animations = CreateAnimationsFromConstructor(Animations, Parent),
 		Image = Parent,
-		CurrentAnimation = "IDLE"
+		CurrentAnimation = "IDLE",
 	}
 
-	setmetatable(self, {__index = animatedObject})
+	setmetatable(self, { __index = animatedObject })
 
 	return self
 end
-
 
 return animatedObject

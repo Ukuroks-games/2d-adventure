@@ -35,16 +35,9 @@ export type BaseCharacter2d = BaseCharacter2dStruct & typeof(BaseCharacter2d)
 --[[
 	Destroy player
 ]]
-function BaseCharacter2d.Destroy(self: BaseCharacter2dStruct)
+function BaseCharacter2d.Destroy(self: BaseCharacter2d)
 	self.MoveEvent:Destroy()
 	physicObject.Destroy(self)
-end
-
---[[
-	Set ZIndex for player
-]]
-function BaseCharacter2d.SetZIndex(self: BaseCharacter2dStruct, ZIndex: number)
-	physicObject.SetZIndex(self, ZIndex)
 end
 
 --[[

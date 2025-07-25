@@ -1,4 +1,3 @@
-local AssetService = game:GetService("AssetService")
 local ContentProvider = game:GetService("ContentProvider")
 local TweenService = game:GetService("TweenService")
 
@@ -36,7 +35,7 @@ export type MapStruct = {
 	Connections: { RBXScriptConnection },
 }
 
-export type Map = MapStruct & typeof(map)
+export type Map = typeof(setmetatable({} :: MapStruct, {__index = map}))
 
 --[[
 	Calc position for move Player to position on the map
@@ -44,7 +43,7 @@ export type Map = MapStruct & typeof(map)
 	Зечем? Игрок находится в центре а координаты от левого верхнего угла изображения
 ]]
 function map.CalcPlayerPositionAbsolute(
-	self: MapStruct,
+	self: Map,
 	player: player2d.Player2d,
 	pos: Vector2
 ): Vector2
@@ -58,7 +57,7 @@ end
 
 ]]
 function map.CalcPlayerPosition(
-	self: MapStruct,
+	self: Map,
 	player: player2d.Player2d,
 	pos: Vector2
 ): Vector2
@@ -73,7 +72,7 @@ end
 
 ]]
 function map.GetSetPlayerPosTween(
-	self: MapStruct,
+	self: Map,
 	player: player2d.Player2d,
 	pos: Vector2
 ): Tween
@@ -88,19 +87,19 @@ function map.GetSetPlayerPosTween(
 	)
 end
 
-function map.AddObject(self: MapStruct, obj: physicObject.PhysicObject)
+function map.AddObject(self: Map, obj: physicObject.PhysicObject)
 	obj:SetParent(self.Image)
 
 	table.insert(self.Objects, obj)
 end
 
-function map.CalcPositions(self: MapStruct)
+function map.CalcPositions(self: Map)
 	for _, v in pairs(self.Objects) do
 		v:CalcSizeAndPos(self.Image)
 	end
 end
 
-function map.CalcCollide(self: MapStruct)
+function map.CalcCollide(self: Map)
 	--[[
 		Список объектов которые имеют колизию
 	]]
@@ -141,7 +140,7 @@ end
 
 ]]
 function map.SetPlayerPosition(
-	self: MapStruct,
+	self: Map,
 	player: player2d.Player2d,
 	pos: Vector2
 )
@@ -207,7 +206,7 @@ end
 --[[
 	Calc ZIndex for all objects on map
 ]]
-function map.CalcZIndexs(self: MapStruct)
+function map.CalcZIndexs(self: Map)
 	table.sort(
 		self.Objects,
 		function(
@@ -223,7 +222,7 @@ function map.CalcZIndexs(self: MapStruct)
 	end
 end
 
-function map.DeletePlayer(self: MapStruct, Player: player2d.Player2d)
+function map.DeletePlayer(self: Map, Player: player2d.Player2d)
 	local p = table.find(self.Objects, Player)
 	if p then
 		self.Objects[p] = nil
@@ -244,7 +243,7 @@ function map.SetPlayer(
 	table.insert(self.Objects, newPlayer) -- add player to objects for enable collision for player
 end
 
-function map.Loading(self: MapStruct, Progress: NumberValue)
+function map.Loading(self: Map, Progress: NumberValue)
 	for i, v in pairs(self.Objects) do
 		if v.Animations then
 			for _, b in pairs(v.Animations) do
@@ -287,16 +286,17 @@ function map.new(
 		PlayerIndex = nil,
 	}
 
+	setmetatable(self, { __index = map })
+
 	if Objects then
 		for _, v in pairs(Objects) do
-			map.AddObject(self, v)
+			self:AddObject(v)
 		end
 	end
 
 	self.Image.Size = UDim2.fromScale(Size.X, Size.Y)
 	self.Image.ScaleType = Enum.ScaleType.Fit
 
-	setmetatable(self, { __index = map })
 
 	return self
 end

@@ -65,7 +65,7 @@ export type PhysicObjectStruct = {
 	Anchored: boolean,
 }
 
-export type PhysicObject = PhysicObjectStruct & typeof(physicObject)
+export type PhysicObject = typeof(setmetatable({} :: PhysicObjectStruct, {__index = physicObject}))
 
 --[[
 
@@ -161,7 +161,7 @@ end
 
 ]]
 function physicObject.CalcPosition(
-	self: PhysicObjectStruct,
+	self: PhysicObject,
 	background: ExImage.ExImage | Frame
 ): Vector2
 	return self.Image.AbsolutePosition
@@ -181,7 +181,7 @@ end
 
 ]]
 function physicObject.SetParent(
-	self: PhysicObjectStruct,
+	self: PhysicObject,
 	parent: GuiObject | ExImage.ExImage
 )
 	if typeof(parent) == "table" then
@@ -194,7 +194,7 @@ end
 --[[
 
 ]]
-function physicObject.SetPosition(self: PhysicObjectStruct, pos: Vector2)
+function physicObject.SetPosition(self: PhysicObject, pos: Vector2)
 	self.physicImage.Position = UDim2.fromOffset(
 		pos.X,
 		pos.Y + self.Image.AbsoluteSize.Y - self.physicImage.AbsoluteSize.Y
@@ -204,7 +204,7 @@ end
 --[[
 
 ]]
-function physicObject.SetSize(self: PhysicObjectStruct, size: Vector3)
+function physicObject.SetSize(self: PhysicObject, size: Vector3)
 	self.Image.Size = UDim2.new(0, size.X, 0, size.Y)
 
 	self.Image.Position = UDim2.new(0, 0, 0, size.Z - size.Y)
@@ -215,7 +215,7 @@ end
 --[[
 	Set ZIndex for physic object
 ]]
-function physicObject.SetZIndex(self: PhysicObjectStruct, ZIndex: number)
+function physicObject.SetZIndex(self: PhysicObject, ZIndex: number)
 	self.physicImage.ZIndex = ZIndex
 	self.Image.ZIndex = ZIndex
 end
