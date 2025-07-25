@@ -244,7 +244,8 @@ function map.SetPlayer(
 end
 
 function map.Loading(self: Map, Progress: NumberValue)
-	for i, v in pairs(self.Objects) do
+	local i = 0
+	for _, v in pairs(self.Objects) do
 		if v.Animations then
 			for _, b in pairs(v.Animations) do
 				b:Preload()
@@ -252,11 +253,16 @@ function map.Loading(self: Map, Progress: NumberValue)
 		end
 
 		if typeof(v.Image) == "ImageLabel" then
-			ContentProvider:PreloadAsync(v.Image.Image)
+			ContentProvider:PreloadAsync({v.Image.Image})
 		end
 
+		i += 1
 		Progress.Value = i / (#self.Objects + 1)
 	end
+
+	ContentProvider:PreloadAsync({ self.Image.Image })
+
+	Progress.Value = 1
 end
 
 --[[

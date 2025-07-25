@@ -248,9 +248,7 @@ function Game.SetPlayer(self: Game, newPlayer: player.Player2d)
 	self.Player = newPlayer
 end
 
-function Game.Loading(
-	self: Game
-): { Done: RBXScriptSignal, Progress: NumberValue }
+function Game.Loading(self: Game)
 	local DoneEvent = Instance.new("BindableEvent")
 	local Progress = Instance.new("NumberValue")
 
@@ -259,7 +257,24 @@ function Game.Loading(
 		DoneEvent:Fire()
 	end)
 
-	return { Done = DoneEvent.Event, Progress = Progress }
+	local a = setmetatable({
+		Wait = function()
+			print(Progress.Value)
+			if Progress.Value < 1 then
+				DoneEvent.Event:Wait()
+			end
+		end,
+	}, { __index = DoneEvent.Event })
+
+	DoneEvent.Destroying:Connect(function(_: any) 
+		table.clear(a)
+	end)
+
+	return {
+		Done = a,
+		Progress = Progress,
+		DoneEvent = DoneEvent
+	}
 end
 
 function Game.Start(self: Game)
