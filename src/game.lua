@@ -74,10 +74,10 @@ export type GameStruct = {
 
 	MoveStopConnection: RBXScriptConnection?,
 
-	ControlThread: thread
+	ControlThread: thread,
 }
 
-export type Game = typeof(setmetatable({} :: GameStruct, {__index = Game}))
+export type Game = typeof(setmetatable({} :: GameStruct, { __index = Game }))
 
 --[[
 
@@ -161,11 +161,9 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 		self.CollideMutex:wait()
 		local touchedSide = self.Player:GetTouchedSide()
 
-		X = -X
-
 		if
-			((X < 0) and (touchedSide.Right == true))
-			or ((X > 0) and (touchedSide.Left == true))
+			((X > 0) and (touchedSide.Right == true))
+			or ((X < 0) and (touchedSide.Left == true))
 		then
 			X = 0
 		end
@@ -250,7 +248,9 @@ function Game.SetPlayer(self: Game, newPlayer: player.Player2d)
 	self.Player = newPlayer
 end
 
-function Game.Loading(self: Game): { Done: RBXScriptSignal, Progress: NumberValue }
+function Game.Loading(
+	self: Game
+): { Done: RBXScriptSignal, Progress: NumberValue }
 	local DoneEvent = Instance.new("BindableEvent")
 	local Progress = Instance.new("NumberValue")
 
@@ -259,7 +259,7 @@ function Game.Loading(self: Game): { Done: RBXScriptSignal, Progress: NumberValu
 		DoneEvent:Fire()
 	end)
 
-	return {Done = DoneEvent.Event, Progress = Progress}
+	return { Done = DoneEvent.Event, Progress = Progress }
 end
 
 function Game.Start(self: Game)
@@ -292,7 +292,7 @@ function Game.Start(self: Game)
 
 		local Move = cooldown.new(
 			self.CooldownTime,
-			function(_self, YPos: number?, XPos: number?)
+			function(_self, XPos: number?, YPos: number?)
 				if Up.State.Value and Right.State.Value then --	Right Up
 					Game.RightUp(_self)
 				elseif Down.State.Value and Right.State.Value then -- Right Down
@@ -310,7 +310,7 @@ function Game.Start(self: Game)
 				elseif Right.State.Value then --	Right
 					Game.Right(_self)
 				elseif YPos and XPos then
-					Game.Move(_self, YPos, XPos)
+					Game.Move(_self, -XPos, YPos)
 				else
 					warn(
 						"No key pressed and positions of X and Y are not indicated"
@@ -452,7 +452,7 @@ function Game.new(
 		MoveTween = nil,
 		CollideMutex = mutex.new(true),
 		Moving = false,
-		ControlThread = nil
+		ControlThread = nil,
 	}
 
 	self.Player:SetParent(self.Frame)
