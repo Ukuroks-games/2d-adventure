@@ -1,3 +1,5 @@
+local TweenService = game:GetService("TweenService")
+local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 
 --[[
@@ -38,6 +40,41 @@ export type BaseCharacter2d = BaseCharacter2dStruct & typeof(BaseCharacter2d)
 function BaseCharacter2d.Destroy(self: BaseCharacter2d)
 	self.MoveEvent:Destroy()
 	physicObject.Destroy(self)
+end
+
+function BaseCharacter2d.GetMoveTween(self: BaseCharacter2d, X: number, Y: number, RelativeObject: GuiObject? | ExImage.ExImage, cooldownTime: number?): Tween?
+	local tween
+
+	if not RelativeObject then
+		RelativeObject = self.Image
+	end
+
+	if self.WalkSpeed.Calculated then
+		local instance = (function()
+			if typeof(RelativeObject) == "table" then
+				return RelativeObject.ImageInstance
+			else
+				return RelativeObject
+			end
+		end)()
+
+		tween = TweenService:Create(instance, TweenInfo.new(cooldownTime), {
+			["Position"] = UDim2.new(
+				UDim.new(
+					instance.Position.X.Scale,
+					instance.Position.X.Offset
+						- (X * self.WalkSpeed.Calculated.X)
+				),
+				UDim.new(
+					instance.Position.Y.Scale,
+					instance.Position.Y.Offset
+						+ (Y * self.WalkSpeed.Calculated.Y)
+				)
+			),
+		})
+	end
+
+	return tween
 end
 
 --[[

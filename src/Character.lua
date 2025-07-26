@@ -1,7 +1,6 @@
 local AssetService = game:GetService("AssetService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local stdlib = require(ReplicatedStorage.Packages.stdlib)
+local stdlib = require(script.Parent.Parent.stdlib)
 local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
 local ExImage = require(script.Parent.ExImage)
@@ -19,7 +18,8 @@ local Character2d = setmetatable({}, {
 export type Character2d =
 	{}
 	& AnimatedObject.AnimatedObject
-	& BaseCharacter.BaseCharacter2d & typeof(Character2d)
+	& BaseCharacter.BaseCharacter2d
+	& typeof(Character2d)
 
 --[[
 
@@ -48,6 +48,61 @@ function Character2d.SetZIndex(self: Character2d, ZIndex: number)
 			frame.Image.ZIndex = ZIndex
 		end
 	end
+end
+
+function Character2d.WalkMove(
+	self: Character2d,
+	X: number,
+	Y: number,
+	RelativeObject: GuiObject? | ExImage.ExImage,
+	cooldownTime: number?
+): Tween
+
+	local touchedSide = self:GetTouchedSide()
+
+	if
+		((X > 0) and (touchedSide.Right == true))
+		or ((X < 0) and (touchedSide.Left == true))
+	then
+		X = 0
+	end
+
+	if
+		((Y > 0) and (touchedSide.Up == true))
+		or ((Y < 0) and (touchedSide.Down == true))
+	then
+		Y = 0
+	end
+
+	local r = math.abs(X / Y)
+
+	local animationName = "Walk"
+
+	local function SetY()
+		if Y > 0 then
+			animationName ..= "Up"
+		else
+			animationName ..= "Down"
+		end
+	end
+
+	if r > 0.75 then -- X bigger
+		if X < 0 then
+			animationName ..= "Left"
+		else
+			animationName ..= "Right"
+		end
+
+		if r <= 1 then
+			SetY()
+		end
+	else -- Y bigger
+		SetY()
+	end
+
+	self:SetAnimation(animationName)
+
+	return self:GetMoveTween(X, Y, RelativeObject, cooldownTime)
 end
 
 function Character2d.new(

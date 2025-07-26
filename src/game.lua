@@ -159,79 +159,24 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 		end
 
 		self.CollideMutex:wait()
-		local touchedSide = self.Player:GetTouchedSide()
 
-		if
-			((X > 0) and (touchedSide.Right == true))
-			or ((X < 0) and (touchedSide.Left == true))
-		then
-			X = 0
+
+		if self.MoveTween then
+			self.MoveTween:Destroy()
+			self.MoveTween = nil -- set to nil for this IF can working
 		end
 
-		if
-			((Y > 0) and (touchedSide.Up == true))
-			or ((Y < 0) and (touchedSide.Down == true))
-		then
-			Y = 0
+		self.MoveTween =
+			self.Player:WalkMove(X, Y, self.Map.Image, self.CooldownTime)
+
+		if self.MoveTween then
+			self.MoveTween:Play()
+			self.Moving = false
 		end
-
-		local r = math.abs(X / Y)
-
-		local animationName = "Walk"
-
-		local function SetY()
-			if Y > 0 then
-				animationName ..= "Up"
-			else
-				animationName ..= "Down"
-			end
-		end
-
-		if r > 0.75 then -- X bigger
-			if X < 0 then
-				animationName ..= "Left"
-			else
-				animationName ..= "Right"
-			end
-
-			if r <= 1 then
-				SetY()
-			end
-		else -- Y bigger
-			SetY()
-		end
-
-		showAnimation(self, animationName)
-
-		if self.Player.WalkSpeed.Calculated then
-			self.MoveTween = TweenService:Create(
-				self.Map.Image.ImageInstance,
-				TweenInfo.new(self.CooldownTime),
-				{
-					["Position"] = UDim2.new(
-						UDim.new(
-							self.Map.Image.Position.X.Scale,
-							self.Map.Image.Position.X.Offset
-								- (X * self.Player.WalkSpeed.Calculated.X)
-						),
-						UDim.new(
-							self.Map.Image.Position.Y.Scale,
-							self.Map.Image.Position.Y.Offset
-								+ (Y * self.Player.WalkSpeed.Calculated.Y)
-						)
-					),
-				}
-			)
-		else
-			warn("self.Player.WalkSpeed hasn't been calculate yet")
-		end
-
-		self.MoveTween:Play()
-		self.Moving = false
 
 		self.MoveStopConnection = self.MoveTween.Completed:Connect(
 			function(a0: Enum.PlaybackState)
-				self.Player.Animations[self.Player.CurrentAnimation]:StopAnimation()
+				self.Player:StopAnimation()
 			end
 		)
 	end

@@ -94,6 +94,20 @@ function animatedObject.SetAnimation(
 	end
 end
 
+function animatedObject.StartAnimation(
+	self: AnimatedObject,
+	animationName: string?
+)
+	self.Animations[animationName or self.CurrentAnimation]:StartAnimation()
+end
+
+function animatedObject.StopAnimation(
+	self: AnimatedObject,
+	animationName: string?
+)
+	self.Animations[animationName or self.CurrentAnimation]:StopAnimation()
+end
+
 --[[
 	Stop all animations
 ]]
