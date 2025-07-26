@@ -1,5 +1,3 @@
---!nocheck
-
 local AssetService = game:GetService("AssetService")
 
 --[[
@@ -9,14 +7,30 @@ local ExImage = {}
 
 export type Image = ImageButton | ImageLabel
 
-export type ExImage = {
+local function Index(self, key)
+	local _, e = pcall(function()
+		return self.ImageInstance[key]
+	end)
+
+	return e
+end
+
+local function NewIndex(self, key, value)
+	if typeof(value) == typeof(self) then	-- if something like ExImage.Parent = ExImage
+		self.ImageInstance[key] = value.ImageInstance
+	else
+		self.ImageInstance[key] = value
+	end
+end
+
+export type ExImage = typeof(setmetatable({} :: {
 	--[[
 		Real image resolution
 	]]
 	RealSize: Vector2,
 
 	ImageInstance: Image,
-} & Image
+}, {__index = Index, __newindex = NewIndex}))
 
 function ExImage.new(id: string, isButton: boolean?): ExImage
 	id = "rbxassetid://" .. id
@@ -36,20 +50,8 @@ function ExImage.new(id: string, isButton: boolean?): ExImage
 	}
 
 	setmetatable(_self, {
-		__index = function(self: typeof(_self), key)
-			local _, e = pcall(function()
-				return self.ImageInstance[key]
-			end)
-
-			return e or rawget(self, key)
-		end,
-		__newindex = function(self: typeof(_self), key, value)
-			if typeof(value) == typeof(_self) then
-				self.ImageInstance[key] = value.ImageInstance
-			else
-				self.ImageInstance[key] = value
-			end
-		end,
+		__index = Index,
+		__newindex = NewIndex,
 	})
 
 	return _self

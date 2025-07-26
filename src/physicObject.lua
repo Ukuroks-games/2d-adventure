@@ -147,7 +147,7 @@ end
 
 ]]
 function physicObject.CalcSize(
-	self: PhysicObjectStruct,
+	self: PhysicObject,
 	background: ExImage.ExImage | Frame
 ): Vector3
 	return Vector3.new(
@@ -224,7 +224,7 @@ end
 	Physic object constructor
 ]]
 function physicObject.new(
-	Image: GuiObject | ExImage.ExImage,
+	Image: Frame | ExImage.ExImage,
 	canCollide: boolean?,
 	checkingTouchedSize: boolean?,
 	anchored: boolean?
@@ -248,7 +248,7 @@ function physicObject.new(
 		Image = Image,
 	}
 
-	Image.Parent = this.physicImage
+	this.Image.Parent = this.physicImage
 	this.physicImage.BackgroundTransparency = 1
 
 	setmetatable(this, { __index = physicObject })
