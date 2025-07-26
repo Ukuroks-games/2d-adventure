@@ -20,8 +20,8 @@ GameFrame.Size = UDim2.fromScale(1, 1)
 local cam = camera2d.new(1)
 
 local changeMap = Object2d.new(
-	Vector2.new(320, 160),
-	Vector3.new(28, 69, 196),
+	Vector2.new(336, 94),
+	Vector3.new(28, 69, 8),
 	ExImage.new("84486373084684")
 )
 
