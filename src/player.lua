@@ -19,7 +19,21 @@ export type Player2d = Player2dStruct & typeof(player2d)
 
 	It ignore any changes. player always on centre
 ]]
-function player2d.SetPosition(self: Player2dStruct, pos: Vector2)
+function player2d.SetPositionX(self: Player2dStruct, pos: number)
+	self.physicImage.Position = UDim2.new(
+		0.5,
+		-self.physicImage.AbsoluteSize.X / 2,
+		0.5,
+		-self.physicImage.AbsoluteSize.Y / 2
+	) -- move to center PlayerFrame
+end
+
+--[[
+	Set player position.
+
+	It ignore any changes. player always on centre
+]]
+function player2d.SetPositionY(self: Player2dStruct, pos: number)
 	self.physicImage.Position = UDim2.new(
 		0.5,
 		-self.physicImage.AbsoluteSize.X / 2,

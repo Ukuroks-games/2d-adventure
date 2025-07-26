@@ -65,7 +65,10 @@ export type PhysicObjectStruct = {
 	Anchored: boolean,
 }
 
-export type PhysicObject = typeof(setmetatable({} :: PhysicObjectStruct, {__index = physicObject}))
+export type PhysicObject = typeof(setmetatable(
+	{} :: PhysicObjectStruct,
+	{ __index = physicObject }
+))
 
 --[[
 
@@ -195,9 +198,29 @@ end
 
 ]]
 function physicObject.SetPosition(self: PhysicObject, pos: Vector2)
+	self:SetPositionX(pos.X)
+	self:SetPositionY(pos.Y)
+end
+
+--[[
+	Set player position.
+
+	It ignore any changes. player always on centre
+]]
+function physicObject.SetPositionX(self: PhysicObject, pos: number)
+	self.physicImage.Position =
+		UDim2.fromOffset(pos, self.physicImage.Position.Y.Offset)
+end
+
+--[[
+	Set player position.
+
+	It ignore any changes. player always on centre
+]]
+function physicObject.SetPositionY(self: PhysicObject, pos: number)
 	self.physicImage.Position = UDim2.fromOffset(
-		pos.X,
-		pos.Y + self.Image.AbsoluteSize.Y - self.physicImage.AbsoluteSize.Y
+		self.physicImage.Position.X.Offset,
+		pos + self.Image.AbsoluteSize.Y - self.physicImage.AbsoluteSize.Y
 	)
 end
 
@@ -334,62 +357,45 @@ function physicObject.new(
 			this.TouchedSideMutex:wait()
 
 			if this.TouchedSide.Up then
-				this.physicImage.Position = UDim2.new(
-					this.physicImage.Position.X,
-					UDim.new(
-						this.physicImage.Position.Y.Scale,
-						this.physicImage.Position.Y.Offset
-							+ (
-								obj.physicImage.AbsolutePosition.Y
-								+ obj.physicImage.AbsoluteSize.Y
-								- this.physicImage.AbsolutePosition.Y
-							)
-					)
+				this:SetPositionY(
+					this.physicImage.Position.Y.Offset
+						+ (
+							obj.physicImage.AbsolutePosition.Y
+							+ obj.physicImage.AbsoluteSize.Y
+							- this.physicImage.AbsolutePosition.Y
+						)
 				)
 			end
 
 			if this.TouchedSide.Down then
-				this.physicImage.Position = UDim2.new(
-					this.physicImage.Position.X,
-					UDim.new(
-						this.physicImage.Position.Y.Scale,
-						this.physicImage.Position.Y.Offset
-							- (
-								this.physicImage.AbsolutePosition.Y
-								+ this.physicImage.AbsoluteSize.Y
-								- obj.physicImage.AbsolutePosition.Y
-							)
-					)
+				this:SetPositionY(
+					-(
+							this.physicImage.AbsolutePosition.Y
+							+ this.physicImage.AbsoluteSize.Y
+							- obj.physicImage.AbsolutePosition.Y
+						)
 				)
 			end
 
 			if this.TouchedSide.Left then
-				this.physicImage.Position = UDim2.new(
-					UDim.new(
-						this.physicImage.Position.X.Scale,
-						this.physicImage.Position.X.Offset
-							+ (
-								obj.physicImage.AbsolutePosition.X
-								+ obj.physicImage.AbsoluteSize.X
-								- this.physicImage.AbsolutePosition.X
-							)
-					),
-					this.physicImage.Position.Y
+				this:SetPositionX(
+					this.physicImage.Position.X.Offset
+						+ (
+							obj.physicImage.AbsolutePosition.X
+							+ obj.physicImage.AbsoluteSize.X
+							- this.physicImage.AbsolutePosition.X
+						)
 				)
 			end
 
 			if this.TouchedSide.Right then
-				this.physicImage.Position = UDim2.new(
-					UDim.new(
-						this.physicImage.Position.X.Scale,
-						this.physicImage.Position.X.Offset
-							- (
-								this.physicImage.AbsolutePosition.X
-								+ this.physicImage.AbsoluteSize.X
-								- obj.physicImage.AbsolutePosition.X
-							)
-					),
-					this.physicImage.Position.Y
+				this:SetPositionY(
+					this.physicImage.Position.X.Offset
+						- (
+							this.physicImage.AbsolutePosition.X
+							+ this.physicImage.AbsoluteSize.X
+							- obj.physicImage.AbsolutePosition.X
+						)
 				)
 			end
 		end

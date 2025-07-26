@@ -188,7 +188,7 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 		end
 
 		if r > 0.75 then -- X bigger
-			if X > 0 then
+			if X < 0 then
 				animationName ..= "Left"
 			else
 				animationName ..= "Right"
@@ -212,7 +212,7 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 						UDim.new(
 							self.Map.Image.Position.X.Scale,
 							self.Map.Image.Position.X.Offset
-								+ (X * self.Player.WalkSpeed.Calculated.X)
+								- (X * self.Player.WalkSpeed.Calculated.X)
 						),
 						UDim.new(
 							self.Map.Image.Position.Y.Scale,
@@ -266,14 +266,14 @@ function Game.Loading(self: Game)
 		end,
 	}, { __index = DoneEvent.Event })
 
-	DoneEvent.Destroying:Connect(function(_: any) 
+	DoneEvent.Destroying:Connect(function(_: any)
 		table.clear(a)
 	end)
 
 	return {
 		Done = a,
 		Progress = Progress,
-		DoneEvent = DoneEvent
+		DoneEvent = DoneEvent,
 	}
 end
 
@@ -294,14 +294,14 @@ function Game.Start(self: Game)
 		})
 
 		local Right = InputLib.WhileKeyPressed(task.wait, {
-			defaultControls.Keyboard.Left,
-			defaultControls.Gamepad.Left,
+			defaultControls.Keyboard.Right,
+			defaultControls.Gamepad.Right,
 			Enum.KeyCode.Right,
 		})
 
 		local Left = InputLib.WhileKeyPressed(task.wait, {
-			defaultControls.Keyboard.Right,
-			defaultControls.Gamepad.Right,
+			defaultControls.Keyboard.Left,
+			defaultControls.Gamepad.Left,
 			Enum.KeyCode.Left,
 		})
 
@@ -325,7 +325,7 @@ function Game.Start(self: Game)
 				elseif Right.State.Value then --	Right
 					Game.Right(_self)
 				elseif YPos and XPos then
-					Game.Move(_self, -XPos, YPos)
+					Game.Move(_self, XPos, YPos)
 				else
 					warn(
 						"No key pressed and positions of X and Y are not indicated"
