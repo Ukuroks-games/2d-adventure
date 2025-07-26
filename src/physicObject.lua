@@ -1,5 +1,6 @@
 local stdlib = require(script.Parent.Parent.stdlib)
 local ExImage = require(script.Parent.ExImage)
+local config = require(script.Parent.config)
 
 local mutex = stdlib.mutex
 
@@ -272,7 +273,13 @@ function physicObject.new(
 	}
 
 	this.Image.Parent = this.physicImage
-	this.physicImage.BackgroundTransparency = 1
+	this.physicImage.BackgroundTransparency = (function()
+		if config.ShowHitboxes then
+			return config.HitboxesTransparent
+		else
+			return 1
+		end
+	end)()
 
 	setmetatable(this, { __index = physicObject })
 

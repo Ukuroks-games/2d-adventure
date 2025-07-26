@@ -6,6 +6,7 @@ local Map = require(script.map)
 local Camera2d = require(script.camera2d)
 local GifInfo = require(script.gifInfo)
 local ExImage = require(script.ExImage)
+local config = require(script.config)
 
 local lib = {
 	Game = Game,
@@ -16,6 +17,7 @@ local lib = {
 	Camera2d = Camera2d,
 	GifInfo = GifInfo,
 	ExImage = ExImage,
+	config = config
 }
 
 export type Game = Game.Game
