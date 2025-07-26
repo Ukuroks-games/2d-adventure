@@ -20,7 +20,7 @@ export type MapStruct = {
 
 	Image: ExImage.ExImage,
 
-	Objects: { physicObject.PhysicObject },
+	Objects: { [number]: physicObject.PhysicObject },
 
 	cam: camera2d.Camera2d,
 
@@ -213,7 +213,7 @@ function map.CalcZIndexs(self: Map)
 			a: physicObject.PhysicObject,
 			b: physicObject.PhysicObject
 		): boolean
-			return a.Image.AbsolutePosition.Y < b.Image.AbsolutePosition.Y
+			return a.physicImage.AbsolutePosition.Y < b.physicImage.AbsolutePosition.Y
 		end
 	)
 
