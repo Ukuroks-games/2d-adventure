@@ -445,7 +445,7 @@ function physicObject.new(
 				end
 
 				if stdlib.algorithm.find_if(s.TouchedSide.Right, function(value): boolean 
-					return value.ID == b.ID4166746
+					return value.ID == b.ID
 				end) then
 					print("Right")
 					X -= (s.physicImage.AbsolutePosition.X + s.physicImage.AbsoluteSize.X - b.physicImage.AbsolutePosition.X) / m
@@ -454,7 +454,12 @@ function physicObject.new(
 				s:SetPositionRaw(Vector2.new(X, Y))
 			end
 
-			calc(this, obj, 1)
+			if not obj.Anchored and physicObject.GetTouchMsg(obj, this) then
+				calc(this, obj, 2)
+				this:SetTouchMsg(obj)
+			else
+				calc(this, obj, 1)
+			end
 		end
 	end)
 
