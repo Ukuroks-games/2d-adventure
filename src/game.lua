@@ -1,4 +1,3 @@
-local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
 local InputLib = require(script.Parent.Parent.InputLib)

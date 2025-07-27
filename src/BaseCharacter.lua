@@ -92,7 +92,6 @@ function BaseCharacter2d.new(
 	self.WalkSpeed = WalkSpeed
 	self.MoveEvent = Instance.new("BindableEvent")
 	self.Move = self.MoveEvent.Event
-	self.Anchored = false
 	self.Size = Size
 
 	setmetatable(self, {

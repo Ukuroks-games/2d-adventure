@@ -5,6 +5,7 @@ local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
 local ExImage = require(script.Parent.ExImage)
 local Object2d = require(script.Parent.Object2d)
+local physicObject = require(script.Parent.physicObject)
 
 local Character2d = setmetatable({}, {
 	__index = function(self: Character2d, key: string)
@@ -57,19 +58,35 @@ function Character2d.WalkMove(
 	RelativeObject: GuiObject? | ExImage.ExImage,
 	cooldownTime: number?
 ): Tween
-
 	local touchedSide = self:GetTouchedSide()
 
+	local function CheckCanMoveToSide(
+		side: physicObject.TouchSide
+	): boolean
+		if #side > 0 then
+			return stdlib.algorithm.any_of(
+				side,
+				function(
+					value
+				): boolean -- Все один из коснувшихся являются anchored
+					return value.Anchored
+				end
+			)
+		else
+			return false
+		end
+	end
+
 	if
-		((X > 0) and (touchedSide.Right == true))
-		or ((X < 0) and (touchedSide.Left == true))
+		((X > 0) and CheckCanMoveToSide(touchedSide.Right))
+		or ((X < 0) and CheckCanMoveToSide(touchedSide.Left))
 	then
 		X = 0
 	end
 
 	if
-		((Y > 0) and (touchedSide.Up == true))
-		or ((Y < 0) and (touchedSide.Down == true))
+		((Y > 0) and CheckCanMoveToSide(touchedSide.Up))
+		or ((Y < 0) and CheckCanMoveToSide(touchedSide.Down))
 	then
 		Y = 0
 	end

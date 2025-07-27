@@ -12,6 +12,8 @@ local ExImage = adventure2d.ExImage
 local player = adventure2d.Player2d
 local gifInfo = adventure2d.GifInfo
 
+adventure2d.config.ShowHitboxes = true
+
 local GameFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
 	:WaitForChild("ScreenGui").Frame
@@ -34,6 +36,15 @@ local map1 = map.new(Vector2.new(1, 1), cam, "114575775575709", {
 	changeMap,
 	Object2d.new(
 		Vector2.new(572, 133),
+		Vector3.new(20, 33, 8),
+		ExImage.new("76560541017161"),
+		false,
+		true,
+		true,
+		false
+	),
+	Object2d.new(
+		Vector2.new(585, 133),
 		Vector3.new(20, 33, 8),
 		ExImage.new("76560541017161"),
 		false,

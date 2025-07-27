@@ -107,13 +107,11 @@ function map.CalcCollide(self: Map)
 		return value.CanCollide
 	end)
 
-	for _, v in pairs(Objects) do
-		v.TouchedSideMutex:lock()
+	for _, v in pairs(Objects ) do
+		v:StartPhysicCalc()
+	end
 
-		v.TouchedSide.Up = false -- reset TouchedSide
-		v.TouchedSide.Down = false
-		v.TouchedSide.Left = false
-		v.TouchedSide.Right = false
+	for _, v in pairs(Objects) do
 
 		local i = algorithm.find_if(Objects, function(value): boolean
 			return physicObject.CheckCollision(v, value)
