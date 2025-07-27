@@ -25,13 +25,22 @@ local changeMap = Object2d.new(
 	ExImage.new("84486373084684")
 )
 
-local map1 = map.new(Vector2.new(1, 1), cam, "76803732961234", {
+local map1 = map.new(Vector2.new(1, 1), cam, "114575775575709", {
 	Object2d.new( -- door
 		Vector2.new(157, 196),
 		Vector3.new(28, 69, 8),
 		ExImage.new("84486373084684")
 	),
 	changeMap,
+	Object2d.new(
+		Vector2.new(572, 133),
+		Vector3.new(20, 33, 8),
+		ExImage.new("76560541017161"),
+		false,
+		true,
+		true,
+		false
+	),
 }, Vector2.new(80, 300), Vector3.new(22, 48, 8))
 
 local map2 = map.new(Vector2.new(1, 1), cam, "131246783435400")

@@ -3,6 +3,9 @@ local physicObject = require(script.Parent.physicObject)
 
 local Object2d = setmetatable({}, { __index = physicObject })
 
+--[[
+	Just static object without animations
+]]
 export type Object2d = {
 
 	--[[
@@ -127,14 +130,15 @@ function Object2d.new(
 	AnchorPosition: Vector2,
 	Size: Vector3,
 	Image: ExImage.ExImage,
-	isButton: boolean?
+	isButton: boolean?,
+	canCollide: boolean?,
+	CheckTouchedSide: boolean?,
+	anchored: boolean?
 ): Object2d
-	local self = physicObject.new(Image)
+	local self = physicObject.new(Image, canCollide, CheckTouchedSide, anchored)
 
 	self.AnchorPosition = AnchorPosition
 	self.Size = Size
-
-	self.Image = Image
 
 	self.Image.BackgroundTransparency = 1
 

@@ -273,6 +273,7 @@ function physicObject.new(
 	}
 
 	this.Image.Parent = this.physicImage
+
 	this.physicImage.BackgroundTransparency = (function()
 		if config.ShowHitboxes then
 			return config.HitboxesTransparent

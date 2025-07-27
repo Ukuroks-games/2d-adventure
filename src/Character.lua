@@ -81,7 +81,7 @@ function Character2d.WalkMove(
 	local function SetY()
 		if Y > 0 then
 			animationName ..= "Up"
-		else
+		elseif Y < 0 then
 			animationName ..= "Down"
 		end
 	end
@@ -89,7 +89,7 @@ function Character2d.WalkMove(
 	if r > 0.75 then -- X bigger
 		if X < 0 then
 			animationName ..= "Left"
-		else
+		elseif X > 0 then
 			animationName ..= "Right"
 		end
 
@@ -98,6 +98,10 @@ function Character2d.WalkMove(
 		end
 	else -- Y bigger
 		SetY()
+	end
+
+	if animationName == "Walk" then
+		animationName = "IDLE"
 	end
 
 	self:SetAnimation(animationName)
