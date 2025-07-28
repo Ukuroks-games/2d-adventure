@@ -11,6 +11,9 @@ BUILD_DIR = build
 RBXM_BUILD = $(LIBNAME)lib.rbxm
 
 SOURCES =	src/init.lua			\
+			src/BaseCharacter.lua	\
+			src/AnimatedObject.lua	\
+			src/Character.lua		\
 			src/player.lua			\
 			src/Object2d.lua		\
 			src/map.lua				\
@@ -21,12 +24,15 @@ SOURCES =	src/init.lua			\
 			src/ControlClass.lua	\
 			src/ControlType.lua		\
 			src/defaultControls.lua	\
+			src/config.luau
 
 $(BUILD_DIR): 
 	mkdir $@
 
-./Packages: wally.toml
+wally.lock: wally.toml
 	wally install
+
+./Packages: wally.lock
 	
 
 
@@ -46,13 +52,20 @@ lint:
 $(RBXM_BUILD): library.project.json	$(SOURCES)
 	rojo build library.project.json --output $@
 
-tests.rbxl: ./Packages tests.project.json $(SOURCES) tests/test.client.lua
-	rojo build tests.project.json --output $@
 
-tests: clean-tests tests.rbxl
+demo.rbxl: ./Packages demo.project.json $(SOURCES) tests/demo/test.client.luau
+	rojo build demo.project.json --output $@
 
-sourcemap.json: ./Packages tests.project.json
-	rojo sourcemap tests.project.json --output $@
+TestMovableObjects.rbxl: ./Packages TestMovableObjects.project.json $(SOURCES) tests/TestMovableObjects/test.client.luau
+	rojo build TestMovableObjects.project.json --output $@
+
+ALL_TESTS =	demo.rbxl	\
+			TestMovableObjects.rbxl
+
+tests: clean-tests $(ALL_TESTS)
+
+sourcemap.json: ./Packages defaultTests.project.json
+	rojo sourcemap defaultTests.project.json --output $@
 
 # Re gen sourcemap
 sourcemap: clean-sourcemap sourcemap.json
@@ -65,7 +78,7 @@ clean-rbxm:
 	$(RM) $(RBXM_BUILD)
 
 clean-tests:
-	$(RM) tests.rbxl
+	$(RM) $(ALL_TESTS)
 
 clean-build:
 	$(RM) $(BUILD_DIR)

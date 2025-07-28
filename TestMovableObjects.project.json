@@ -1,5 +1,5 @@
 {
-	"name": "Tests",
+	"name": "TestMovableObjects",
 	"tree": {
 		"$className": "DataModel",
 		"ReplicatedStorage": {
@@ -30,7 +30,7 @@
 			"$className": "StarterPlayer",
 			"StarterPlayerScripts": {
 				"$className": "StarterPlayerScripts",
-				"$path": "tests"
+				"$path": "tests/TestMovableObjects"
 			}
 		}
 	}
