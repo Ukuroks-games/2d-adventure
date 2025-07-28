@@ -102,7 +102,7 @@ function Game.Destroy(self: GameStruct)
 	self.DestroyingEvent:Destroy()
 end
 
-local function showAnimation(self: GameStruct, animationName: string)
+local function showAnimation(self: Game, animationName: string)
 	if self.MoveTween then
 		self.MoveTween:Destroy()
 		self.MoveTween = nil -- set to nil for this IF can working
@@ -113,7 +113,7 @@ local function showAnimation(self: GameStruct, animationName: string)
 	self.Player:SetAnimation(animationName)
 end
 
-function Game.IDLE(self: GameStruct)
+function Game.IDLE(self: Game)
 	showAnimation(self, "IDLE")
 end
 
@@ -157,13 +157,12 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 			self.MoveStopConnection:Disconnect()
 		end
 
-		self.CollideMutex:wait()
-
-
 		if self.MoveTween then
 			self.MoveTween:Destroy()
 			self.MoveTween = nil -- set to nil for this IF can working
 		end
+
+		self.CollideMutex:wait()
 
 		self.MoveTween =
 			self.Player:WalkMove(X, Y, self.Map.Image, self.CooldownTime)
@@ -181,17 +180,26 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 	end
 end
 
+--[[
+	Set current map
+]]
 function Game.SetMap(self: Game, newMap: map.Map)
 	self.Map:Done(self.Player)
 	self.Map = newMap
 	newMap:Init(self.Player, self.Frame)
 end
 
+--[[
+	Set player
+]]
 function Game.SetPlayer(self: Game, newPlayer: player.Player2d)
 	self.Map:SetPlayer(newPlayer, self.Player)
 	self.Player = newPlayer
 end
 
+--[[
+	Loading game
+]]
 function Game.Loading(self: Game)
 	local DoneEvent = Instance.new("BindableEvent")
 	local Progress = Instance.new("NumberValue")
@@ -221,6 +229,9 @@ function Game.Loading(self: Game)
 	}
 end
 
+--[[
+	Start game
+]]
 function Game.Start(self: Game)
 	self.ControlThread = task.spawn(function()
 		-- Keyboard controls
@@ -327,8 +338,7 @@ function Game.Start(self: Game)
 		}, self.Player.MoveEvent)
 
 		local IdleRun = cooldown.new(4, function(...)
-			--Game.IDLE
-			print("Start IDLE")
+			self:IDLE()
 		end)
 
 		stdlib.events.AnyEvent({
@@ -367,7 +377,8 @@ function Game.Start(self: Game)
 			end)
 		end)
 
-		self.CollideStepedEvent.Event:Connect(function()
+		self.CollideSteped:Connect(function()
+			self.CollideMutex:lock()
 			self.Map:CalcCollide()
 			self.CollideMutex:unlock()
 		end)
@@ -418,9 +429,9 @@ function Game.new(
 
 	self.Map:Init(self.Player, self.Frame)
 
-	showAnimation(self, "IDLE")
-
 	setmetatable(self, { __index = Game })
+
+	showAnimation(self, "IDLE")
 
 	return self
 end

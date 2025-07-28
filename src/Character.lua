@@ -123,7 +123,7 @@ function Character2d.WalkMove(
 
 	self:SetAnimation(animationName)
 
-	return self:GetMoveTween(X, Y, RelativeObject, cooldownTime)
+	return BaseCharacter.WalkMove(self, X, Y, RelativeObject, cooldownTime)
 end
 
 function Character2d.new(

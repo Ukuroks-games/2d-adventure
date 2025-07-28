@@ -12,7 +12,7 @@ local ExImage = adventure2d.ExImage
 local player = adventure2d.Player2d
 local gifInfo = adventure2d.GifInfo
 
-adventure2d.config.ShowHitboxes = true
+--adventure2d.config.ShowHitboxes = true
 
 local GameFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")

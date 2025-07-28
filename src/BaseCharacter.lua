@@ -77,6 +77,22 @@ function BaseCharacter2d.GetMoveTween(self: BaseCharacter2d, X: number, Y: numbe
 	return tween
 end
 
+function BaseCharacter2d.WalkMove(
+	self: BaseCharacter2d,
+	X: number,
+	Y: number,
+	RelativeObject: GuiObject? | ExImage.ExImage,
+	cooldownTime: number?
+): Tween?
+	local t = self:GetMoveTween(X, Y, RelativeObject, cooldownTime)
+
+	if t then
+		self.MoveEvent:Fire()
+	end
+
+	return t
+end
+
 --[[
 	BaseCharacter2d constructor
 ]]

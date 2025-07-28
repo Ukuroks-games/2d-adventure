@@ -3,7 +3,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local giflib = require(ReplicatedStorage.Packages.giflib)
 local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
-local ExImage = require(ReplicatedStorage.Packages["2d-adventure"].ExImage)
+
+adventure2d.config.ShowHitboxes = true
 
 local GameFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
@@ -79,7 +80,7 @@ local _game = adventure2d.Game.new(
 			adventure2d.Object2d.new(
 				Vector2.new(200, 200),
 				Vector3.new(20, 33, 8),
-				ExImage.new("76560541017161"),
+				adventure2d.ExImage.new("76560541017161"),
 				false,
 				true,
 				true,
@@ -88,7 +89,7 @@ local _game = adventure2d.Game.new(
 			adventure2d.Object2d.new(
 				Vector2.new(200, 220),
 				Vector3.new(20, 33, 8),
-				ExImage.new("76560541017161"),
+				adventure2d.ExImage.new("76560541017161"),
 				false,
 				true,
 				true,
@@ -97,7 +98,7 @@ local _game = adventure2d.Game.new(
 			adventure2d.Object2d.new(
 				Vector2.new(200, 240),
 				Vector3.new(20, 33, 8),
-				ExImage.new("76560541017161"),
+				adventure2d.ExImage.new("76560541017161"),
 				false,
 				true,
 				true,
@@ -107,7 +108,7 @@ local _game = adventure2d.Game.new(
 			adventure2d.Object2d.new(
 				Vector2.new(200, 260),
 				Vector3.new(20, 33, 8),
-				ExImage.new("76560541017161"),
+				adventure2d.ExImage.new("76560541017161"),
 				false,
 				true,
 				true,
@@ -116,7 +117,7 @@ local _game = adventure2d.Game.new(
 			adventure2d.Object2d.new(
 				Vector2.new(200, 280),
 				Vector3.new(20, 33, 8),
-				ExImage.new("76560541017161"),
+				adventure2d.ExImage.new("76560541017161"),
 				false,
 				true,
 				true,
@@ -125,7 +126,62 @@ local _game = adventure2d.Game.new(
 			adventure2d.Object2d.new(
 				Vector2.new(200, 300),
 				Vector3.new(20, 33, 8),
-				ExImage.new("76560541017161"),
+				adventure2d.ExImage.new("76560541017161"),
+				false,
+				true,
+				true,
+				false
+			),
+			adventure2d.Object2d.new(
+				Vector2.new(220, 200),
+				Vector3.new(20, 33, 8),
+				adventure2d.ExImage.new("76560541017161"),
+				false,
+				true,
+				true,
+				false
+			),
+			adventure2d.Object2d.new(
+				Vector2.new(220, 220),
+				Vector3.new(20, 33, 8),
+				adventure2d.ExImage.new("76560541017161"),
+				false,
+				true,
+				true,
+				false
+			),
+			adventure2d.Object2d.new(
+				Vector2.new(220, 240),
+				Vector3.new(20, 33, 8),
+				adventure2d.ExImage.new("76560541017161"),
+				false,
+				true,
+				true,
+				false
+			),
+
+			adventure2d.Object2d.new(
+				Vector2.new(220, 260),
+				Vector3.new(20, 33, 8),
+				adventure2d.ExImage.new("76560541017161"),
+				false,
+				true,
+				true,
+				false
+			),
+			adventure2d.Object2d.new(
+				Vector2.new(220, 280),
+				Vector3.new(20, 33, 8),
+				adventure2d.ExImage.new("76560541017161"),
+				false,
+				true,
+				true,
+				false
+			),
+			adventure2d.Object2d.new(
+				Vector2.new(220, 300),
+				Vector3.new(20, 33, 8),
+				adventure2d.ExImage.new("76560541017161"),
 				false,
 				true,
 				true,

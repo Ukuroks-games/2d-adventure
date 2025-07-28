@@ -421,33 +421,27 @@ function physicObject.new(
 			local function calc(s: PhysicObject, b: PhysicObject, m: number)
 				local X, Y = s.physicImage.Position.X.Offset, s.physicImage.Position.Y.Offset
 
-				print(s, b, X, Y, m)
-
 				if stdlib.algorithm.find_if(s.TouchedSide.Up, function(value): boolean 
 					return value.ID == b.ID
 				end) then
-					print("Up")
 					Y += (b.physicImage.AbsolutePosition.Y + b.physicImage.AbsoluteSize.Y - s.physicImage.AbsolutePosition.Y) / m
 				end
 
 				if stdlib.algorithm.find_if(s.TouchedSide.Down, function(value): boolean 
 					return value.ID == b.ID
 				end) then
-					print("Down")
 					Y -= (s.physicImage.AbsolutePosition.Y + s.physicImage.AbsoluteSize.Y - b.physicImage.AbsolutePosition.Y) / m
 				end
 
 				if stdlib.algorithm.find_if(s.TouchedSide.Left, function(value): boolean 
 					return value.ID == b.ID
 				end) then
-					print("Left")
 					X += (b.physicImage.AbsolutePosition.X + b.physicImage.AbsoluteSize.X - s.physicImage.AbsolutePosition.X) / m
 				end
 
 				if stdlib.algorithm.find_if(s.TouchedSide.Right, function(value): boolean 
 					return value.ID == b.ID
 				end) then
-					print("Right")
 					X -= (s.physicImage.AbsolutePosition.X + s.physicImage.AbsoluteSize.X - b.physicImage.AbsolutePosition.X) / m
 				end
 
