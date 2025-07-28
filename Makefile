@@ -26,37 +26,51 @@ SOURCES =	src/init.lua			\
 			src/defaultControls.lua	\
 			src/config.luau
 
-$(BUILD_DIR): 
+$(BUILD_DIR):
 	mkdir $@
 
-wally.lock: wally.toml
+wallyInstall:	wally.toml
 	wally install
 
-./Packages: wally.lock
+wally.lock:	wallyInstall
+
+./Packages:	wallyInstall
 	
 
+BUILD_SOURCES = $(addprefix $(BUILD_DIR)/, $(notdir $(SOURCES)))
 
-configure: clean-build $(BUILD_DIR) wally.toml $(SOURCES)
-	$(CP) src/* $(BUILD_DIR)
+$(BUILD_DIR)/wally.toml:	$(BUILD_DIR)	wally.toml
 	$(CP) wally.toml build/
 
-package: configure $(SOURCES)
+MV_SOURCES:	$(BUILD_DIR)	$(SOURCES)
+	$(CP) $(SOURCES) $(BUILD_DIR)
+
+$(BUILD_SOURCES):	MV_SOURCES
+
+
+$(PACKAGE_NAME):	MV_SOURCES $(BUILD_DIR)/wally.toml
 	wally package --output $(PACKAGE_NAME) --project-path $(BUILD_DIR)
 
-publish: configure $(SOURCES)
+
+package:	clean-package	clean-build	$(PACKAGE_NAME)
+	
+
+publish:	clean-build	MV_SOURCES	$(BUILD_DIR)/wally.toml	
 	wally publish --project-path $(BUILD_DIR)
+
 
 lint:
 	selene src/ tests/
 
-$(RBXM_BUILD): library.project.json	$(SOURCES)
+
+$(RBXM_BUILD): ./Packages	library.project.json	$(SOURCES)
 	rojo build library.project.json --output $@
 
 
-demo.rbxl: ./Packages demo.project.json $(SOURCES) tests/demo/test.client.luau
+demo.rbxl:	./Packages	demo.project.json	$(SOURCES)	tests/demo/test.client.luau
 	rojo build demo.project.json --output $@
 
-TestMovableObjects.rbxl: ./Packages TestMovableObjects.project.json $(SOURCES) tests/TestMovableObjects/test.client.luau
+TestMovableObjects.rbxl:	./Packages	TestMovableObjects.project.json	$(SOURCES)	tests/TestMovableObjects/test.client.luau
 	rojo build TestMovableObjects.project.json --output $@
 
 ALL_TESTS =	demo.rbxl	\
@@ -64,11 +78,12 @@ ALL_TESTS =	demo.rbxl	\
 
 tests: clean-tests $(ALL_TESTS)
 
-sourcemap.json: ./Packages defaultTests.project.json
+
+sourcemap.json:	./Packages	defaultTests.project.json
 	rojo sourcemap defaultTests.project.json --output $@
 
 # Re gen sourcemap
-sourcemap: clean-sourcemap sourcemap.json
+sourcemap:	clean-sourcemap	sourcemap.json
 
 
 clean-sourcemap: 
@@ -81,7 +96,9 @@ clean-tests:
 	$(RM) $(ALL_TESTS)
 
 clean-build:
-	$(RM) $(BUILD_DIR)
+	$(RM) $(BUILD_DIR)/*
 
-clean: clean-tests clean-build clean-rbxm
+clean-package:
 	$(RM) $(PACKAGE_NAME) 
+
+clean:	clean-tests	clean-build	clean-rbxm	clean-package
