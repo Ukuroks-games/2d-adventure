@@ -24,6 +24,7 @@ SOURCES =	src/init.lua			\
 			src/ControlClass.lua	\
 			src/ControlType.lua		\
 			src/defaultControls.lua	\
+			src/game.lua			\
 			src/config.luau
 
 $(BUILD_DIR):
@@ -43,7 +44,7 @@ $(BUILD_DIR)/wally.toml:	$(BUILD_DIR)	wally.toml
 	$(CP) wally.toml build/
 
 MV_SOURCES:	$(BUILD_DIR)	$(SOURCES)
-	$(CP) $(SOURCES) $(BUILD_DIR)
+	$(CP) src/* $(BUILD_DIR)
 
 $(BUILD_SOURCES):	MV_SOURCES
 
@@ -79,11 +80,11 @@ ALL_TESTS =	demo.rbxl	\
 tests: clean-tests $(ALL_TESTS)
 
 
-sourcemap.json:	./Packages	defaultTests.project.json
+sourcemap.json:	./Packages	defaultTests.project.json $(SOURCES)
 	rojo sourcemap defaultTests.project.json --output $@
 
 # Re gen sourcemap
-sourcemap:	clean-sourcemap	sourcemap.json
+sourcemap:	sourcemap.json
 
 
 clean-sourcemap: 
