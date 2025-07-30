@@ -32,6 +32,8 @@ $(BUILD_DIR):
 
 wallyInstall:	wally.toml
 	wally install
+	rojo sourcemap defaultTests.project.json --output sourcemap.json
+	wally-package-types --sourcemap sourcemap.json Packages/
 
 wally.lock:	wallyInstall
 
