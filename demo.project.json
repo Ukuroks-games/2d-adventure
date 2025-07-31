@@ -9,6 +9,9 @@
 				"2d-adventure": {
 					"$path": "src"
 				}
+			},
+			"DevPackages": {
+				"$path": "DevPackages"
 			}
 		},
 		"Workspace": {
@@ -22,6 +25,9 @@
 			"ScreenGui": {
 				"$className": "ScreenGui",
 				"Frame": {
+					"$className": "Frame"
+				},
+				"Dialog": {
 					"$className": "Frame"
 				}
 			}

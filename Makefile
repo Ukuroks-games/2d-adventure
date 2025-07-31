@@ -10,6 +10,8 @@ BUILD_DIR = build
 
 RBXM_BUILD = $(LIBNAME)lib.rbxm
 
+GENERATE_SOURCEMAP = defaultTests
+
 SOURCES =	src/init.lua			\
 			src/BaseCharacter.lua	\
 			src/AnimatedObject.lua	\
@@ -33,12 +35,15 @@ $(BUILD_DIR):
 wallyInstall:	wally.toml
 	wally install
 	rojo sourcemap defaultTests.project.json --output sourcemap.json
-	wally-package-types --sourcemap sourcemap.json Packages/
 
 wally.lock:	wallyInstall
 
 ./Packages:	wallyInstall
-	
+	wally-package-types --sourcemap sourcemap.json $@
+
+./DevPackages:	wallyInstall
+	wally-package-types --sourcemap sourcemap.json $@
+
 
 BUILD_SOURCES = $(addprefix $(BUILD_DIR)/, $(notdir $(SOURCES)))
 
@@ -51,14 +56,14 @@ MV_SOURCES:	$(BUILD_DIR)	$(SOURCES)
 $(BUILD_SOURCES):	MV_SOURCES
 
 
-$(PACKAGE_NAME):	MV_SOURCES $(BUILD_DIR)/wally.toml
+$(PACKAGE_NAME):	$(BUILD_SOURCES)	$(BUILD_DIR)/wally.toml
 	wally package --output $(PACKAGE_NAME) --project-path $(BUILD_DIR)
 
 
 package:	clean-package	clean-build	$(PACKAGE_NAME)
 	
 
-publish:	clean-build	MV_SOURCES	$(BUILD_DIR)/wally.toml	
+publish:	clean-build	$(BUILD_SOURCES)	$(BUILD_DIR)/wally.toml	
 	wally publish --project-path $(BUILD_DIR)
 
 
@@ -70,7 +75,7 @@ $(RBXM_BUILD): ./Packages	library.project.json	$(SOURCES)
 	rojo build library.project.json --output $@
 
 
-demo.rbxl:	./Packages	demo.project.json	$(SOURCES)	tests/demo/test.client.luau
+demo.rbxl:	./Packages	./DevPackages	demo.project.json	$(SOURCES)	tests/demo/test.client.luau
 	rojo build demo.project.json --output $@
 
 TestMovableObjects.rbxl:	./Packages	TestMovableObjects.project.json	$(SOURCES)	tests/TestMovableObjects/test.client.luau
@@ -82,8 +87,8 @@ ALL_TESTS =	demo.rbxl	\
 tests: clean-tests $(ALL_TESTS)
 
 
-sourcemap.json:	./Packages	defaultTests.project.json $(SOURCES)
-	rojo sourcemap defaultTests.project.json --output $@
+sourcemap.json:	./Packages	./DevPackages	$(GENERATE_SOURCEMAP).project.json $(SOURCES)
+	rojo sourcemap $(GENERATE_SOURCEMAP).project.json --output $@
 
 # Re gen sourcemap
 sourcemap:	sourcemap.json

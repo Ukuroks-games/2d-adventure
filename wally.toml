@@ -28,3 +28,4 @@ InputLib = "egor00f/inputlib@>=0.2.1"
 
 
 [dev-dependencies]
+dialoglib = "egor00f/dialoglib@>=0.2.0"

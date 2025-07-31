@@ -1,6 +1,8 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 
+local dialoglib = require(ReplicatedStorage.DevPackages.dialoglib)
 local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
 local giflib = require(ReplicatedStorage.Packages.giflib)
 
@@ -19,6 +21,10 @@ local GameFrame = Players.LocalPlayer
 	:WaitForChild("ScreenGui").Frame
 GameFrame.Size = UDim2.fromScale(1, 1)
 
+local DialogFrame = Players.LocalPlayer
+	:WaitForChild("PlayerGui")
+	:WaitForChild("ScreenGui").Dialog
+
 local cam = camera2d.new(1)
 
 local changeMap = Object2d.new(
@@ -27,10 +33,16 @@ local changeMap = Object2d.new(
 	ExImage.new("84486373084684")
 )
 
+local shee = Object2d.new(
+	Vector2.new(300, 120),
+	Vector3.new(28, 70, 8),
+	ExImage.new("75550147574274")
+)
+
 local map1 = map.new(Vector2.new(1, 1), cam, "114575775575709", {
 	Object2d.new( -- door
 		Vector2.new(157, 196),
-		Vector3.new(28, 69, 8),
+		Vector3.new(24, 50, 8),
 		ExImage.new("84486373084684")
 	),
 	changeMap,
@@ -43,6 +55,7 @@ local map1 = map.new(Vector2.new(1, 1), cam, "114575775575709", {
 		true,
 		true
 	),
+	shee,
 }, Vector2.new(80, 300), Vector3.new(22, 48, 8))
 
 local map2 = map.new(Vector2.new(1, 1), cam, "131246783435400")
@@ -115,6 +128,29 @@ _game:Loading().Done:Wait()
 
 _game:Start()
 
-changeMap.Touched:Connect(function()
+changeMap.Touched:Connect(function(_)
 	_game:SetMap(map2)
+end)
+
+local d = dialoglib.dialog.new(
+	DialogFrame,
+	{
+		dialoglib.phrase.new("test", dialoglib.character.new("null")),
+		dialoglib.phrase.new("test", dialoglib.character.new("null")),
+	}
+)
+
+local lock = false
+
+shee.Touched:Connect(function(_)
+	if not lock then
+		lock = true
+		print("pause")
+		_game:Pause()
+		d:Next()
+		UserInputService.InputChanged:Wait()
+		print("resume")
+		_game:Resume()
+		lock = false
+	end
 end)
