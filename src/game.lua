@@ -49,11 +49,13 @@ export type GameStruct = {
 		List of objects that will be destroyed on Destroy call
 	]]
 	DestroyableObjects: {
-		Up: {},
-		Down: {},
-		Right: {},
-		Left: {},
-		Gamepad: {}
+		Up: InputLib.WhileKeyPressedController?,
+		Down: InputLib.WhileKeyPressedController?,
+		Right: InputLib.WhileKeyPressedController?,
+		Left: InputLib.WhileKeyPressedController?,
+		Gamepad: InputLib.WhileKeyPressedController?,
+
+		[any]: any,
 	},
 
 	--[[
@@ -140,19 +142,19 @@ function Game.Right(self: GameStruct)
 end
 
 function Game.LeftUp(self: GameStruct)
-	Game.Move(self, -math.sqrt(2)/2, math.sqrt(2)/2)	-- sin(45°) = cos(45°) = √2/2
+	Game.Move(self, -math.sqrt(2) / 2, math.sqrt(2) / 2) -- sin(45°) = cos(45°) = √2/2
 end
 
 function Game.LeftDown(self: GameStruct)
-	Game.Move(self, -math.sqrt(2)/2, -math.sqrt(2)/2)
+	Game.Move(self, -math.sqrt(2) / 2, -math.sqrt(2) / 2)
 end
 
 function Game.RightUp(self: GameStruct)
-	Game.Move(self, math.sqrt(2)/2, math.sqrt(2)/2)
+	Game.Move(self, math.sqrt(2) / 2, math.sqrt(2) / 2)
 end
 
 function Game.RightDown(self: GameStruct)
-	Game.Move(self, math.sqrt(2)/2, -math.sqrt(2)/2)
+	Game.Move(self, math.sqrt(2) / 2, -math.sqrt(2) / 2)
 end
 
 function Game.Move(self: GameStruct, X: number, Y: number)
@@ -274,11 +276,14 @@ function Game.Start(self: Game)
 
 		local GamepadThumbStick1 = Instance.new("Vector3Value")
 
-		local Gamepad = InputLib.WhileKeyPressed(function(InputObject: InputObject, a1: boolean)
-			GamepadThumbStick1.Value = InputObject.Position
-		end, {
-			Enum.KeyCode.Thumbstick1,
-		})
+		local Gamepad = InputLib.WhileKeyPressed(
+			function(InputObject: InputObject, a1: boolean)
+				GamepadThumbStick1.Value = InputObject.Position
+			end,
+			{
+				Enum.KeyCode.Thumbstick1,
+			}
+		)
 
 		local Move = cooldown.new(
 			self.CooldownTime,
@@ -315,7 +320,6 @@ function Game.Start(self: Game)
 		self.DestroyableObjects.Right = Right
 		self.DestroyableObjects.Gamepad = Gamepad
 
-
 		local KeyboardMoveEvent = stdlib.events.AnyEvent({
 			Up.Called,
 			Down.Called,
@@ -327,14 +331,14 @@ function Game.Start(self: Game)
 			Move(self)
 		end)
 
-		GamepadThumbStick1.Changed:Connect(function(_: any) 
+		GamepadThumbStick1.Changed:Connect(function(_: any)
 			Move(self, GamepadThumbStick1.Value.X, GamepadThumbStick1.Value.Y)
-		end)		
+		end)
 
 		-- other
 
 		stdlib.events.AnyEvent({
-			Move.CallEvent.Event
+			Move.CallEvent.Event,
 		}, self.Player.MoveEvent)
 
 		local IdleRun = cooldown.new(4, function(...)
@@ -396,19 +400,39 @@ function Game.Start(self: Game)
 end
 
 function Game.Pause(self: Game)
-	self.DestroyableObjects.Up.Pause()
-	self.DestroyableObjects.Down.Pause()
-	self.DestroyableObjects.Left.Pause()
-	self.DestroyableObjects.Right.Pause()
-	self.DestroyableObjects.Gamepad.Pause()
+	if self.DestroyableObjects.Up then
+		self.DestroyableObjects.Up.Pause()
+	end
+	if self.DestroyableObjects.Down then
+		self.DestroyableObjects.Down.Pause()
+	end
+	if self.DestroyableObjects.Left then
+		self.DestroyableObjects.Left.Pause()
+	end
+	if self.DestroyableObjects.Right then
+		self.DestroyableObjects.Right.Pause()
+	end
+	if self.DestroyableObjects.Gamepad then
+		self.DestroyableObjects.Gamepad.Pause()
+	end
 end
 
 function Game.Resume(self: Game)
-	self.DestroyableObjects.Up.Resume()
-	self.DestroyableObjects.Down.Resume()
-	self.DestroyableObjects.Left.Resume()
-	self.DestroyableObjects.Right.Resume()
-	self.DestroyableObjects.Gamepad.Resume()
+	if self.DestroyableObjects.Up then
+		self.DestroyableObjects.Up.Resume()
+	end
+	if self.DestroyableObjects.Down then
+		self.DestroyableObjects.Down.Resume()
+	end
+	if self.DestroyableObjects.Left then
+		self.DestroyableObjects.Left.Resume()
+	end
+	if self.DestroyableObjects.Right then
+		self.DestroyableObjects.Right.Resume()
+	end
+	if self.DestroyableObjects.Gamepad then
+		self.DestroyableObjects.Gamepad.Resume()
+	end
 end
 
 --[[
