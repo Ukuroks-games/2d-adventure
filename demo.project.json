@@ -29,6 +29,9 @@
 				},
 				"Dialog": {
 					"$className": "Frame"
+				},
+				"Pause":{
+					"$className": "TextButton"
 				}
 			}
 		},

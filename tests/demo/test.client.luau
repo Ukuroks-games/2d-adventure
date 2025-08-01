@@ -24,25 +24,37 @@ GameFrame.Size = UDim2.fromScale(1, 1)
 local DialogFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
 	:WaitForChild("ScreenGui").Dialog
+DialogFrame.Size = UDim2.fromScale(1, 0.3)
+DialogFrame.Position = UDim2.fromScale(0, 0.7)
+DialogFrame.ZIndex = 999
+
+local Pause = Players.LocalPlayer
+	:WaitForChild("PlayerGui")
+	:WaitForChild("ScreenGui").Pause
+
+	Pause.Size = UDim2.fromScale(0.1, 0.1)
+Pause.Position = UDim2.fromScale(0.9, 0.01)
+Pause.ZIndex = 999
+	
 
 local cam = camera2d.new(1)
 
 local changeMap = Object2d.new(
 	Vector2.new(336, 94),
-	Vector3.new(28, 69, 8),
+	Vector3.new(28, 69, 10),
 	ExImage.new("84486373084684")
 )
 
 local shee = Object2d.new(
-	Vector2.new(300, 120),
-	Vector3.new(28, 70, 8),
+	Vector2.new(300, 140),
+	Vector3.new(24, 50, 8),
 	ExImage.new("75550147574274")
 )
 
 local map1 = map.new(Vector2.new(1, 1), cam, "114575775575709", {
 	Object2d.new( -- door
 		Vector2.new(157, 196),
-		Vector3.new(24, 50, 8),
+		Vector3.new(28, 69, 10),
 		ExImage.new("84486373084684")
 	),
 	changeMap,
@@ -132,25 +144,35 @@ changeMap.Touched:Connect(function(_)
 	_game:SetMap(map2)
 end)
 
-local d = dialoglib.dialog.new(
-	DialogFrame,
-	{
-		dialoglib.phrase.new("test", dialoglib.character.new("null")),
-		dialoglib.phrase.new("test", dialoglib.character.new("null")),
-	}
-)
+local d = dialoglib.dialog.new(DialogFrame, {
+	dialoglib.phrase.new("test", dialoglib.character.new("null")),
+	dialoglib.phrase.new("test", dialoglib.character.new("null")),
+})
 
 local lock = false
 
 shee.Touched:Connect(function(_)
 	if not lock then
 		lock = true
+		DialogFrame.Visible = lock
 		print("pause")
 		_game:Pause()
 		d:Next()
-		UserInputService.InputChanged:Wait()
+		UserInputService.InputBegan:Wait()
+		d:Next()
+		UserInputService.InputBegan:Wait()
 		print("resume")
 		_game:Resume()
 		lock = false
+		DialogFrame.Visible = lock
 	end
+end)
+
+Pause.MouseButton1Click:Connect(function()
+	if lock then
+		_game:Resume()
+	else
+		_game:Pause()
+	end
+	lock = not lock
 end)
