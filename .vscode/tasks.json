@@ -24,7 +24,7 @@
             "type": "shell",
             "label": "Build tests",
             "detail": "Build tests place",
-            "command": "make tests && exit",
+            "command": "make tests -j$(nproc) && exit",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -34,7 +34,7 @@
             "type": "shell",
             "label": "Build rbxm",
             "detail": "Build rbxm library",
-            "command": "make 2d-adventurelib.rbxm && exit",
+            "command": "make 2d-adventurelib.rbxm -j$(nproc) && exit",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -44,7 +44,7 @@
             "type": "shell",
             "label": "Clean",
             "detail": "Clean builded",
-            "command": "make clean && exit",
+            "command": "make clean -j$(nproc) && exit",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -53,8 +53,17 @@
         {
             "type": "shell",
             "label": "Generate sourcemap",
-            "detail": "Generate sourcemap for project",
-            "command": "make sourcemap && exit",
+            "detail": "Generate default sourcemap",
+            "command": "make sourcemap -j$(nproc) && exit",
+            "group": {
+                "kind": "none"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Generate demo sourcemap",
+            "detail": "Generate sourcemap for demo project",
+            "command": "make sourcemap \"GENERATE_SOURCEMAP=demo\" -j$(nproc) && exit",
             "group": {
                 "kind": "none"
             }
@@ -63,7 +72,7 @@
             "type": "shell",
             "label": "Lint",
             "detail": "Lint this project",
-            "command": "make lint --ignore-errors && exit",
+            "command": "make lint -j$(nproc) --ignore-errors && exit",
             "group": {
                 "kind": "none"
             }

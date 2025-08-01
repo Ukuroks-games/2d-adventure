@@ -15,6 +15,7 @@
 		"Roblox",
 		"rojo",
 		"setmetatable",
+		"shee",
 		"stdlib"
 	],
 	"cSpell.ignorePaths": [
@@ -24,8 +25,9 @@
 		".vscode-insiders",
 		"*.toml" // ignore toml files
 	],
-	"luau-lsp.sourcemap.rojoProjectFile": "tests.project.json",
+	"luau-lsp.sourcemap.rojoProjectFile": "defaultTests.project.json",
 	"luau-lsp.platform.type": "roblox",
-	"luau-lsp.sourcemap.generatorCommand": "make sourcemap.json",
+	"luau-lsp.sourcemap.generatorCommand": "make sourcemap.json -j8",
 	"makefile.configureOnOpen": false,
+	"luau-lsp.sourcemap.autogenerate": false,
 }

@@ -55,7 +55,7 @@ export type PhysicObjectStruct = {
 
 	TouchedSide: TouchedSides,
 
-	TouchedSideMutex: mutex.Mutex,
+	TouchedSideMutex: stdlib.Mutex,
 
 	physicImage: Frame,
 
@@ -71,7 +71,7 @@ export type PhysicObjectStruct = {
 		[PhysicObject]: boolean,
 	},
 
-	TouchMsgMutex: mutex.Mutex,
+	TouchMsgMutex: stdlib.Mutex,
 
 	ID: number
 }

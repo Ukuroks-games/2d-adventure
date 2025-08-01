@@ -48,7 +48,15 @@ export type GameStruct = {
 	--[[
 		List of objects that will be destroyed on Destroy call
 	]]
-	DestroyableObjects: {},
+	DestroyableObjects: {
+		Up: InputLib.WhileKeyPressedController?,
+		Down: InputLib.WhileKeyPressedController?,
+		Right: InputLib.WhileKeyPressedController?,
+		Left: InputLib.WhileKeyPressedController?,
+		Gamepad: InputLib.WhileKeyPressedController?,
+
+		[any]: any,
+	},
 
 	--[[
 	
@@ -67,7 +75,7 @@ export type GameStruct = {
 
 	MoveTween: Tween,
 
-	CollideMutex: mutex.Mutex,
+	CollideMutex: stdlib.Mutex,
 
 	Moving: boolean,
 
@@ -134,19 +142,19 @@ function Game.Right(self: GameStruct)
 end
 
 function Game.LeftUp(self: GameStruct)
-	Game.Move(self, -0.5, 0.5)
+	Game.Move(self, -math.sqrt(2) / 2, math.sqrt(2) / 2) -- sin(45°) = cos(45°) = √2/2
 end
 
 function Game.LeftDown(self: GameStruct)
-	Game.Move(self, -0.5, -0.5)
+	Game.Move(self, -math.sqrt(2) / 2, -math.sqrt(2) / 2)
 end
 
 function Game.RightUp(self: GameStruct)
-	Game.Move(self, 0.5, 0.5)
+	Game.Move(self, math.sqrt(2) / 2, math.sqrt(2) / 2)
 end
 
 function Game.RightDown(self: GameStruct)
-	Game.Move(self, 0.5, -0.5)
+	Game.Move(self, math.sqrt(2) / 2, -math.sqrt(2) / 2)
 end
 
 function Game.Move(self: GameStruct, X: number, Y: number)
@@ -236,121 +244,134 @@ function Game.Start(self: Game)
 	self.ControlThread = task.spawn(function()
 		-- Keyboard controls
 
-		local Up = InputLib.WhileKeyPressed(task.wait, {
+		local function w(InputObject: InputObject, a1: boolean)
+			task.wait()
+		end
+
+		self.DestroyableObjects.Up = InputLib.WhileKeyPressed(w, {
 			defaultControls.Keyboard.Up,
 			defaultControls.Gamepad.Up,
 			Enum.KeyCode.Up,
 		})
 
-		local Down = InputLib.WhileKeyPressed(task.wait, {
+		self.DestroyableObjects.Down = InputLib.WhileKeyPressed(w, {
 			defaultControls.Keyboard.Down,
 			defaultControls.Gamepad.Down,
 			Enum.KeyCode.Down,
 		})
 
-		local Right = InputLib.WhileKeyPressed(task.wait, {
+		self.DestroyableObjects.Left = InputLib.WhileKeyPressed(w, {
 			defaultControls.Keyboard.Right,
 			defaultControls.Gamepad.Right,
 			Enum.KeyCode.Right,
 		})
 
-		local Left = InputLib.WhileKeyPressed(task.wait, {
+		self.DestroyableObjects.Right = InputLib.WhileKeyPressed(w, {
 			defaultControls.Keyboard.Left,
 			defaultControls.Gamepad.Left,
 			Enum.KeyCode.Left,
 		})
 
-		local Move = cooldown.new(
-			self.CooldownTime,
-			function(_self, XPos: number?, YPos: number?)
-				if Up.State.Value and Right.State.Value then --	Right Up
-					Game.RightUp(_self)
-				elseif Down.State.Value and Right.State.Value then -- Right Down
-					Game.RightDown(_self)
-				elseif Down.State.Value and Left.State.Value then --	Left Down
-					Game.LeftDown(_self)
-				elseif Up.State.Value and Left.State.Value then --	Left Up
-					Game.LeftUp(_self)
-				elseif Up.State.Value then --	Up
-					Game.Up(_self)
-				elseif Down.State.Value then --	Down
-					Game.Down(_self)
-				elseif Left.State.Value then --	Left
-					Game.Left(_self)
-				elseif Right.State.Value then --	Right
-					Game.Right(_self)
-				elseif YPos and XPos then
-					Game.Move(_self, XPos, YPos)
-				else
-					warn(
-						"No key pressed and positions of X and Y are not indicated"
-					)
-				end
-			end
-		)
-
-		table.insert(self.DestroyableObjects, Up)
-		table.insert(self.DestroyableObjects, Down)
-		table.insert(self.DestroyableObjects, Left)
-		table.insert(self.DestroyableObjects, Right)
-
-		local KeyboardMoveEvent = stdlib.events.AnyEvent({
-			Up.Called,
-			Down.Called,
-			Right.Called,
-			Left.Called,
-		})
-
-		KeyboardMoveEvent.Event:Connect(function(...: any)
-			Move(self)
-		end)
-
 		-- gamepad input
 
 		local GamepadThumbStick1 = Instance.new("Vector3Value")
 
-		table.insert(
-			self.Connections,
-			UserInputService.InputChanged:Connect(
-				function(input: InputObject, a1: boolean)
-					if input.KeyCode == Enum.KeyCode.Thumbstick1 then
-						GamepadThumbStick1.Value = input.Position
+		self.DestroyableObjects.Gamepad = InputLib.WhileKeyPressed(
+			function(InputObject: InputObject, a1: boolean)
+				GamepadThumbStick1.Value = InputObject.Position
+			end,
+			{
+				Enum.KeyCode.Thumbstick1,
+			}
+		)
+
+		if
+			self.DestroyableObjects.Up
+			and self.DestroyableObjects.Down
+			and self.DestroyableObjects.Right
+			and self.DestroyableObjects.Left
+			and self.DestroyableObjects.Gamepad
+		then
+			local Move = cooldown.new(
+				self.CooldownTime,
+				function(_self, XPos: number?, YPos: number?)
+					if
+						self.DestroyableObjects.Up.State.Value
+						and self.DestroyableObjects.Right.State.Value
+					then --	Right Up
+						Game.RightUp(_self)
+					elseif
+						self.DestroyableObjects.Down.State.Value
+						and self.DestroyableObjects.Right.State.Value
+					then -- Right Down
+						Game.RightDown(_self)
+					elseif
+						self.DestroyableObjects.Down.State.Value
+						and self.DestroyableObjects.Left.State.Value
+					then --	Left Down
+						Game.LeftDown(_self)
+					elseif
+						self.DestroyableObjects.Up.State.Value
+						and self.DestroyableObjects.Left.State.Value
+					then --	Left Up
+						Game.LeftUp(_self)
+					elseif self.DestroyableObjects.Up.State.Value then --	Up
+						Game.Up(_self)
+					elseif self.DestroyableObjects.Down.State.Value then --	Down
+						Game.Down(_self)
+					elseif self.DestroyableObjects.Left.State.Value then --	Left
+						Game.Left(_self)
+					elseif self.DestroyableObjects.Right.State.Value then --	Right
+						Game.Right(_self)
+					elseif YPos and XPos then
+						Game.Move(_self, XPos, YPos)
+					else
+						warn(
+							"No key pressed and positions of X and Y are not indicated"
+						)
 					end
 				end
 			)
-		)
 
-		local GamepadControlThread = task.spawn(function()
-			while GamepadThumbStick1.Changed:Wait() do -- не через Changed потому, что Есть CollideMutex и его нужно ждать
+			local KeyboardMoveEvent = stdlib.events.AnyEvent({
+				self.DestroyableObjects.Up.Called,
+				self.DestroyableObjects.Down.Called,
+				self.DestroyableObjects.Right.Called,
+				self.DestroyableObjects.Left.Called,
+			})
+
+			KeyboardMoveEvent.Event:Connect(function(_: any)
+				Move(self)
+			end)
+
+			GamepadThumbStick1.Changed:Connect(function(_: any)
 				Move(
 					self,
 					GamepadThumbStick1.Value.X,
 					GamepadThumbStick1.Value.Y
 				)
-			end
-		end)
+			end)
 
-		-- other
+			-- other
 
-		stdlib.events.AnyEvent({
-			KeyboardMoveEvent.Event,
-			GamepadThumbStick1.Changed,
-		}, self.Player.MoveEvent)
+			stdlib.events.AnyEvent({
+				Move.CallEvent.Event,
+			}, self.Player.MoveEvent)
 
-		local IdleRun = cooldown.new(4, function(...)
-			self:IDLE()
-		end)
+			local IdleRun = cooldown.new(4, function(...)
+				self:IDLE()
+			end)
 
-		stdlib.events.AnyEvent({
-			self.Map.ObjectMovement,
-			self.Player.Move,
-		}, self.CollideStepedEvent)
+			stdlib.events.AnyEvent({
+				self.Map.ObjectMovement,
+				self.Player.Move,
+			}, self.CollideStepedEvent)
 
-		--[[
-	
-]]
-		local IDLE_show_thread = task.spawn(function()
 			--[[
+
+		]]
+			local IDLE_show_thread = task.spawn(function()
+				--[[
 		Кароч как оно рабтает:
 
 		Когда игрок надижает клавищу начинаем отсчет времени.
@@ -360,40 +381,76 @@ function Game.Start(self: Game)
 		> При длительном зажатии получается что что цикл посторяется, что может созданить проблемы с производительностью
 	]]
 
-			local t
+				local t
 
-			self.Player.Move:Connect(function()
-				if t then
-					task.cancel(t)
-				end
-			end)
+				self.Player.Move:Connect(function()
+					if t then
+						task.cancel(t)
+					end
+				end)
 
-			self.Player.Move:Connect(function()
-				t = task.spawn(function()
-					wait(4)
+				self.Player.Move:Connect(function()
+					t = task.spawn(function()
+						wait(4)
 
-					IdleRun(self)
+						IdleRun(self)
+					end)
 				end)
 			end)
-		end)
 
-		self.CollideSteped:Connect(function()
-			self.CollideMutex:lock()
-			self.Map:CalcCollide()
-			self.CollideMutex:unlock()
-		end)
+			self.CollideSteped:Connect(function()
+				self.CollideMutex:lock()
+				self.Map:CalcCollide()
+				self.CollideMutex:unlock()
+			end)
 
-		self.CollideStepedEvent.Event:Connect(function()
-			self.Map:CalcZIndexs()
-		end)
+			self.CollideStepedEvent.Event:Connect(function()
+				self.Map:CalcZIndexs()
+			end)
 
-		self.Destroying:Connect(function()
-			task.cancel(IDLE_show_thread)
-			task.cancel(GamepadControlThread)
-			IdleRun:Destroy()
-			GamepadThumbStick1:Destroy()
-		end)
+			self.Destroying:Connect(function()
+				task.cancel(IDLE_show_thread)
+				IdleRun:Destroy()
+				GamepadThumbStick1:Destroy()
+			end)
+		end
 	end)
+end
+
+function Game.Pause(self: Game)
+	if self.DestroyableObjects.Up then
+		self.DestroyableObjects.Up.Pause()
+	end
+	if self.DestroyableObjects.Down then
+		self.DestroyableObjects.Down.Pause()
+	end
+	if self.DestroyableObjects.Left then
+		self.DestroyableObjects.Left.Pause()
+	end
+	if self.DestroyableObjects.Right then
+		self.DestroyableObjects.Right.Pause()
+	end
+	if self.DestroyableObjects.Gamepad then
+		self.DestroyableObjects.Gamepad.Pause()
+	end
+end
+
+function Game.Resume(self: Game)
+	if self.DestroyableObjects.Up then
+		self.DestroyableObjects.Up.Resume()
+	end
+	if self.DestroyableObjects.Down then
+		self.DestroyableObjects.Down.Resume()
+	end
+	if self.DestroyableObjects.Left then
+		self.DestroyableObjects.Left.Resume()
+	end
+	if self.DestroyableObjects.Right then
+		self.DestroyableObjects.Right.Resume()
+	end
+	if self.DestroyableObjects.Gamepad then
+		self.DestroyableObjects.Gamepad.Resume()
+	end
 end
 
 --[[
