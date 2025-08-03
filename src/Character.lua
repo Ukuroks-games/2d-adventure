@@ -60,9 +60,7 @@ function Character2d.WalkMove(
 ): Tween
 	local touchedSide = self:GetTouchedSide()
 
-	local function CheckCanMoveToSide(
-		side: physicObject.TouchSide
-	): boolean
+	local function CheckCanMoveToSide(side: physicObject.TouchSide): boolean
 		if #side > 0 then
 			return stdlib.algorithm.any_of(
 				side,
@@ -133,7 +131,10 @@ function Character2d.new(
 ): Character2d
 	local self = BaseCharacter.new(WalkSpeed, Size)
 
-	stdlib.utility.merge(self, AnimatedObject.new(Animations, self.Image))
+	stdlib.utility.merge(
+		self,
+		AnimatedObject.new(Animations, self.Image.ImageInstance)
+	)
 
 	setmetatable(self, { __index = Character2d })
 

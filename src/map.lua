@@ -35,7 +35,7 @@ export type MapStruct = {
 	Connections: { RBXScriptConnection },
 }
 
-export type Map = typeof(setmetatable({} :: MapStruct, {__index = map}))
+export type Map = typeof(setmetatable({} :: MapStruct, { __index = map }))
 
 --[[
 	Calc position for move Player to position on the map
@@ -107,12 +107,11 @@ function map.CalcCollide(self: Map)
 		return value.CanCollide
 	end)
 
-	for _, v in pairs(Objects ) do
+	for _, v in pairs(Objects) do
 		v:StartPhysicCalc()
 	end
 
 	for _, v in pairs(Objects) do
-
 		local i = algorithm.find_if(Objects, function(value): boolean
 			return physicObject.CheckCollision(v, value)
 		end)
@@ -143,7 +142,7 @@ function map.SetPlayerPosition(
 	pos: Vector2
 )
 	local p = map.CalcPlayerPosition(self, player, pos)
-	self.Image.Position = UDim2.fromOffset(p.X, p.Y)
+	self.Image.ImageInstance.Position = UDim2.fromOffset(p.X, p.Y)
 end
 
 --[[
@@ -155,9 +154,9 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 		self:CalcZIndexs()
 	end
 
-	self.Image.Parent = GameFrame
+	self.Image.ImageInstance.Parent = GameFrame
 
-	self.Image.Visible = true
+	self.Image.ImageInstance.Visible = true
 
 	self:SetPlayer(Player)
 
@@ -190,7 +189,7 @@ end
 	It needed for change map. After `Init` map must call `Done` method
 ]]
 function map.Done(self: Map, Player: player2d.Player2d)
-	self.Image.Visible = false
+	self.Image.ImageInstance.Visible = false
 
 	self:DeletePlayer(Player)
 
@@ -211,7 +210,8 @@ function map.CalcZIndexs(self: Map)
 			a: physicObject.PhysicObject,
 			b: physicObject.PhysicObject
 		): boolean
-			return a.physicImage.AbsolutePosition.Y < b.physicImage.AbsolutePosition.Y
+			return a.physicImage.AbsolutePosition.Y
+				< b.physicImage.AbsolutePosition.Y
 		end
 	)
 
@@ -251,14 +251,14 @@ function map.Loading(self: Map, Progress: NumberValue)
 		end
 
 		if typeof(v.Image) == "ImageLabel" then
-			ContentProvider:PreloadAsync({v.Image.Image})
+			ContentProvider:PreloadAsync({ v.Image.Image })
 		end
 
 		i += 1
 		Progress.Value = i / (#self.Objects + 1)
 	end
 
-	ContentProvider:PreloadAsync({ self.Image.Image })
+	ContentProvider:PreloadAsync({ self.Image.ImageInstance.Image })
 
 	Progress.Value = 1
 end
@@ -298,9 +298,8 @@ function map.new(
 		end
 	end
 
-	self.Image.Size = UDim2.fromScale(Size.X, Size.Y)
-	self.Image.ScaleType = Enum.ScaleType.Fit
-
+	self.Image.ImageInstance.Size = UDim2.fromScale(Size.X, Size.Y)
+	self.Image.ImageInstance.ScaleType = Enum.ScaleType.Fit
 
 	return self
 end

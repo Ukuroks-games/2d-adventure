@@ -1,38 +1,26 @@
 local AssetService = game:GetService("AssetService")
 
 --[[
-	Extentended Image
+	Extended Image
 ]]
 local ExImage = {}
 
-export type Image = ImageButton | ImageLabel
+export type Image = ImageLabel
 
-local function Index(self, key)
-	local _, e = pcall(function()
-		return self.ImageInstance[key]
-	end)
-
-	return e
-end
-
-local function NewIndex(self, key, value)
-	if typeof(value) == typeof(self) then	-- if something like ExImage.Parent = ExImage
-		self.ImageInstance[key] = value.ImageInstance
-	else
-		self.ImageInstance[key] = value
-	end
-end
-
-export type ExImage = typeof(setmetatable({} :: {
+export type ExImage = {
 	--[[
 		Real image resolution
 	]]
 	RealSize: Vector2,
 
 	ImageInstance: Image,
-}, {__index = Index, __newindex = NewIndex}))
+}
 
-function ExImage.new(id: string, isButton: boolean?): ExImage
+function ExImage.new(
+	id: string,
+	isButton: boolean?,
+	overrideSize: Vector2?
+): ExImage
 	id = "rbxassetid://" .. id
 
 	local ImageInstance = Instance.new("Image" .. (function()
@@ -44,15 +32,22 @@ function ExImage.new(id: string, isButton: boolean?): ExImage
 	end)())
 	ImageInstance.Image = id
 
+	local s, e = pcall(function(...)
+		return AssetService:CreateEditableImageAsync(id).Size
+	end)
+
+	local size
+
+	if s then
+		size = overrideSize or e
+	else
+		size = overrideSize
+	end
+
 	local _self = {
-		RealSize = AssetService:CreateEditableImageAsync(id).Size,
+		RealSize = size,
 		ImageInstance = ImageInstance,
 	}
-
-	setmetatable(_self, {
-		__index = Index,
-		__newindex = NewIndex,
-	})
 
 	return _self
 end
