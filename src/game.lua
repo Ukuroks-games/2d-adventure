@@ -158,6 +158,9 @@ function Game.RightDown(self: GameStruct)
 	Game.Move(self, math.sqrt(2) / 2, -math.sqrt(2) / 2)
 end
 
+--[[
+	Move player
+]]
 function Game.Move(self: GameStruct, X: number, Y: number)
 	if not self.Moving then
 		self.Moving = true
@@ -345,7 +348,7 @@ function Game.Start(self: Game)
 				Move(self)
 			end)
 
-			GamepadThumbStick1.Changed:Connect(function(_: any)
+			self.DestroyableObjects.Gamepad.Called:Connect(function(_: any)
 				Move(
 					self,
 					GamepadThumbStick1.Value.X,

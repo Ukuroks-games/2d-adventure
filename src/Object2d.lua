@@ -30,34 +30,44 @@ function Object2d.CalcPosition(
 		local currentSizes = background.ImageInstance.AbsoluteSize.X
 			/ background.ImageInstance.AbsoluteSize.Y
 
-		if currentSizes < 1 then -- тоесть если есть поля сверху и снизу
+		if currentSizes < 1 then -- то есть если есть поля сверху и снизу
 			-- высота самого изображения
-			local h = (background.RealSize.Y * background.ImageInstance.AbsoluteSize.X)
-				/ background.RealSize.X
+			local h = (
+				background.RealSize.Y * background.ImageInstance.AbsoluteSize.X
+			) / background.RealSize.X
 
 			return Vector2.new(
 				AnchorPosition.X
-					* (background.ImageInstance.AbsoluteSize.X / background.RealSize.X),
+					* (
+						background.ImageInstance.AbsoluteSize.X
+						/ background.RealSize.X
+					),
 				AnchorPosition.Y * (h / background.RealSize.Y)
 					+ ((background.ImageInstance.AbsoluteSize.Y - h) / 2)
 			)
 		elseif currentSizes > 1 then -- поля справа и слева
 			-- ширина самого изображения
-			local w = (background.RealSize.X * background.ImageInstance.AbsoluteSize.Y)
-				/ background.RealSize.Y
+			local w = (
+				background.RealSize.X * background.ImageInstance.AbsoluteSize.Y
+			) / background.RealSize.Y
 
 			return Vector2.new(
 				AnchorPosition.X * (w / background.RealSize.X)
 					+ ((background.ImageInstance.AbsoluteSize.X - w) / 2),
 				AnchorPosition.Y
-					* (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y)
+					* (
+						background.ImageInstance.AbsoluteSize.Y
+						/ background.RealSize.Y
+					)
 			)
 		end
 	end
 
 	return Vector2.new(
-		AnchorPosition.X * (background.ImageInstance.AbsoluteSize.X / background.RealSize.X),
-		AnchorPosition.Y * (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y)
+		AnchorPosition.X
+			* (background.ImageInstance.AbsoluteSize.X / background.RealSize.X),
+		AnchorPosition.Y
+			* (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y)
 	)
 end
 
@@ -72,37 +82,54 @@ function Object2d.CalcSize(Size: Vector3, background: ExImage.ExImage): Vector3
 		local currentSizes = background.ImageInstance.AbsoluteSize.X
 			/ background.ImageInstance.AbsoluteSize.Y
 
-		if currentSizes < 1 then -- тоесть если есть поля сверху и снизу
+		if currentSizes < 1 then -- то есть если есть поля сверху и снизу
 			-- высота самого изображения
-			local h = (background.RealSize.Y * background.ImageInstance.AbsoluteSize.X)
-				/ background.RealSize.X
+			local h = (
+				background.RealSize.Y * background.ImageInstance.AbsoluteSize.X
+			) / background.RealSize.X
 
 			return Vector3.new(
-				Size.X * (background.ImageInstance.AbsoluteSize.X / background.RealSize.X),
+				Size.X
+					* (
+						background.ImageInstance.AbsoluteSize.X
+						/ background.RealSize.X
+					),
 				Size.Y * (h / background.RealSize.Y),
 				Size.Z * (h / background.RealSize.Y)
 			)
 		elseif currentSizes > 1 then -- поля справа и слева
-			local w = (background.RealSize.X * background.ImageInstance.AbsoluteSize.Y)
-				/ background.RealSize.Y
+			local w = (
+				background.RealSize.X * background.ImageInstance.AbsoluteSize.Y
+			) / background.RealSize.Y
 
 			return Vector3.new(
 				Size.X * (w / background.RealSize.X),
-				Size.Y * (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y),
-				Size.Z * (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y)
+				Size.Y
+					* (
+						background.ImageInstance.AbsoluteSize.Y
+						/ background.RealSize.Y
+					),
+				Size.Z
+					* (
+						background.ImageInstance.AbsoluteSize.Y
+						/ background.RealSize.Y
+					)
 			)
 		end
 	end
 
 	return Vector3.new(
-		Size.X * (background.ImageInstance.AbsoluteSize.X / background.RealSize.X),
-		Size.Y * (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y),
-		Size.Z * (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y)
+		Size.X
+			* (background.ImageInstance.AbsoluteSize.X / background.RealSize.X),
+		Size.Y
+			* (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y),
+		Size.Z
+			* (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y)
 	)
 end
 
 --[[
-	Расчитывает координаты объекта
+	Рассчитывает координаты объекта
 ]]
 function Object2d.GetPosition(
 	self: Object2d,
@@ -112,12 +139,15 @@ function Object2d.GetPosition(
 end
 
 --[[
-	Расчитывает размыеры объекта
+	Рассчитывает размеры объекта
 ]]
 function Object2d.GetSize(self: Object2d, background: ExImage.ExImage): Vector3
 	return Object2d.CalcSize(self.Size, background)
 end
 
+--[[
+	Рассчитывает размеры и коо объекта
+]]
 function Object2d.CalcSizeAndPos(self: Object2d, background: ExImage.ExImage)
 	self:SetSize(self:GetSize(background))
 	self:SetPosition(self:GetPosition(background))
@@ -140,7 +170,7 @@ function Object2d.new(
 	self.AnchorPosition = AnchorPosition
 	self.Size = Size
 
-	self.Image.BackgroundTransparency = 1
+	self.Image.ImageInstance.BackgroundTransparency = 1
 
 	setmetatable(self, {
 		__index = Object2d,

@@ -76,6 +76,9 @@ export type PhysicObjectStruct = {
 	ID: number
 }
 
+--[[
+	Счётчик id. при создании нового `physicObject` увеличивается на 1. Вообще надо бы заменить на нормальный контроллер id, но пока пофиг думаю 10^30 (наверное столько) хватит
+]]
 physicObject.Id = -999999999999990
 
 export type PhysicObject = typeof(setmetatable(
@@ -233,6 +236,9 @@ function physicObject.SetPositionY(self: PhysicObject, pos: number)
 	)
 end
 
+--[[
+	Изменить координаты напрямую
+]]
 function physicObject.SetPositionRaw(self: PhysicObject, pos: Vector2)
 	self.physicImage.Position = UDim2.new(self.physicImage.Position.X.Scale, pos.X, self.physicImage.Position.Y.Scale, pos.Y)
 end
@@ -256,6 +262,9 @@ function physicObject.SetZIndex(self: PhysicObject, ZIndex: number)
 	self.Image.ImageInstance.ZIndex = ZIndex
 end
 
+--[[
+
+]]
 function physicObject.StartPhysicCalc(self: PhysicObject)
 	self.TouchedSideMutex:lock()
 	table.clear(self.TouchMsg)
@@ -264,6 +273,9 @@ function physicObject.StartPhysicCalc(self: PhysicObject)
 	end
 end
 
+--[[
+
+]]
 function physicObject.GetTouchMsg(
 	self: PhysicObject,
 	obj: PhysicObject
@@ -274,6 +286,9 @@ function physicObject.GetTouchMsg(
 	return self.TouchMsg[obj]
 end
 
+--[[
+
+]]
 function physicObject.SetTouchMsg(
 	self: PhysicObject,
 	obj: PhysicObject,
