@@ -28,9 +28,7 @@ export type BaseCharacter2dStruct = {
 	Move: RBXScriptSignal,
 
 	MoveEvent: BindableEvent,
-
-	Image: Frame,
-} & physicObject.PhysicObject
+} & physicObject.PhysicObjectStruct
 
 export type BaseCharacter2d = BaseCharacter2dStruct & typeof(BaseCharacter2d)
 
@@ -42,7 +40,13 @@ function BaseCharacter2d.Destroy(self: BaseCharacter2d)
 	physicObject.Destroy(self)
 end
 
-function BaseCharacter2d.GetMoveTween(self: BaseCharacter2d, X: number, Y: number, RelativeObject: GuiObject? | ExImage.ExImage, cooldownTime: number?): Tween?
+function BaseCharacter2d.GetMoveTween(
+	self: BaseCharacter2d,
+	X: number,
+	Y: number,
+	RelativeObject: GuiObject? | ExImage.ExImage,
+	cooldownTime: number?
+): Tween?
 	local tween
 
 	if not RelativeObject then
@@ -100,8 +104,8 @@ function BaseCharacter2d.new(
 	WalkSpeed: CharacterSpeed,
 	Size: Vector3
 ): BaseCharacter2d
-	local PlayerFrame = Instance.new("Frame")
-	PlayerFrame.BackgroundTransparency = 1
+	local PlayerFrame = ExImage.new("")
+	PlayerFrame.ImageInstance.BackgroundTransparency = 1
 
 	local self = physicObject.new(PlayerFrame, true, true, false)
 

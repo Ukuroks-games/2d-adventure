@@ -59,7 +59,7 @@ export type PhysicObjectStruct = {
 
 	physicImage: Frame,
 
-	Image: Frame,
+	Image: ExImage.ExImage,
 
 	Size: Vector3,
 
@@ -154,7 +154,7 @@ end
 ]]
 function physicObject.GetPosition(
 	self: PhysicObject,
-	background: ExImage.ExImage | Frame
+	background: ExImage.ExImage
 ): Vector2
 	return self:CalcPosition(background)
 end
@@ -164,11 +164,11 @@ end
 ]]
 function physicObject.CalcSize(
 	self: PhysicObject,
-	background: ExImage.ExImage | Frame
+	background: ExImage.ExImage
 ): Vector3
 	return Vector3.new(
-		self.Image.AbsoluteSize.X,
-		self.Image.AbsoluteSize.Y,
+		self.Image.ImageInstance.AbsoluteSize.X,
+		self.Image.ImageInstance.AbsolutePosition.Y,
 		self.physicImage.AbsoluteSize.Y
 	)
 end
@@ -178,9 +178,9 @@ end
 ]]
 function physicObject.CalcPosition(
 	self: PhysicObject,
-	background: ExImage.ExImage | Frame
+	background: ExImage.ExImage
 ): Vector2
-	return self.Image.AbsolutePosition
+	return self.Image.ImageInstance.AbsolutePosition
 end
 
 --[[
@@ -188,7 +188,7 @@ end
 ]]
 function physicObject.GetSize(
 	self: PhysicObject,
-	background: ExImage.ExImage | Frame
+	background: ExImage.ExImage
 ): Vector3
 	return self:CalcSize(background)
 end
@@ -198,7 +198,7 @@ end
 ]]
 function physicObject.SetParent(
 	self: PhysicObject,
-	parent: GuiObject | ExImage.ExImage
+	parent: ExImage.ExImage | Frame
 )
 	if typeof(parent) == "table" then
 		self.physicImage.Parent = parent.ImageInstance
@@ -216,9 +216,7 @@ function physicObject.SetPosition(self: PhysicObject, pos: Vector2)
 end
 
 --[[
-	Set player position.
-
-	It ignore any changes. player always on centre
+	Set physicObject position.
 ]]
 function physicObject.SetPositionX(self: PhysicObject, pos: number)
 	self.physicImage.Position =
@@ -226,14 +224,12 @@ function physicObject.SetPositionX(self: PhysicObject, pos: number)
 end
 
 --[[
-	Set player position.
-
-	It ignore any changes. player always on centre
+	Set physicObject position.
 ]]
 function physicObject.SetPositionY(self: PhysicObject, pos: number)
 	self.physicImage.Position = UDim2.fromOffset(
 		self.physicImage.Position.X.Offset,
-		pos + self.Image.AbsoluteSize.Y - self.physicImage.AbsoluteSize.Y
+		pos + self.Image.ImageInstance.AbsoluteSize.Y - self.physicImage.AbsoluteSize.Y
 	)
 end
 
@@ -245,9 +241,9 @@ end
 
 ]]
 function physicObject.SetSize(self: PhysicObject, size: Vector3)
-	self.Image.Size = UDim2.new(0, size.X, 0, size.Y)
+	self.Image.ImageInstance.Size = UDim2.new(0, size.X, 0, size.Y)
 
-	self.Image.Position = UDim2.new(0, 0, 0, size.Z - size.Y)
+	self.Image.ImageInstance.Position = UDim2.new(0, 0, 0, size.Z - size.Y)
 
 	self.physicImage.Size = UDim2.fromOffset(size.X, size.Z)
 end
@@ -257,7 +253,7 @@ end
 ]]
 function physicObject.SetZIndex(self: PhysicObject, ZIndex: number)
 	self.physicImage.ZIndex = ZIndex
-	self.Image.ZIndex = ZIndex
+	self.Image.ImageInstance.ZIndex = ZIndex
 end
 
 function physicObject.StartPhysicCalc(self: PhysicObject)
@@ -293,7 +289,7 @@ end
 	Physic object constructor
 ]]
 function physicObject.new(
-	Image: Frame | ExImage.ExImage,
+	Image: ExImage.ExImage,
 	canCollide: boolean?,
 	checkingTouchedSize: boolean?,
 	anchored: boolean?
@@ -330,7 +326,7 @@ function physicObject.new(
 
 	print("create", this)
 
-	this.Image.Parent = this.physicImage
+	this.Image.ImageInstance.Parent = this.physicImage
 
 	this.physicImage.BackgroundTransparency = (function()
 		if config.ShowHitboxes then

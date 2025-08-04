@@ -1,3 +1,4 @@
+local ExImage = require(script.Parent.ExImage)
 local gifInfo = require(script.Parent.gifInfo)
 local giflib = require(script.Parent.Parent.giflib)
 
@@ -51,19 +52,19 @@ export type AnimatedObject = typeof(setmetatable(
 		]]
 		CurrentAnimation: string,
 
-		Image: Frame,
+		Image: ExImage.ExImage,
 	},
 	{ __index = animatedObject }
 ))
 
 local function CreateAnimationsFromConstructor(
 	Animations: ConstructorAnimations,
-	PlayerFrame: Frame
+	PlayerFrame: ExImage.ExImage
 ): Animations
 	local CreatedAnimations = {}
 
 	for i, v in pairs(Animations) do
-		local gif = v(PlayerFrame)
+		local gif = v(PlayerFrame.ImageInstance)
 
 		gif:Hide()
 		gif:SetBackgroundTransparency(1)
@@ -120,7 +121,7 @@ end
 
 function animatedObject.new(
 	Animations: ConstructorAnimations,
-	Parent: Frame
+	Parent: ExImage.ExImage
 ): AnimatedObject
 	local self = {
 		Animations = CreateAnimationsFromConstructor(Animations, Parent),

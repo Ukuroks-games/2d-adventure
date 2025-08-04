@@ -1,5 +1,3 @@
-local AssetService = game:GetService("AssetService")
-
 local stdlib = require(script.Parent.Parent.stdlib)
 local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
@@ -29,16 +27,7 @@ function Character2d.CalcSize(
 	self: Character2d,
 	mapImage: ExImage.ExImage
 ): Vector3
-	local Resolution: Vector3
-
-	if self.Size.X == -1 or self.Size.Y == -1 then
-		local a = AssetService:CreateEditableImageAsync(
-			self.Animations[self.CurrentAnimation].Frames[1].Image.Image
-		).Size
-		Resolution = Vector3.new(a.X, a.Y, self.Size.Z)
-	end
-
-	return Object2d.CalcSize(Resolution or self.Size, mapImage)
+	return Object2d.CalcSize(self.Size, mapImage)
 end
 
 function Character2d.SetZIndex(self: Character2d, ZIndex: number)
@@ -131,10 +120,7 @@ function Character2d.new(
 ): Character2d
 	local self = BaseCharacter.new(WalkSpeed, Size)
 
-	stdlib.utility.merge(
-		self,
-		AnimatedObject.new(Animations, self.Image.ImageInstance)
-	)
+	stdlib.utility.merge(self, AnimatedObject.new(Animations, self.Image))
 
 	setmetatable(self, { __index = Character2d })
 

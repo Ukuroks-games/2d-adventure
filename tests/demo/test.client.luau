@@ -132,7 +132,7 @@ local _game = Game.new(
 			giflib.Frame.new("116455657084740", 0.2), -- 3
 			giflib.Frame.new("130845587189191", 0.2), --3
 		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
-	}, { X = 10, Y = 9 }, Vector3.new(-1, -1, 4)),
+	}, { X = 10, Y = 9 }, Vector3.new(25, 50, 4)),
 	map1
 )
 
