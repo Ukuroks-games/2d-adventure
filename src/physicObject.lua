@@ -126,7 +126,7 @@ function physicObject.CheckCollision(
 	return other ~= self
 		and (
 			Check(self.physicImage, other.physicImage)
-			or Check(other.physicImage, self.physicImage) -- если наооборот верхня левая точка other находится в self
+			or Check(other.physicImage, self.physicImage) -- если наоборот верхня левая точка other находится в self
 		)
 end
 
@@ -342,12 +342,12 @@ function physicObject.new(
 		--[[
 			Кароч в чем смысол алгоритма:
 
-			находим центральные точки твух прямоугольников и смотрим как они расположены относительно друг друга
+			находим центральные точки двух прямоугольников и смотрим как они расположены относительно друг друга
 
-			А для конечного пределения по какой оси было касание (вверх-низ, право-лево, обе) смотрим отношение 
+			А для конечного определения по какой оси было касание (вверх-низ, право-лево, обе) смотрим отношение 
 			сторон области пересечения. 
 
-			Касание по двум осям возможно если область пересения - квадрат.
+			Касание по двум осям возможно если область пересечения - квадрат.
 		]]
 		if not this.Anchored or checkingTouchedSize then
 			local p1x = this.physicImage.AbsolutePosition.X

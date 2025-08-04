@@ -5,6 +5,9 @@ local ExImage = require(script.Parent.ExImage)
 local Object2d = require(script.Parent.Object2d)
 local physicObject = require(script.Parent.physicObject)
 
+--[[
+	Character
+]]
 local Character2d = setmetatable({}, {
 	__index = function(self: Character2d, key: string)
 		return AnimatedObject[key] or BaseCharacter[key]

@@ -9,6 +9,7 @@
 	"cSpell.enabled": true,
 	"cSpell.words": [
 		"__newindex",
+		"CalcZIndexs",
 		"giflib",
 		"pcall",
 		"rbxassetid",
@@ -18,7 +19,8 @@
 		"rojo",
 		"setmetatable",
 		"shee",
-		"stdlib"
+		"stdlib",
+		"Thumbstick"
 	],
 	"cSpell.ignorePaths": [
 		"vscode-extension",

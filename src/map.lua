@@ -101,7 +101,7 @@ end
 
 function map.CalcCollide(self: Map)
 	--[[
-		Список объектов которые имеют колизию
+		Список объектов которые имеют коллизию
 	]]
 	local Objects = algorithm.copy_if(self.Objects, function(value): boolean
 		return value.CanCollide

@@ -10,7 +10,9 @@ local ExImage = require(script.Parent.ExImage)
 local player2d = setmetatable({}, { __index = Character })
 
 --[[
-	Класс игрока
+	Класс игрока.
+
+	По сути является классом Character2d с несколькими переопределёнными 
 ]]
 export type Player2dStruct = {} & Character.Character2d
 

@@ -359,9 +359,6 @@ function Game.Start(self: Game)
 				Move.CallEvent.Event,
 			}, self.Player.MoveEvent)
 
-			local IdleRun = cooldown.new(4, function(...)
-				self:IDLE()
-			end)
 
 			stdlib.events.AnyEvent({
 				self.Map.ObjectMovement,
@@ -370,18 +367,17 @@ function Game.Start(self: Game)
 
 			--[[
 
-		]]
+			]]
 			local IDLE_show_thread = task.spawn(function()
 				--[[
-		Кароч как оно рабтает:
+					Короче как оно работает:
 
-		Когда игрок надижает клавищу начинаем отсчет времени.
+					Когда игрок нажимает клавишу начинаем отсчет времени.
 
-		Если во время ожидания была нажата ещё клавиша, то сбрасываем ожидание и ждем следующего.
+					Если во время ожидания была нажата ещё клавиша, то сбрасываем ожидание и ждем следующего.
 
-		> При длительном зажатии получается что что цикл посторяется, что может созданить проблемы с производительностью
-	]]
-
+					> При длительном зажатии получается что что цикл повторяется, что может создать проблемы с производительностью
+				]]
 				local t
 
 				self.Player.Move:Connect(function()
@@ -394,7 +390,7 @@ function Game.Start(self: Game)
 					t = task.spawn(function()
 						wait(4)
 
-						IdleRun(self)
+						self:IDLE()
 					end)
 				end)
 			end)
@@ -411,7 +407,6 @@ function Game.Start(self: Game)
 
 			self.Destroying:Connect(function()
 				task.cancel(IDLE_show_thread)
-				IdleRun:Destroy()
 				GamepadThumbStick1:Destroy()
 			end)
 		end
