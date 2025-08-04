@@ -1,5 +1,4 @@
-local UserInputService = game:GetService("UserInputService")
-
+local ControlType = require(script.Parent.ControlType)
 local InputLib = require(script.Parent.Parent.InputLib)
 local cooldown = require(script.Parent.Parent.cooldown)
 local stdlib = require(script.Parent.Parent.stdlib)
@@ -33,7 +32,7 @@ export type GameStruct = {
 	--[[
 		Sent on physic step end
 	]]
-	CollideSteped: RBXScriptSignal,
+	CollideStepped: RBXScriptSignal,
 
 	--[[
 	
@@ -71,7 +70,7 @@ export type GameStruct = {
 	--[[
 	
 	]]
-	CollideStepedEvent: BindableEvent,
+	CollideSteppedEvent: BindableEvent,
 
 	MoveTween: Tween,
 
@@ -82,6 +81,8 @@ export type GameStruct = {
 	MoveStopConnection: RBXScriptConnection?,
 
 	ControlThread: thread,
+
+	ControllerSettings: ControlType.Control,
 }
 
 export type Game = typeof(setmetatable({} :: GameStruct, { __index = Game }))
@@ -105,7 +106,7 @@ function Game.Destroy(self: GameStruct)
 	end
 
 	self.Frame:Destroy()
-	self.CollideStepedEvent:Destroy()
+	self.CollideSteppedEvent:Destroy()
 	self.Player:Destroy()
 	self.DestroyingEvent:Destroy()
 end
@@ -249,26 +250,26 @@ function Game.Start(self: Game)
 		end
 
 		self.DestroyableObjects.Up = InputLib.WhileKeyPressed(w, {
-			defaultControls.Keyboard.Up,
-			defaultControls.Gamepad.Up,
+			self.ControllerSettings.Keyboard.Up,
+			self.ControllerSettings.Gamepad.Up,
 			Enum.KeyCode.Up,
 		})
 
 		self.DestroyableObjects.Down = InputLib.WhileKeyPressed(w, {
-			defaultControls.Keyboard.Down,
-			defaultControls.Gamepad.Down,
+			self.ControllerSettings.Keyboard.Down,
+			self.ControllerSettings.Gamepad.Down,
 			Enum.KeyCode.Down,
 		})
 
-		self.DestroyableObjects.Left = InputLib.WhileKeyPressed(w, {
-			defaultControls.Keyboard.Right,
-			defaultControls.Gamepad.Right,
+		self.DestroyableObjects.Right = InputLib.WhileKeyPressed(w, {
+			self.ControllerSettings.Keyboard.Right,
+			self.ControllerSettings.Gamepad.Right,
 			Enum.KeyCode.Right,
 		})
 
-		self.DestroyableObjects.Right = InputLib.WhileKeyPressed(w, {
-			defaultControls.Keyboard.Left,
-			defaultControls.Gamepad.Left,
+		self.DestroyableObjects.Left = InputLib.WhileKeyPressed(w, {
+			self.ControllerSettings.Keyboard.Left,
+			self.ControllerSettings.Gamepad.Left,
 			Enum.KeyCode.Left,
 		})
 
@@ -365,7 +366,7 @@ function Game.Start(self: Game)
 			stdlib.events.AnyEvent({
 				self.Map.ObjectMovement,
 				self.Player.Move,
-			}, self.CollideStepedEvent)
+			}, self.CollideSteppedEvent)
 
 			--[[
 
@@ -398,13 +399,13 @@ function Game.Start(self: Game)
 				end)
 			end)
 
-			self.CollideSteped:Connect(function()
+			self.CollideStepped:Connect(function()
 				self.CollideMutex:lock()
 				self.Map:CalcCollide()
 				self.CollideMutex:unlock()
 			end)
 
-			self.CollideStepedEvent.Event:Connect(function()
+			self.CollideSteppedEvent.Event:Connect(function()
 				self.Map:CalcZIndexs()
 			end)
 
@@ -460,10 +461,11 @@ function Game.new(
 	GameFrame: Frame,
 	Player: player.Player2d,
 	Map: map.Map,
-	cooldownTime: number?
+	cooldownTime: number?,
+	controllerSettings: ControlType.Control?
 ): Game
 	local DestroyingEvent = Instance.new("BindableEvent")
-	local CollideStepedEvent = Instance.new("BindableEvent")
+	local CollideSteppedEvent = Instance.new("BindableEvent")
 
 	local self: GameStruct = {
 		Frame = GameFrame,
@@ -471,8 +473,8 @@ function Game.new(
 		Map = Map,
 		Destroying = DestroyingEvent.Event,
 		DestroyingEvent = DestroyingEvent,
-		CollideSteped = CollideStepedEvent.Event,
-		CollideStepedEvent = CollideStepedEvent,
+		CollideStepped = CollideSteppedEvent.Event,
+		CollideSteppedEvent = CollideSteppedEvent,
 		CooldownTime = cooldownTime or 0.1,
 		DestroyableObjects = {},
 		Connections = {},
@@ -480,6 +482,7 @@ function Game.new(
 		CollideMutex = mutex.new(true),
 		Moving = false,
 		ControlThread = nil,
+		ControllerSettings = controllerSettings or defaultControls,
 	}
 
 	self.Player:SetParent(self.Frame)
