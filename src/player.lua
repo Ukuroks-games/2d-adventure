@@ -18,8 +18,6 @@ export type Player2dStruct = {} & Character.Character2d
 
 export type Player2d = Player2dStruct & typeof(player2d)
 
-
-
 function player2d.SetPositionX(self: Player2dStruct, _: number)
 	self.physicImage.Position = UDim2.new(
 		0.5,
@@ -28,7 +26,6 @@ function player2d.SetPositionX(self: Player2dStruct, _: number)
 		-self.physicImage.AbsoluteSize.Y / 2
 	) -- move to center PlayerFrame
 end
-
 
 function player2d.SetPositionY(self: Player2dStruct, _: number)
 	self.physicImage.Position = UDim2.new(

@@ -78,8 +78,6 @@ export type GameStruct = {
 
 	Moving: boolean,
 
-	MoveStopConnection: RBXScriptConnection?,
-
 	ControlThread: thread,
 
 	ControllerSettings: ControlType.Control,
@@ -165,10 +163,6 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 	if not self.Moving then
 		self.Moving = true
 
-		if self.MoveStopConnection then
-			self.MoveStopConnection:Disconnect()
-		end
-
 		if self.MoveTween then
 			self.MoveTween:Destroy()
 			self.MoveTween = nil -- set to nil for this IF can working
@@ -184,11 +178,6 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 			self.Moving = false
 		end
 
-		self.MoveStopConnection = self.MoveTween.Completed:Connect(
-			function(a0: Enum.PlaybackState)
-				self.Player:StopAnimation()
-			end
-		)
 	end
 end
 

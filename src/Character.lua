@@ -18,7 +18,9 @@ local Character2d = setmetatable({}, {
 	Character with animations
 ]]
 export type Character2d =
-	{}
+	{
+		MoveStopConnection: RBXScriptSignal?,
+	}
 	& AnimatedObject.AnimatedObject
 	& BaseCharacter.BaseCharacter2d
 	& typeof(Character2d)
@@ -50,6 +52,10 @@ function Character2d.WalkMoveRaw(
 	RelativeObject: GuiObject? | ExImage.ExImage,
 	cooldownTime: number?
 ): Tween
+	if self.MoveStopConnection then
+		self.MoveStopConnection:Disconnect()
+	end
+
 	local touchedSide = self:GetTouchedSide()
 
 	local function CheckCanMoveToSide(side: physicObject.TouchSide): boolean
@@ -113,7 +119,16 @@ function Character2d.WalkMoveRaw(
 
 	self:SetAnimation(animationName)
 
-	return BaseCharacter.WalkMoveRaw(self, X, Y, RelativeObject, cooldownTime)
+	local t =
+		BaseCharacter.WalkMoveRaw(self, X, Y, RelativeObject, cooldownTime)
+
+	self.MoveStopConnection = t.Completed:Connect(
+		function(_: Enum.PlaybackState)
+			self:StopAnimation()
+		end
+	)
+
+	return t
 end
 
 function Character2d.new(

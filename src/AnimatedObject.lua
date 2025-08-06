@@ -18,6 +18,15 @@ export type Animations = {
 	WalkRightUp: giflib.Gif,
 	WalkRightDown: giflib.Gif,
 
+	StayUp: giflib.GifFrame,
+	StayDown: giflib.GifFrame,
+	StayRight: giflib.GifFrame,
+	StayLeft: giflib.GifFrame,
+	StayUpLeft: giflib.GifFrame,
+	StayUpRight: giflib.GifFrame,
+	StayDownLeft: giflib.GifFrame,
+	StayDownRight: giflib.GifFrame,
+
 	-- Other animations
 	[any]: giflib.Gif,
 }
@@ -32,6 +41,15 @@ export type ConstructorAnimations = {
 	WalkRightUp: gifInfo.Func,
 	WalkRightDown: gifInfo.Func,
 	IDLE: gifInfo.Func,
+
+	StayUp: gifInfo.Func,
+	StayDown: gifInfo.Func,
+	StayRight: gifInfo.Func,
+	StayLeft: gifInfo.Func,
+	StayUpLeft: gifInfo.Func,
+	StayUpRight: gifInfo.Func,
+	StayDownLeft: gifInfo.Func,
+	StayDownRight: gifInfo.Func,
 
 	-- Other animations
 	[any]: gifInfo.Func,
