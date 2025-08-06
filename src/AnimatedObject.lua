@@ -22,10 +22,10 @@ export type Animations = {
 	StayDown: giflib.GifFrame,
 	StayRight: giflib.GifFrame,
 	StayLeft: giflib.GifFrame,
-	StayUpLeft: giflib.GifFrame,
-	StayUpRight: giflib.GifFrame,
-	StayDownLeft: giflib.GifFrame,
-	StayDownRight: giflib.GifFrame,
+	StayLeftUp: giflib.GifFrame,
+	StayLeftDown: giflib.GifFrame,
+	StayRightUp: giflib.GifFrame,
+	StayRightDown: giflib.GifFrame,
 
 	-- Other animations
 	[any]: giflib.Gif,
@@ -40,16 +40,17 @@ export type ConstructorAnimations = {
 	WalkLeftDown: gifInfo.Func,
 	WalkRightUp: gifInfo.Func,
 	WalkRightDown: gifInfo.Func,
+
 	IDLE: gifInfo.Func,
 
 	StayUp: gifInfo.Func,
 	StayDown: gifInfo.Func,
 	StayRight: gifInfo.Func,
 	StayLeft: gifInfo.Func,
-	StayUpLeft: gifInfo.Func,
-	StayUpRight: gifInfo.Func,
-	StayDownLeft: gifInfo.Func,
-	StayDownRight: gifInfo.Func,
+	StayLeftUp: gifInfo.Func,
+	StayLeftDown: gifInfo.Func,
+	StayRightUp: gifInfo.Func,
+	StayRightDown: gifInfo.Func,
 
 	-- Other animations
 	[any]: gifInfo.Func,
@@ -94,7 +95,9 @@ local function CreateAnimationsFromConstructor(
 end
 
 --[[
-	Set current animation
+	Set current animation.
+
+	Automatically stop current animation and start specified animation
 ]]
 function animatedObject.SetAnimation(
 	self: AnimatedObject,
@@ -102,10 +105,10 @@ function animatedObject.SetAnimation(
 )
 	if
 		self.Animations[self.CurrentAnimation]
+		and self.Animations[animationName]
 		and self.CurrentAnimation ~= animationName
 	then
-		self.Animations[self.CurrentAnimation]:StopAnimation()
-		self.Animations[self.CurrentAnimation]:Hide()
+		self:StopAnimation()
 
 		self.CurrentAnimation = animationName
 
@@ -113,6 +116,11 @@ function animatedObject.SetAnimation(
 	end
 end
 
+--[[
+	Raw start current or specified animation.
+
+	Usually you don't need to call this function.
+]]
 function animatedObject.StartAnimation(
 	self: AnimatedObject,
 	animationName: string?
@@ -120,11 +128,16 @@ function animatedObject.StartAnimation(
 	self.Animations[animationName or self.CurrentAnimation]:StartAnimation()
 end
 
+--[[
+	Stop (and hide) current or specified animation
+]]
 function animatedObject.StopAnimation(
 	self: AnimatedObject,
 	animationName: string?
 )
-	self.Animations[animationName or self.CurrentAnimation]:StopAnimation()
+	local name = animationName or self.CurrentAnimation
+	self.Animations[name]:StopAnimation()
+	self.Animations[name]:Hide()
 end
 
 --[[
@@ -137,6 +150,9 @@ function animatedObject.StopAnimations(self: AnimatedObject)
 	end
 end
 
+--[[
+	AnimatedObject constructor
+]]
 function animatedObject.new(
 	Animations: ConstructorAnimations,
 	Parent: ExImage.ExImage

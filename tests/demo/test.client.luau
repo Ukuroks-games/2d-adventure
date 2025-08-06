@@ -32,10 +32,9 @@ local Pause = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
 	:WaitForChild("ScreenGui").Pause
 
-	Pause.Size = UDim2.fromScale(0.1, 0.1)
+Pause.Size = UDim2.fromScale(0.1, 0.1)
 Pause.Position = UDim2.fromScale(0.9, 0.01)
 Pause.ZIndex = 999
-	
 
 local cam = camera2d.new(1)
 
@@ -131,6 +130,30 @@ local _game = Game.new(
 			giflib.Frame.new("103617057842315", 0.2), -- 2
 			giflib.Frame.new("116455657084740", 0.2), -- 3
 			giflib.Frame.new("130845587189191", 0.2), --3
+		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
+		["StayUp"] = gifInfo.new({
+			giflib.Frame.new("137969061702953", 0.2), -- 1
+		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
+		["StayDown"] = gifInfo.new({
+			giflib.Frame.new("80528378729899", 0.2), -- 1
+		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
+		["StayLeft"] = gifInfo.new({
+			giflib.Frame.new("107191532188364", 0.2), -- 1
+		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
+		["StayRight"] = gifInfo.new({
+			giflib.Frame.new("75448470198348", 0.2), -- 1
+		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
+		["StayLeftDown"] = gifInfo.new({
+			giflib.Frame.new("87327527117896", 0.2),
+		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
+		["StayRightDown"] = gifInfo.new({
+			giflib.Frame.new("133771113402094", 0.2),
+		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
+		["StayLeftUp"] = gifInfo.new({
+			giflib.Frame.new("103596248518223", 0.2),
+		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
+		["StayRightUp"] = gifInfo.new({
+			giflib.Frame.new("130845587189191", 0.2),
 		}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
 	}, { X = 10, Y = 9 }, Vector3.new(25, 50, 4)),
 	map1

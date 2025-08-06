@@ -124,7 +124,8 @@ function Character2d.WalkMoveRaw(
 
 	self.MoveStopConnection = t.Completed:Connect(
 		function(_: Enum.PlaybackState)
-			self:StopAnimation()
+
+			self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
 		end
 	)
 
