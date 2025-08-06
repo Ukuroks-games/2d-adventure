@@ -143,19 +143,19 @@ function Game.Right(self: GameStruct)
 end
 
 function Game.LeftUp(self: GameStruct)
-	Game.Move(self, -math.sqrt(2) / 2, math.sqrt(2) / 2) -- sin(45°) = cos(45°) = √2/2
+	Game.Move(self, -1, 1)
 end
 
 function Game.LeftDown(self: GameStruct)
-	Game.Move(self, -math.sqrt(2) / 2, -math.sqrt(2) / 2)
+	Game.Move(self, -1, -1)
 end
 
 function Game.RightUp(self: GameStruct)
-	Game.Move(self, math.sqrt(2) / 2, math.sqrt(2) / 2)
+	Game.Move(self, 1, 1)
 end
 
 function Game.RightDown(self: GameStruct)
-	Game.Move(self, math.sqrt(2) / 2, -math.sqrt(2) / 2)
+	Game.Move(self, 1, -1)
 end
 
 --[[
@@ -361,7 +361,6 @@ function Game.Start(self: Game)
 			stdlib.events.AnyEvent({
 				Move.CallEvent.Event,
 			}, self.Player.MoveEvent)
-
 
 			stdlib.events.AnyEvent({
 				self.Map.ObjectMovement,

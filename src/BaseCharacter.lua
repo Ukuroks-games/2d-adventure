@@ -81,7 +81,29 @@ function BaseCharacter2d.GetMoveTween(
 	return tween
 end
 
-function BaseCharacter2d.WalkMove(
+function BaseCharacter2d.NormalizeXY(X: number, Y: number): (number, number)
+	-- Привидение значений X и Y к [-1; 1]
+	if not (X == 0 and Y == 0) then
+		local a = math.atan(Y / X)
+
+		local function sign(n: number): number
+			local r = math.sign(n)
+
+			if r == 0 then
+				r = 1
+			end
+
+			return r
+		end
+
+		return math.cos(a) * X,
+			math.sin(a) * sign(X) * math.abs(Y)
+	else
+		return 0, 0
+	end
+end
+
+function BaseCharacter2d.WalkMoveRaw(
 	self: BaseCharacter2d,
 	X: number,
 	Y: number,
@@ -95,6 +117,18 @@ function BaseCharacter2d.WalkMove(
 	end
 
 	return t
+end
+
+function BaseCharacter2d.WalkMove(
+	self: BaseCharacter2d,
+	X: number,
+	Y: number,
+	RelativeObject: GuiObject? | ExImage.ExImage,
+	cooldownTime: number?
+)
+	X, Y = self.NormalizeXY(X, Y)
+
+	return self:WalkMoveRaw(X, Y, RelativeObject, cooldownTime)
 end
 
 --[[

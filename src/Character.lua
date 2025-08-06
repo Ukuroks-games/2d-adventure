@@ -43,7 +43,7 @@ function Character2d.SetZIndex(self: Character2d, ZIndex: number)
 	end
 end
 
-function Character2d.WalkMove(
+function Character2d.WalkMoveRaw(
 	self: Character2d,
 	X: number,
 	Y: number,
@@ -113,7 +113,7 @@ function Character2d.WalkMove(
 
 	self:SetAnimation(animationName)
 
-	return BaseCharacter.WalkMove(self, X, Y, RelativeObject, cooldownTime)
+	return BaseCharacter.WalkMoveRaw(self, X, Y, RelativeObject, cooldownTime)
 end
 
 function Character2d.new(
