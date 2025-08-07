@@ -1,5 +1,6 @@
 local stdlib = require(script.Parent.Parent.stdlib)
 local ExImage = require(script.Parent.ExImage)
+local base2d = require(script.Parent.base2d)
 local config = require(script.Parent.config)
 
 local mutex = stdlib.mutex
@@ -9,7 +10,7 @@ local mutex = stdlib.mutex
 
 	interface for another classes, that can have physic
 ]]
-local physicObject = {}
+local physicObject = setmetatable({}, { __index = base2d })
 
 export type TouchSide = { PhysicObject }
 
@@ -43,7 +44,7 @@ export type PhysicObjectStruct = {
 
 
 		example:
-		```lua
+		```luau
 		obj.Touched:Connect(function(obj: PhysicObject)
 
 		end)
@@ -59,8 +60,6 @@ export type PhysicObjectStruct = {
 
 	physicImage: Frame,
 
-	Image: ExImage.ExImage,
-
 	Size: Vector3,
 
 	CanCollide: boolean,
@@ -73,18 +72,15 @@ export type PhysicObjectStruct = {
 
 	TouchMsgMutex: stdlib.Mutex,
 
-	ID: number
-}
+	ID: number,
+} & base2d.Base2dStruct
 
 --[[
 	Счётчик id. при создании нового `physicObject` увеличивается на 1. Вообще надо бы заменить на нормальный контроллер id, но пока пофиг думаю 10^30 (наверное столько) хватит
 ]]
 physicObject.Id = -999999999999990
 
-export type PhysicObject = typeof(setmetatable(
-	{} :: PhysicObjectStruct,
-	{ __index = physicObject }
-))
+export type PhysicObject = PhysicObjectStruct & typeof(physicObject)
 
 --[[
 
@@ -232,7 +228,9 @@ end
 function physicObject.SetPositionY(self: PhysicObject, pos: number)
 	self.physicImage.Position = UDim2.fromOffset(
 		self.physicImage.Position.X.Offset,
-		pos + self.Image.ImageInstance.AbsoluteSize.Y - self.physicImage.AbsoluteSize.Y
+		pos
+			+ self.Image.ImageInstance.AbsoluteSize.Y
+			- self.physicImage.AbsoluteSize.Y
 	)
 end
 
@@ -240,7 +238,12 @@ end
 	Изменить координаты напрямую
 ]]
 function physicObject.SetPositionRaw(self: PhysicObject, pos: Vector2)
-	self.physicImage.Position = UDim2.new(self.physicImage.Position.X.Scale, pos.X, self.physicImage.Position.Y.Scale, pos.Y)
+	self.physicImage.Position = UDim2.new(
+		self.physicImage.Position.X.Scale,
+		pos.X,
+		self.physicImage.Position.Y.Scale,
+		pos.Y
+	)
 end
 
 --[[
@@ -311,31 +314,34 @@ function physicObject.new(
 ): PhysicObject
 	local TouchedEvent = Instance.new("BindableEvent")
 
-	local this: PhysicObjectStruct = {
-		Touched = TouchedEvent.Event,
-		TouchedEvent = TouchedEvent,
-		physicImage = Instance.new("Frame"),
-		CanCollide = canCollide or true,
-		TouchedSideMutex = mutex.new(false),
-		TouchedSide = {
-			Right = {},
-			Left = {},
-			Up = {},
-			Down = {},
-		},
-		Anchored = (function()
-			if anchored ~= nil then
-				return anchored
-			else
-				return true
-			end
-		end)(),
-		Size = Vector3.new(),
-		Image = Image,
-		TouchMsg = {},
-		TouchMsgMutex = mutex.new(),
-		ID = physicObject.Id
-	}
+	local this: PhysicObject = setmetatable(
+		{
+			Touched = TouchedEvent.Event,
+			TouchedEvent = TouchedEvent,
+			physicImage = Instance.new("Frame"),
+			CanCollide = canCollide or true,
+			TouchedSideMutex = mutex.new(false),
+			TouchedSide = {
+				Right = {},
+				Left = {},
+				Up = {},
+				Down = {},
+			},
+			Anchored = (function()
+				if anchored ~= nil then
+					return anchored
+				else
+					return true
+				end
+			end)(),
+			Size = Vector3.new(),
+			Image = Image,
+			TouchMsg = {},
+			TouchMsgMutex = mutex.new(),
+			ID = physicObject.Id,
+		} :: PhysicObjectStruct,
+		{ __index = physicObject }
+	)
 
 	physicObject.Id += 1
 
@@ -350,8 +356,6 @@ function physicObject.new(
 			return 1
 		end
 	end)()
-
-	setmetatable(this, { __index = physicObject })
 
 	this.Touched:Connect(function(obj: PhysicObject)
 		--[[
@@ -430,29 +434,51 @@ function physicObject.new(
 			this.TouchedSideMutex:wait()
 
 			local function calc(s: PhysicObject, b: PhysicObject, m: number)
-				local X, Y = s.physicImage.Position.X.Offset, s.physicImage.Position.Y.Offset
+				local X, Y =
+					s.physicImage.Position.X.Offset,
+					s.physicImage.Position.Y.Offset
 
-				if stdlib.algorithm.find_if(s.TouchedSide.Up, function(value): boolean 
-					return value.ID == b.ID
-				end) then
+				if
+					stdlib.algorithm.find_if(
+						s.TouchedSide.Up,
+						function(value): boolean
+							return value.ID == b.ID
+						end
+					)
+				then
 					Y += (b.physicImage.AbsolutePosition.Y + b.physicImage.AbsoluteSize.Y - s.physicImage.AbsolutePosition.Y) / m
 				end
 
-				if stdlib.algorithm.find_if(s.TouchedSide.Down, function(value): boolean 
-					return value.ID == b.ID
-				end) then
+				if
+					stdlib.algorithm.find_if(
+						s.TouchedSide.Down,
+						function(value): boolean
+							return value.ID == b.ID
+						end
+					)
+				then
 					Y -= (s.physicImage.AbsolutePosition.Y + s.physicImage.AbsoluteSize.Y - b.physicImage.AbsolutePosition.Y) / m
 				end
 
-				if stdlib.algorithm.find_if(s.TouchedSide.Left, function(value): boolean 
-					return value.ID == b.ID
-				end) then
+				if
+					stdlib.algorithm.find_if(
+						s.TouchedSide.Left,
+						function(value): boolean
+							return value.ID == b.ID
+						end
+					)
+				then
 					X += (b.physicImage.AbsolutePosition.X + b.physicImage.AbsoluteSize.X - s.physicImage.AbsolutePosition.X) / m
 				end
 
-				if stdlib.algorithm.find_if(s.TouchedSide.Right, function(value): boolean 
-					return value.ID == b.ID
-				end) then
+				if
+					stdlib.algorithm.find_if(
+						s.TouchedSide.Right,
+						function(value): boolean
+							return value.ID == b.ID
+						end
+					)
+				then
 					X -= (s.physicImage.AbsolutePosition.X + s.physicImage.AbsoluteSize.X - b.physicImage.AbsolutePosition.X) / m
 				end
 

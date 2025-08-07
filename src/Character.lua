@@ -38,9 +38,11 @@ end
 function Character2d.SetZIndex(self: Character2d, ZIndex: number)
 	BaseCharacter.SetZIndex(self, ZIndex)
 
-	for _, animation in pairs(self.Animations) do
-		for _, frame in pairs(animation.Frames) do
-			frame.Image.ZIndex = ZIndex
+	for _, group in pairs(self.Animations) do
+		for _, animation in pairs(group) do
+			for _, frame in pairs(animation.Frames) do
+				frame.Image.ZIndex = ZIndex
+			end
 		end
 	end
 end

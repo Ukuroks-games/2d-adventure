@@ -89,7 +89,7 @@ local _game = Game.new(
 				giflib.Frame.new("131056695027889", 0.08), -- 11
 				giflib.Frame.new("82185418640948", 0.08), -- 12
 			}, true, true, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
-		}
+		},
 		["Walk"] = {
 			["Up"] = gifInfo.new({
 				giflib.Frame.new("137969061702953", 0.2), -- 1
@@ -134,7 +134,7 @@ local _game = Game.new(
 				giflib.Frame.new("116455657084740", 0.2), -- 3
 				giflib.Frame.new("130845587189191", 0.2), -- 3
 			}, true, false, giflib.gif.Mode.Replace, Enum.ResamplerMode.Pixelated),
-		}
+		},
 		["Stay"] = {
 			["Up"] = gifInfo.new({
 				giflib.Frame.new("137969061702953", 0.2), -- 1

@@ -1,10 +1,11 @@
 local ExImage = require(script.Parent.ExImage)
 local gifInfo = require(script.Parent.gifInfo)
 local giflib = require(script.Parent.Parent.giflib)
+local base2d = require(script.Parent.base2d)
 
-local animatedObject = {}
+local animatedObject = setmetatable({}, { __index = base2d })
 
-tupe AnimationsGroupDefault<T> = { [string]: T }
+type AnimationsGroupDefault<T> = { [string]: T }
 
 --[[
 	Animations list
@@ -13,7 +14,7 @@ tupe AnimationsGroupDefault<T> = { [string]: T }
 ]]
 type AnimationsList<T> = {
 	Walk: {
-		WalkUp: T,
+		Up: T,
 		Down: T,
 		Right: T,
 		Left: T,
@@ -21,7 +22,7 @@ type AnimationsList<T> = {
 		LeftDown: T,
 		RightUp: T,
 		RightDown: T,
-	} & AnimationsGroupDefault<T>
+	},
 
 	Stay: {
 		Up: T,
@@ -32,43 +33,45 @@ type AnimationsList<T> = {
 		LeftDown: T,
 		RightUp: T,
 		RightDown: T,
-	} & AnimationsGroupDefault<T>
+	},
 
-	IDLE: AnimationsGroupDefault<T>
-
-	-- Other custom animations
-	[string]: AnimationsGroupDefault<T>,
+	IDLE: AnimationsGroupDefault<T>,
 }
-
 
 export type Animations = AnimationsList<giflib.Gif>
 
 export type ConstructorAnimations = AnimationsList<gifInfo.Func>
 
-export type AnimatedObjectStruct =  {
+export type AnimatedObjectStruct = {
 	--[[
 		Анимации
 	]]
 	Animations: Animations,
 
 	--[[
-		Текущяя анимация
+		Текущая анимация
 	]]
 	CurrentAnimation: string,
-
-	--[[
-
-	]]
-	Image: ExImage.ExImage,
-}
+} & base2d.Base2dStruct
 
 --[[
 	Animations controller
 ]]
-export type AnimatedObject = typeof(setmetatable(
-	{} :: AnimatedObjectStruct,
-	{ __index = animatedObject }
-))
+export type AnimatedObject = AnimatedObjectStruct & typeof(animatedObject)
+
+function animatedObject.Preload(self: AnimatedObject)
+	local t = base2d.Preload(self)
+
+	for _, group in pairs(self.Animations) do
+		for _, gif in pairs(group) do
+			for _, frame in pairs(gif.Frames) do
+				table.insert(t, frame.Image.Image)
+			end
+		end
+	end
+
+	return t
+end
 
 --[[
 
@@ -99,7 +102,7 @@ end
 	GetAnimation
 ]]
 function animatedObject.GetAnimation(
-	self: AnimatedObject, 
+	self: AnimatedObject,
 	animationName: string
 ): giflib.Gif?
 	local g = self.Animations[animationName:sub(1, 4)]
@@ -107,6 +110,7 @@ function animatedObject.GetAnimation(
 	if g then
 		return g[animationName:sub(5)]
 	else
+		warn("Animation " .. tostring(animationName) .. "not exist")
 		return nil
 	end
 end
@@ -122,11 +126,8 @@ function animatedObject.SetAnimation(
 )
 	local Animation = self:GetAnimation(animationName)
 
-	if
-		Animation
-		and self.CurrentAnimation ~= animationName
-	then
-		self:StopAnimation(animationName)
+	if Animation and self.CurrentAnimation ~= animationName then
+		self:StopAnimation()
 
 		self.CurrentAnimation = animationName
 
@@ -143,7 +144,11 @@ function animatedObject.StartAnimation(
 	self: AnimatedObject,
 	animationName: string?
 )
-	self:GetAnimation(animationName):StartAnimation()
+	local animation = self:GetAnimation(animationName or self.CurrentAnimation)
+
+	if animation then
+		animation:StartAnimation()
+	end
 end
 
 --[[
@@ -154,11 +159,13 @@ function animatedObject.StopAnimation(
 	animationName: string?
 )
 	local animation = self:GetAnimation(animationName or self.CurrentAnimation)
-	
+
 	if animation then
 		animation:StopAnimation()
 		animation:Hide()
 	end
+
+	return animation
 end
 
 --[[
