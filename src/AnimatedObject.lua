@@ -4,94 +4,111 @@ local giflib = require(script.Parent.Parent.giflib)
 
 local animatedObject = {}
 
+tupe AnimationsGroupDefault<T> = { [string]: T }
+
 --[[
 	Animations list
+
+	Group names only 4 symbols
 ]]
-export type Animations = {
-	WalkUp: giflib.Gif,
-	WalkDown: giflib.Gif,
-	WalkRight: giflib.Gif,
-	WalkLeft: giflib.Gif,
-	IDLE: giflib.Gif,
-	WalkLeftUp: giflib.Gif,
-	WalkLeftDown: giflib.Gif,
-	WalkRightUp: giflib.Gif,
-	WalkRightDown: giflib.Gif,
+type AnimationsList<T> = {
+	Walk: {
+		WalkUp: T,
+		Down: T,
+		Right: T,
+		Left: T,
+		LeftUp: T,
+		LeftDown: T,
+		RightUp: T,
+		RightDown: T,
+	} & AnimationsGroupDefault<T>
 
-	StayUp: giflib.GifFrame,
-	StayDown: giflib.GifFrame,
-	StayRight: giflib.GifFrame,
-	StayLeft: giflib.GifFrame,
-	StayLeftUp: giflib.GifFrame,
-	StayLeftDown: giflib.GifFrame,
-	StayRightUp: giflib.GifFrame,
-	StayRightDown: giflib.GifFrame,
+	Stay: {
+		Up: T,
+		Down: T,
+		Right: T,
+		Left: T,
+		LeftUp: T,
+		LeftDown: T,
+		RightUp: T,
+		RightDown: T,
+	} & AnimationsGroupDefault<T>
 
-	-- Other animations
-	[any]: giflib.Gif,
+	IDLE: AnimationsGroupDefault<T>
+
+	-- Other custom animations
+	[string]: AnimationsGroupDefault<T>,
 }
 
-export type ConstructorAnimations = {
-	WalkUp: gifInfo.Func,
-	WalkDown: gifInfo.Func,
-	WalkRight: gifInfo.Func,
-	WalkLeft: gifInfo.Func,
-	WalkLeftUp: gifInfo.Func,
-	WalkLeftDown: gifInfo.Func,
-	WalkRightUp: gifInfo.Func,
-	WalkRightDown: gifInfo.Func,
 
-	IDLE: gifInfo.Func,
+export type Animations = AnimationsList<giflib.Gif>
 
-	StayUp: gifInfo.Func,
-	StayDown: gifInfo.Func,
-	StayRight: gifInfo.Func,
-	StayLeft: gifInfo.Func,
-	StayLeftUp: gifInfo.Func,
-	StayLeftDown: gifInfo.Func,
-	StayRightUp: gifInfo.Func,
-	StayRightDown: gifInfo.Func,
+export type ConstructorAnimations = AnimationsList<gifInfo.Func>
 
-	-- Other animations
-	[any]: gifInfo.Func,
+export type AnimatedObjectStruct =  {
+	--[[
+		Анимации
+	]]
+	Animations: Animations,
+
+	--[[
+		Текущяя анимация
+	]]
+	CurrentAnimation: string,
+
+	--[[
+
+	]]
+	Image: ExImage.ExImage,
 }
 
 --[[
 	Animations controller
 ]]
 export type AnimatedObject = typeof(setmetatable(
-	{} :: {
-		--[[
-			Анимации
-		]]
-		Animations: Animations,
-
-		--[[
-			Текущяя анимация
-		]]
-		CurrentAnimation: string,
-
-		Image: ExImage.ExImage,
-	},
+	{} :: AnimatedObjectStruct,
 	{ __index = animatedObject }
 ))
 
+--[[
+
+]]
 local function CreateAnimationsFromConstructor(
 	Animations: ConstructorAnimations,
 	PlayerFrame: ExImage.ExImage
 ): Animations
 	local CreatedAnimations = {}
 
-	for i, v in pairs(Animations) do
-		local gif = v(PlayerFrame.ImageInstance)
+	for GroupName, Group in pairs(Animations) do
+		CreatedAnimations[GroupName] = {}
 
-		gif:Hide()
-		gif:SetBackgroundTransparency(1)
+		for i, v in pairs(Group) do
+			local gif = v(PlayerFrame.ImageInstance)
 
-		CreatedAnimations[i] = gif
+			gif:Hide()
+			gif:SetBackgroundTransparency(1)
+
+			CreatedAnimations[GroupName][i] = gif
+		end
 	end
 
 	return CreatedAnimations
+end
+
+--[[
+	GetAnimation
+]]
+function animatedObject.GetAnimation(
+	self: AnimatedObject, 
+	animationName: string
+): giflib.Gif?
+	local g = self.Animations[animationName:sub(1, 4)]
+
+	if g then
+		return g[animationName:sub(5)]
+	else
+		return nil
+	end
 end
 
 --[[
@@ -103,16 +120,17 @@ function animatedObject.SetAnimation(
 	self: AnimatedObject,
 	animationName: string
 )
+	local Animation = self:GetAnimation(animationName)
+
 	if
-		self.Animations[self.CurrentAnimation]
-		and self.Animations[animationName]
+		Animation
 		and self.CurrentAnimation ~= animationName
 	then
-		self:StopAnimation()
+		self:StopAnimation(animationName)
 
 		self.CurrentAnimation = animationName
 
-		self.Animations[self.CurrentAnimation]:RestartAnimation(true)
+		Animation:RestartAnimation(true)
 	end
 end
 
@@ -125,7 +143,7 @@ function animatedObject.StartAnimation(
 	self: AnimatedObject,
 	animationName: string?
 )
-	self.Animations[animationName or self.CurrentAnimation]:StartAnimation()
+	self:GetAnimation(animationName):StartAnimation()
 end
 
 --[[
@@ -135,9 +153,12 @@ function animatedObject.StopAnimation(
 	self: AnimatedObject,
 	animationName: string?
 )
-	local name = animationName or self.CurrentAnimation
-	self.Animations[name]:StopAnimation()
-	self.Animations[name]:Hide()
+	local animation = self:GetAnimation(animationName or self.CurrentAnimation)
+	
+	if animation then
+		animation:StopAnimation()
+		animation:Hide()
+	end
 end
 
 --[[
@@ -145,8 +166,10 @@ end
 ]]
 function animatedObject.StopAnimations(self: AnimatedObject)
 	for _, v in pairs(self.Animations) do
-		v:StopAnimation()
-		v:Hide()
+		for _, animation in pairs(v) do
+			animation:StopAnimation()
+			animation:Hide()
+		end
 	end
 end
 
@@ -157,7 +180,7 @@ function animatedObject.new(
 	Animations: ConstructorAnimations,
 	Parent: ExImage.ExImage
 ): AnimatedObject
-	local self = {
+	local self: AnimatedObjectStruct = {
 		Animations = CreateAnimationsFromConstructor(Animations, Parent),
 		Image = Parent,
 		CurrentAnimation = "IDLE",
