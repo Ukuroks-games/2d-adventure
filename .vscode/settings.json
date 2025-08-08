@@ -20,7 +20,8 @@
 		"setmetatable",
 		"shee",
 		"stdlib",
-		"Thumbstick"
+		"Thumbstick",
+		"tostring"
 	],
 	"cSpell.ignorePaths": [
 		"vscode-extension",

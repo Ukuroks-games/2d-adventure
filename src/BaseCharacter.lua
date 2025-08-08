@@ -96,8 +96,7 @@ function BaseCharacter2d.NormalizeXY(X: number, Y: number): (number, number)
 			return r
 		end
 
-		return math.cos(a) * X,
-			math.sin(a) * sign(X) * math.abs(Y)
+		return math.cos(a) * X, math.sin(a) * sign(X) * math.abs(Y)
 	else
 		return 0, 0
 	end

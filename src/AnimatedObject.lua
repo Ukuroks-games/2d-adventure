@@ -1,112 +1,174 @@
 local ExImage = require(script.Parent.ExImage)
 local gifInfo = require(script.Parent.gifInfo)
 local giflib = require(script.Parent.Parent.giflib)
+local base2d = require(script.Parent.base2d)
 
-local animatedObject = {}
+--[[
+	character animation controller
+]]
+local animatedObject = setmetatable({}, { __index = base2d })
+
+type AnimationsGroupDefault<T> = { [string]: T }
 
 --[[
 	Animations list
+
+	Group names only 4 symbols
 ]]
-export type Animations = {
-	WalkUp: giflib.Gif,
-	WalkDown: giflib.Gif,
-	WalkRight: giflib.Gif,
-	WalkLeft: giflib.Gif,
-	IDLE: giflib.Gif,
-	WalkLeftUp: giflib.Gif,
-	WalkLeftDown: giflib.Gif,
-	WalkRightUp: giflib.Gif,
-	WalkRightDown: giflib.Gif,
+type AnimationsList<T> = {
+	Walk: {
+		Up: T,
+		Down: T,
+		Right: T,
+		Left: T,
+		LeftUp: T,
+		LeftDown: T,
+		RightUp: T,
+		RightDown: T,
+	},
 
-	-- Other animations
-	[any]: giflib.Gif,
+	Stay: {
+		Up: T,
+		Down: T,
+		Right: T,
+		Left: T,
+		LeftUp: T,
+		LeftDown: T,
+		RightUp: T,
+		RightDown: T,
+	},
+
+	IDLE: AnimationsGroupDefault<T>,
 }
 
-export type ConstructorAnimations = {
-	WalkUp: gifInfo.Func,
-	WalkDown: gifInfo.Func,
-	WalkRight: gifInfo.Func,
-	WalkLeft: gifInfo.Func,
-	WalkLeftUp: gifInfo.Func,
-	WalkLeftDown: gifInfo.Func,
-	WalkRightUp: gifInfo.Func,
-	WalkRightDown: gifInfo.Func,
-	IDLE: gifInfo.Func,
+export type Animations = AnimationsList<giflib.Gif>
 
-	-- Other animations
-	[any]: gifInfo.Func,
-}
+export type ConstructorAnimations = AnimationsList<gifInfo.Func>
+
+export type AnimatedObjectStruct = {
+	--[[
+		Анимации
+	]]
+	Animations: Animations,
+
+	--[[
+		Текущая анимация
+	]]
+	CurrentAnimation: string,
+} & base2d.Base2dStruct
 
 --[[
 	Animations controller
 ]]
-export type AnimatedObject = typeof(setmetatable(
-	{} :: {
-		--[[
-			Анимации
-		]]
-		Animations: Animations,
+export type AnimatedObject = AnimatedObjectStruct & typeof(animatedObject)
 
-		--[[
-			Текущяя анимация
-		]]
-		CurrentAnimation: string,
+function animatedObject.Preload(self: AnimatedObject)
+	local t = base2d.Preload(self)
 
-		Image: ExImage.ExImage,
-	},
-	{ __index = animatedObject }
-))
+	for _, group in pairs(self.Animations) do
+		for _, gif in pairs(group) do
+			for _, frame in pairs(gif.Frames) do
+				table.insert(t, frame.Image.Image)
+			end
+		end
+	end
 
+	return t
+end
+
+--[[
+
+]]
 local function CreateAnimationsFromConstructor(
 	Animations: ConstructorAnimations,
 	PlayerFrame: ExImage.ExImage
 ): Animations
 	local CreatedAnimations = {}
 
-	for i, v in pairs(Animations) do
-		local gif = v(PlayerFrame.ImageInstance)
+	for GroupName, Group in pairs(Animations) do
+		CreatedAnimations[GroupName] = {}
 
-		gif:Hide()
-		gif:SetBackgroundTransparency(1)
+		for i, v in pairs(Group) do
+			local gif = v(PlayerFrame.ImageInstance)
 
-		CreatedAnimations[i] = gif
+			gif:Hide()
+			gif:SetBackgroundTransparency(1)
+
+			CreatedAnimations[GroupName][i] = gif
+		end
 	end
 
 	return CreatedAnimations
 end
 
 --[[
-	Set current animation
+	GetAnimation
+]]
+function animatedObject.GetAnimation(
+	self: AnimatedObject,
+	animationName: string
+): giflib.Gif?
+	local g = self.Animations[animationName:sub(1, 4)]
+
+	if g then
+		return g[animationName:sub(5)]
+	else
+		warn("Animation " .. tostring(animationName) .. "not exist")
+		return nil
+	end
+end
+
+--[[
+	Set current animation.
+
+	Automatically stop current animation and start specified animation
 ]]
 function animatedObject.SetAnimation(
 	self: AnimatedObject,
 	animationName: string
 )
-	if
-		self.Animations[self.CurrentAnimation]
-		and self.CurrentAnimation ~= animationName
-	then
-		self.Animations[self.CurrentAnimation]:StopAnimation()
-		self.Animations[self.CurrentAnimation]:Hide()
+	local Animation = self:GetAnimation(animationName)
+
+	if Animation and self.CurrentAnimation ~= animationName then
+		self:StopAnimation()
 
 		self.CurrentAnimation = animationName
 
-		self.Animations[self.CurrentAnimation]:RestartAnimation(true)
+		Animation:RestartAnimation(true)
 	end
 end
 
+--[[
+	Raw start current or specified animation.
+
+	Usually you don't need to call this function.
+]]
 function animatedObject.StartAnimation(
 	self: AnimatedObject,
 	animationName: string?
 )
-	self.Animations[animationName or self.CurrentAnimation]:StartAnimation()
+	local animation = self:GetAnimation(animationName or self.CurrentAnimation)
+
+	if animation then
+		animation:StartAnimation()
+	end
 end
 
+--[[
+	Stop (and hide) current or specified animation
+]]
 function animatedObject.StopAnimation(
 	self: AnimatedObject,
 	animationName: string?
 )
-	self.Animations[animationName or self.CurrentAnimation]:StopAnimation()
+	local animation = self:GetAnimation(animationName or self.CurrentAnimation)
+
+	if animation then
+		animation:StopAnimation()
+		animation:Hide()
+	end
+
+	return animation
 end
 
 --[[
@@ -114,16 +176,21 @@ end
 ]]
 function animatedObject.StopAnimations(self: AnimatedObject)
 	for _, v in pairs(self.Animations) do
-		v:StopAnimation()
-		v:Hide()
+		for _, animation in pairs(v) do
+			animation:StopAnimation()
+			animation:Hide()
+		end
 	end
 end
 
+--[[
+	AnimatedObject constructor
+]]
 function animatedObject.new(
 	Animations: ConstructorAnimations,
 	Parent: ExImage.ExImage
 ): AnimatedObject
-	local self = {
+	local self: AnimatedObjectStruct = {
 		Animations = CreateAnimationsFromConstructor(Animations, Parent),
 		Image = Parent,
 		CurrentAnimation = "IDLE",

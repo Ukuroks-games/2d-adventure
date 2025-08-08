@@ -244,15 +244,7 @@ end
 function map.Loading(self: Map, Progress: NumberValue)
 	local i = 0
 	for _, v in pairs(self.Objects) do
-		if v.Animations then
-			for _, b in pairs(v.Animations) do
-				b:Preload()
-			end
-		end
-
-		if typeof(v.Image) == "ImageLabel" then
-			ContentProvider:PreloadAsync({ v.Image.Image })
-		end
+		v:Preload()
 
 		i += 1
 		Progress.Value = i / (#self.Objects + 1)

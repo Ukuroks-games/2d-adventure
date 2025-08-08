@@ -18,7 +18,9 @@ local Character2d = setmetatable({}, {
 	Character with animations
 ]]
 export type Character2d =
-	{}
+	{
+		MoveStopConnection: RBXScriptSignal?,
+	}
 	& AnimatedObject.AnimatedObject
 	& BaseCharacter.BaseCharacter2d
 	& typeof(Character2d)
@@ -36,9 +38,11 @@ end
 function Character2d.SetZIndex(self: Character2d, ZIndex: number)
 	BaseCharacter.SetZIndex(self, ZIndex)
 
-	for _, animation in pairs(self.Animations) do
-		for _, frame in pairs(animation.Frames) do
-			frame.Image.ZIndex = ZIndex
+	for _, group in pairs(self.Animations) do
+		for _, animation in pairs(group) do
+			for _, frame in pairs(animation.Frames) do
+				frame.Image.ZIndex = ZIndex
+			end
 		end
 	end
 end
@@ -50,6 +54,10 @@ function Character2d.WalkMoveRaw(
 	RelativeObject: GuiObject? | ExImage.ExImage,
 	cooldownTime: number?
 ): Tween
+	if self.MoveStopConnection then
+		self.MoveStopConnection:Disconnect()
+	end
+
 	local touchedSide = self:GetTouchedSide()
 
 	local function CheckCanMoveToSide(side: physicObject.TouchSide): boolean
@@ -113,7 +121,17 @@ function Character2d.WalkMoveRaw(
 
 	self:SetAnimation(animationName)
 
-	return BaseCharacter.WalkMoveRaw(self, X, Y, RelativeObject, cooldownTime)
+	local t =
+		BaseCharacter.WalkMoveRaw(self, X, Y, RelativeObject, cooldownTime)
+
+	self.MoveStopConnection = t.Completed:Connect(
+		function(_: Enum.PlaybackState)
+
+			self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
+		end
+	)
+
+	return t
 end
 
 function Character2d.new(
