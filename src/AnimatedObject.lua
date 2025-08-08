@@ -3,6 +3,9 @@ local gifInfo = require(script.Parent.gifInfo)
 local giflib = require(script.Parent.Parent.giflib)
 local base2d = require(script.Parent.base2d)
 
+--[[
+	character animation controller
+]]
 local animatedObject = setmetatable({}, { __index = base2d })
 
 type AnimationsGroupDefault<T> = { [string]: T }

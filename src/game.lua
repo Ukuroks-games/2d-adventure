@@ -121,7 +121,13 @@ local function showAnimation(self: Game, animationName: string)
 end
 
 function Game.IDLE(self: Game)
-	showAnimation(self, "IDLE")
+	showAnimation(
+		self,
+		"IDLE"
+			.. stdlib.algorithm.GetIndexs(self.Player.Animations.IDLE)[math.random(
+				#self.Player.Animations.IDLE
+			)]
+	)
 end
 
 function Game.Up(self: GameStruct)
@@ -177,7 +183,6 @@ function Game.Move(self: GameStruct, X: number, Y: number)
 			self.MoveTween:Play()
 			self.Moving = false
 		end
-
 	end
 end
 
@@ -235,6 +240,8 @@ end
 ]]
 function Game.Start(self: Game)
 	self.ControlThread = task.spawn(function()
+		self.Player:SetAnimation("IDLE")
+
 		-- Keyboard controls
 
 		local function w(InputObject: InputObject, a1: boolean)
