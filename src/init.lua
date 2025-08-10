@@ -1,3 +1,5 @@
+--!strict
+
 local Game = require(script.game)
 local Object2d = require(script.Object2d)
 local Player2d = require(script.player)
@@ -17,7 +19,7 @@ local lib = {
 	Camera2d = Camera2d,
 	GifInfo = GifInfo,
 	ExImage = ExImage,
-	config = config
+	config = config,
 }
 
 export type Game = Game.Game

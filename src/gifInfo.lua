@@ -1,3 +1,5 @@
+--!strict
+
 local giflib = require(script.Parent.Parent.giflib)
 
 local gifInfo = {}

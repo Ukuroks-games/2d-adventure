@@ -1,3 +1,5 @@
+--!strict
+
 local AssetService = game:GetService("AssetService")
 
 --[[
@@ -23,7 +25,7 @@ function ExImage.new(
 ): ExImage
 	id = "rbxassetid://" .. id
 
-	local ImageInstance = Instance.new("Image" .. (function()
+	local ImageInstance: ImageLabel = Instance.new("Image" .. (function()
 		if isButton == true then
 			return "Button"
 		else

@@ -1,3 +1,5 @@
+--!strict
+
 local ExImage = require(script.Parent.ExImage)
 
 local base2d = {}
@@ -6,18 +8,21 @@ export type Base2dStruct = {
 	Image: ExImage.ExImage,
 }
 
-export type Base2d = typeof(setmetatable({} :: Base2dStruct, {__index = base2d}))
+export type Base2d = typeof(setmetatable(
+	{} :: Base2dStruct,
+	{ __index = base2d }
+))
 
-function base2d.Preload(self): { string }
-	return { self.Image.Image }
+function base2d.Preload(self: Base2d): { string }
+	return { self.Image.ImageInstance.Image }
 end
 
 function base2d.new(image: ExImage.ExImage): Base2d
 	local self: Base2dStruct = {
-		Image = image
+		Image = image,
 	}
 
-	setmetatable(self, {__index = base2d})
+	setmetatable(self, { __index = base2d })
 
 	return self
 end

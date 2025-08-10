@@ -1,4 +1,7 @@
+--!strict
+
 local TweenService = game:GetService("TweenService")
+
 local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
 local Character = require(script.Parent.Character)
@@ -43,45 +46,6 @@ function player2d.SetPositionRaw(self: Player2d, _: Vector2)
 		0.5,
 		-self.physicImage.AbsoluteSize.Y / 2
 	) -- move to center PlayerFrame
-end
-
-function player2d.GetMoveTween(
-	self: Player2d,
-	X: number,
-	Y: number,
-	RelativeObject: GuiObject? | ExImage.ExImage,
-	cooldownTime: number?
-): Tween?
-	local tween
-
-	if self.WalkSpeed.Calculated and RelativeObject and cooldownTime then
-		local instance = (function()
-			if typeof(RelativeObject) == "table" then
-				return RelativeObject.ImageInstance
-			else
-				return RelativeObject
-			end
-		end)()
-
-		tween = TweenService:Create(instance, TweenInfo.new(cooldownTime), {
-			["Position"] = UDim2.new(
-				UDim.new(
-					instance.Position.X.Scale,
-					instance.Position.X.Offset
-						- (X * self.WalkSpeed.Calculated.X)
-				),
-				UDim.new(
-					instance.Position.Y.Scale,
-					instance.Position.Y.Offset
-						+ (Y * self.WalkSpeed.Calculated.Y)
-				)
-			),
-		})
-	else
-		warn("self.Player.WalkSpeed hasn't been calculate yet")
-	end
-
-	return tween
 end
 
 --[[

@@ -1,4 +1,7 @@
+--!strict
+
 local ExImage = require(script.Parent.ExImage)
+
 local gifInfo = require(script.Parent.gifInfo)
 local giflib = require(script.Parent.Parent.giflib)
 local base2d = require(script.Parent.base2d)
@@ -60,7 +63,7 @@ export type AnimatedObjectStruct = {
 --[[
 	Animations controller
 ]]
-export type AnimatedObject = AnimatedObjectStruct & typeof(animatedObject)
+export type AnimatedObject = typeof(setmetatable({} :: AnimatedObjectStruct, {__index = animatedObject}))
 
 function animatedObject.Preload(self: AnimatedObject)
 	local t = base2d.Preload(self)

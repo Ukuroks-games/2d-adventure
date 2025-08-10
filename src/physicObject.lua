@@ -1,4 +1,7 @@
+--!strict
+
 local stdlib = require(script.Parent.Parent.stdlib)
+
 local ExImage = require(script.Parent.ExImage)
 local base2d = require(script.Parent.base2d)
 local config = require(script.Parent.config)
@@ -80,7 +83,10 @@ export type PhysicObjectStruct = {
 ]]
 physicObject.Id = -999999999999990
 
-export type PhysicObject = PhysicObjectStruct & typeof(physicObject)
+export type PhysicObject = typeof(setmetatable(
+	{} :: PhysicObjectStruct,
+	{ __index = physicObject }
+))
 
 --[[
 

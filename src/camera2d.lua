@@ -1,3 +1,5 @@
+--!strict
+
 local Camera2d = {}
 
 export type Camera2d = {

@@ -1,9 +1,11 @@
-local ControlType = require(script.Parent.ControlType)
+--!strict
+
 local InputLib = require(script.Parent.Parent.InputLib)
 local cooldown = require(script.Parent.Parent.cooldown)
 local stdlib = require(script.Parent.Parent.stdlib)
 local mutex = stdlib.mutex
 
+local ControlType = require(script.Parent.ControlType)
 local defaultControls = require(script.Parent.defaultControls)
 local map = require(script.Parent.map)
 local player = require(script.Parent.player)
@@ -72,13 +74,13 @@ export type GameStruct = {
 	]]
 	CollideSteppedEvent: BindableEvent,
 
-	MoveTween: Tween,
+	MoveTween: Tween?,
 
 	CollideMutex: stdlib.Mutex,
 
 	Moving: boolean,
 
-	ControlThread: thread,
+	ControlThread: thread?,
 
 	ControllerSettings: ControlType.Control,
 }
@@ -130,42 +132,42 @@ function Game.IDLE(self: Game)
 	)
 end
 
-function Game.Up(self: GameStruct)
+function Game.Up(self: Game)
 	Game.Move(self, 0, 1)
 end
 
-function Game.Down(self: GameStruct)
+function Game.Down(self: Game)
 	Game.Move(self, 0, -1)
 end
 
-function Game.Left(self: GameStruct)
+function Game.Left(self: Game)
 	Game.Move(self, -1, 0)
 end
 
-function Game.Right(self: GameStruct)
+function Game.Right(self: Game)
 	Game.Move(self, 1, 0)
 end
 
-function Game.LeftUp(self: GameStruct)
+function Game.LeftUp(self: Game)
 	Game.Move(self, -1, 1)
 end
 
-function Game.LeftDown(self: GameStruct)
+function Game.LeftDown(self: Game)
 	Game.Move(self, -1, -1)
 end
 
-function Game.RightUp(self: GameStruct)
+function Game.RightUp(self: Game)
 	Game.Move(self, 1, 1)
 end
 
-function Game.RightDown(self: GameStruct)
+function Game.RightDown(self: Game)
 	Game.Move(self, 1, -1)
 end
 
 --[[
 	Move player
 ]]
-function Game.Move(self: GameStruct, X: number, Y: number)
+function Game.Move(self: Game, X: number, Y: number)
 	if not self.Moving then
 		self.Moving = true
 
@@ -294,7 +296,7 @@ function Game.Start(self: Game)
 		then
 			local Move = cooldown.new(
 				self.CooldownTime,
-				function(_self, XPos: number?, YPos: number?)
+				function(_self: Game, XPos: number?, YPos: number?)
 					if
 						self.DestroyableObjects.Up.State.Value
 						and self.DestroyableObjects.Right.State.Value

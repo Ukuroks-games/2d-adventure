@@ -1,4 +1,9 @@
+-- services
+
 local TweenService = game:GetService("TweenService")
+
+--
+
 local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 
@@ -30,7 +35,13 @@ export type BaseCharacter2dStruct = {
 	MoveEvent: BindableEvent,
 } & physicObject.PhysicObjectStruct
 
-export type BaseCharacter2d = BaseCharacter2dStruct & typeof(BaseCharacter2d)
+--[[
+
+]]
+export type BaseCharacter2d = typeof(setmetatable(
+	{} :: BaseCharacter2dStruct,
+	{ __index = BaseCharacter2d }
+))
 
 --[[
 	Destroy player
@@ -40,27 +51,20 @@ function BaseCharacter2d.Destroy(self: BaseCharacter2d)
 	physicObject.Destroy(self)
 end
 
+--[[
+
+]]
 function BaseCharacter2d.GetMoveTween(
 	self: BaseCharacter2d,
 	X: number,
 	Y: number,
-	RelativeObject: GuiObject? | ExImage.ExImage,
+	RelativeObject: ExImage.ExImage,
 	cooldownTime: number?
 ): Tween?
 	local tween
 
-	if not RelativeObject then
-		RelativeObject = self.Image
-	end
-
 	if self.WalkSpeed.Calculated then
-		local instance = (function()
-			if typeof(RelativeObject) == "table" then
-				return RelativeObject.ImageInstance
-			else
-				return RelativeObject
-			end
-		end)()
+		local instance = RelativeObject.ImageInstance
 
 		tween = TweenService:Create(instance, TweenInfo.new(cooldownTime), {
 			["Position"] = UDim2.new(
@@ -81,6 +85,9 @@ function BaseCharacter2d.GetMoveTween(
 	return tween
 end
 
+--[[
+
+]]
 function BaseCharacter2d.NormalizeXY(X: number, Y: number): (number, number)
 	-- Привидение значений X и Y к [-1; 1]
 	if not (X == 0 and Y == 0) then
@@ -102,13 +109,20 @@ function BaseCharacter2d.NormalizeXY(X: number, Y: number): (number, number)
 	end
 end
 
+--[[
+
+]]
 function BaseCharacter2d.WalkMoveRaw(
 	self: BaseCharacter2d,
 	X: number,
 	Y: number,
-	RelativeObject: GuiObject? | ExImage.ExImage,
+	RelativeObject: ExImage.ExImage?,
 	cooldownTime: number?
 ): Tween?
+	if not RelativeObject then
+		RelativeObject = self.Image
+	end
+
 	local t = self:GetMoveTween(X, Y, RelativeObject, cooldownTime)
 
 	if t then
@@ -118,11 +132,14 @@ function BaseCharacter2d.WalkMoveRaw(
 	return t
 end
 
+--[[
+
+]]
 function BaseCharacter2d.WalkMove(
 	self: BaseCharacter2d,
 	X: number,
 	Y: number,
-	RelativeObject: GuiObject? | ExImage.ExImage,
+	RelativeObject: ExImage.ExImage?,
 	cooldownTime: number?
 )
 	X, Y = self.NormalizeXY(X, Y)

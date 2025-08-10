@@ -1,3 +1,5 @@
+--!strict
+
 local config = {
 	ShowHitboxes = false,
 	HitboxesTransparent = 0.75

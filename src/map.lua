@@ -1,10 +1,18 @@
+--!strict
+
+-- services
+
 local ContentProvider = game:GetService("ContentProvider")
 local TweenService = game:GetService("TweenService")
 
-local ExImage = require(script.Parent.ExImage)
+-- libs
+
 local stdlib = require(script.Parent.Parent.stdlib)
 local algorithm = stdlib.algorithm
 
+--
+
+local ExImage = require(script.Parent.ExImage)
 local Object2d = require(script.Parent.Object2d)
 local camera2d = require(script.Parent.camera2d)
 local physicObject = require(script.Parent.physicObject)

@@ -6,7 +6,7 @@ local Object2d = setmetatable({}, { __index = physicObject })
 --[[
 	Just static object without animations
 ]]
-export type Object2d = {
+export type Object2dStruct = {
 
 	--[[
 		К каким пикселям на реальном изображении прикрутить объект
@@ -16,7 +16,9 @@ export type Object2d = {
 	AnchorPosition: Vector2,
 
 	Image: ExImage.ExImage,
-} & physicObject.PhysicObject & typeof(Object2d)
+} & physicObject.PhysicObjectStruct
+
+export type Object2d = typeof(setmetatable({} :: Object2dStruct, {__index = Object2d}))
 
 --[[
 
@@ -143,14 +145,6 @@ end
 ]]
 function Object2d.GetSize(self: Object2d, background: ExImage.ExImage): Vector3
 	return Object2d.CalcSize(self.Size, background)
-end
-
---[[
-	Рассчитывает размеры и коо объекта
-]]
-function Object2d.CalcSizeAndPos(self: Object2d, background: ExImage.ExImage)
-	self:SetSize(self:GetSize(background))
-	self:SetPosition(self:GetPosition(background))
 end
 
 --[[

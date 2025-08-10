@@ -1,3 +1,5 @@
+--!strict
+
 local controlType = require(script.Parent.ControlType)
 local defaultControls = require(script.Parent.defaultControls)
 

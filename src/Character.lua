@@ -9,21 +9,22 @@ local physicObject = require(script.Parent.physicObject)
 	Character
 ]]
 local Character2d = setmetatable({}, {
-	__index = function(self: Character2d, key: string)
+	__index = function(self, key: string)
 		return AnimatedObject[key] or BaseCharacter[key]
 	end,
 })
 
+export type Character2dStruct = {
+	MoveStopConnection: RBXScriptConnection?,
+} & AnimatedObject.AnimatedObjectStruct & BaseCharacter.BaseCharacter2dStruct
+
 --[[
 	Character with animations
 ]]
-export type Character2d =
-	{
-		MoveStopConnection: RBXScriptSignal?,
-	}
-	& AnimatedObject.AnimatedObject
-	& BaseCharacter.BaseCharacter2d
-	& typeof(Character2d)
+export type Character2d = typeof(setmetatable(
+	{} :: Character2dStruct,
+	{ __index = Character2d }
+))
 
 --[[
 
@@ -126,7 +127,6 @@ function Character2d.WalkMoveRaw(
 
 	self.MoveStopConnection = t.Completed:Connect(
 		function(_: Enum.PlaybackState)
-
 			self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
 		end
 	)
