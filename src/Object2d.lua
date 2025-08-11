@@ -1,5 +1,6 @@
 --!strict
 
+local Calc = require(script.Parent.Calc)
 local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 
@@ -20,133 +21,17 @@ export type Object2dStruct = {
 	Image: ExImage.ExImage,
 } & physicObject.PhysicObjectStruct
 
-export type Object2d = typeof(setmetatable({} :: Object2dStruct, {__index = Object2d}))
+export type Object2d = typeof(setmetatable(
+	{} :: Object2dStruct,
+	{ __index = Object2d }
+))
 
---[[
-
-]]
-function Object2d.CalcPosition(
-	AnchorPosition: Vector2,
-	background: ExImage.ExImage
-): Vector2
-	if background.ImageInstance.ScaleType == Enum.ScaleType.Fit then
-		--отношение текущих размеров
-		local currentSizes = background.ImageInstance.AbsoluteSize.X
-			/ background.ImageInstance.AbsoluteSize.Y
-
-		if currentSizes < 1 then -- то есть если есть поля сверху и снизу
-			-- высота самого изображения
-			local h = (
-				background.RealSize.Y * background.ImageInstance.AbsoluteSize.X
-			) / background.RealSize.X
-
-			return Vector2.new(
-				AnchorPosition.X
-					* (
-						background.ImageInstance.AbsoluteSize.X
-						/ background.RealSize.X
-					),
-				AnchorPosition.Y * (h / background.RealSize.Y)
-					+ ((background.ImageInstance.AbsoluteSize.Y - h) / 2)
-			)
-		elseif currentSizes > 1 then -- поля справа и слева
-			-- ширина самого изображения
-			local w = (
-				background.RealSize.X * background.ImageInstance.AbsoluteSize.Y
-			) / background.RealSize.Y
-
-			return Vector2.new(
-				AnchorPosition.X * (w / background.RealSize.X)
-					+ ((background.ImageInstance.AbsoluteSize.X - w) / 2),
-				AnchorPosition.Y
-					* (
-						background.ImageInstance.AbsoluteSize.Y
-						/ background.RealSize.Y
-					)
-			)
-		end
-	end
-
-	return Vector2.new(
-		AnchorPosition.X
-			* (background.ImageInstance.AbsoluteSize.X / background.RealSize.X),
-		AnchorPosition.Y
-			* (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y)
-	)
+function Object2d.CalcSize(self: Object2d, background: ExImage.ExImage): Vector3
+	return Calc.CalcSize(self.Size, background)
 end
 
---[[
-
-]]
-function Object2d.CalcSize(Size: Vector3, background: ExImage.ExImage): Vector3
-	if background.ImageInstance.ScaleType == Enum.ScaleType.Fit then
-		-- отношение изначальных размеров
-
-		--отношение текущих размеров
-		local currentSizes = background.ImageInstance.AbsoluteSize.X
-			/ background.ImageInstance.AbsoluteSize.Y
-
-		if currentSizes < 1 then -- то есть если есть поля сверху и снизу
-			-- высота самого изображения
-			local h = (
-				background.RealSize.Y * background.ImageInstance.AbsoluteSize.X
-			) / background.RealSize.X
-
-			return Vector3.new(
-				Size.X
-					* (
-						background.ImageInstance.AbsoluteSize.X
-						/ background.RealSize.X
-					),
-				Size.Y * (h / background.RealSize.Y),
-				Size.Z * (h / background.RealSize.Y)
-			)
-		elseif currentSizes > 1 then -- поля справа и слева
-			local w = (
-				background.RealSize.X * background.ImageInstance.AbsoluteSize.Y
-			) / background.RealSize.Y
-
-			return Vector3.new(
-				Size.X * (w / background.RealSize.X),
-				Size.Y
-					* (
-						background.ImageInstance.AbsoluteSize.Y
-						/ background.RealSize.Y
-					),
-				Size.Z
-					* (
-						background.ImageInstance.AbsoluteSize.Y
-						/ background.RealSize.Y
-					)
-			)
-		end
-	end
-
-	return Vector3.new(
-		Size.X
-			* (background.ImageInstance.AbsoluteSize.X / background.RealSize.X),
-		Size.Y
-			* (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y),
-		Size.Z
-			* (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y)
-	)
-end
-
---[[
-	Рассчитывает координаты объекта
-]]
-function Object2d.GetPosition(
-	self: Object2d,
-	background: ExImage.ExImage
-): Vector2
-	return Object2d.CalcPosition(self.AnchorPosition, background)
-end
-
---[[
-	Рассчитывает размеры объекта
-]]
-function Object2d.GetSize(self: Object2d, background: ExImage.ExImage): Vector3
-	return Object2d.CalcSize(self.Size, background)
+function Object2d.CalcPosition(self: Object2d, background: ExImage.ExImage): Vector2
+	return Calc.CalcPosition(self.AnchorPosition, background)
 end
 
 --[[
@@ -161,7 +46,12 @@ function Object2d.new(
 	CheckTouchedSide: boolean?,
 	anchored: boolean?
 ): Object2d
-	local self: Object2d = physicObject.new(Image, canCollide, CheckTouchedSide, anchored) :: Object2d
+	local self: Object2d = physicObject.new(
+		Image,
+		canCollide,
+		CheckTouchedSide,
+		anchored
+	) :: Object2d
 
 	self.AnchorPosition = AnchorPosition
 	self.Size = Size

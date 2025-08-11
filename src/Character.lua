@@ -1,6 +1,7 @@
 local stdlib = require(script.Parent.Parent.stdlib)
 local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
+local Calc = require(script.Parent.Calc)
 local ExImage = require(script.Parent.ExImage)
 local Object2d = require(script.Parent.Object2d)
 local physicObject = require(script.Parent.physicObject)
@@ -33,7 +34,7 @@ function Character2d.CalcSize(
 	self: Character2d,
 	mapImage: ExImage.ExImage
 ): Vector3
-	return Object2d.CalcSize(self.Size, mapImage)
+	return Calc.CalcSize(self.Size, mapImage)
 end
 
 function Character2d.SetZIndex(self: Character2d, ZIndex: number)

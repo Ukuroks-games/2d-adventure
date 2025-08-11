@@ -7,6 +7,7 @@ local TweenService = game:GetService("TweenService")
 
 -- libs
 
+local Calc = require(script.Parent.Calc)
 local stdlib = require(script.Parent.Parent.stdlib)
 local algorithm = stdlib.algorithm
 
@@ -72,7 +73,7 @@ function map.CalcPlayerPosition(
 	return map.CalcPlayerPositionAbsolute(
 		self,
 		player,
-		Object2d.CalcPosition(pos, self.Image)
+		Calc.CalcPosition(pos, self.Image)
 	)
 end
 
@@ -174,7 +175,7 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 
 	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
 
-	local speed = Object2d.CalcSize(
+	local speed = Calc.CalcSize(
 		Vector3.new(Player.WalkSpeed.X, Player.WalkSpeed.Y, 0),
 		self.Image
 	)
