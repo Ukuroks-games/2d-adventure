@@ -58,6 +58,7 @@ function Character2d.WalkMoveRaw(
 ): Tween
 	if self.MoveStopConnection then
 		self.MoveStopConnection:Disconnect()
+		self.MoveStopConnection = nil
 	end
 
 	local touchedSide = self:GetTouchedSide()
@@ -127,8 +128,10 @@ function Character2d.WalkMoveRaw(
 		BaseCharacter.WalkMoveRaw(self, X, Y, RelativeObject, cooldownTime)
 
 	self.MoveStopConnection = t.Completed:Connect(
-		function(_: Enum.PlaybackState)
-			self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
+		function(state: Enum.PlaybackState)
+			if state == Enum.PlaybackState.Completed then
+				self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
+			end
 		end
 	)
 

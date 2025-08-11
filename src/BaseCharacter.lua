@@ -82,6 +82,8 @@ function BaseCharacter2d.GetMoveTween(
 				)
 			),
 		})
+	else
+		warn("self.WalkSpeed not been calculated")
 	end
 
 	return tween

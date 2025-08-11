@@ -171,7 +171,7 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 
 	Player:SetPosition(Vector2.new())
 
-	CalcPositions() -- превоночальный расчет
+	CalcPositions() -- первоначальный расчет
 
 	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
 
