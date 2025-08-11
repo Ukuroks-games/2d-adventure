@@ -1,3 +1,5 @@
+--!strict
+
 local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 
@@ -159,7 +161,7 @@ function Object2d.new(
 	CheckTouchedSide: boolean?,
 	anchored: boolean?
 ): Object2d
-	local self = physicObject.new(Image, canCollide, CheckTouchedSide, anchored)
+	local self: Object2d = physicObject.new(Image, canCollide, CheckTouchedSide, anchored) :: Object2d
 
 	self.AnchorPosition = AnchorPosition
 	self.Size = Size

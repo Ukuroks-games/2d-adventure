@@ -1,3 +1,5 @@
+--!strict
+
 -- services
 
 local TweenService = game:GetService("TweenService")

@@ -332,6 +332,8 @@ function Game.Start(self: Game)
 							"No key pressed and positions of X and Y are not indicated"
 						)
 					end
+
+					return nil
 				end
 			)
 

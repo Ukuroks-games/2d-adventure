@@ -5,7 +5,7 @@ local defaultControls = require(script.Parent.defaultControls)
 
 local Control = {}
 
-function Control.new(data: { Keyboard: {}?, Gamepad: {}? }?): controlType.Control
+function Control.new(data: { Keyboard: controlType.ControlButtons?, Gamepad: controlType.ControlButtons? }?): controlType.Control
 
 	if data then
 		local self: controlType.Control = {

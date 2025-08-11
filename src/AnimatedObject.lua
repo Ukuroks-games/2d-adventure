@@ -63,7 +63,11 @@ export type AnimatedObjectStruct = {
 --[[
 	Animations controller
 ]]
-export type AnimatedObject = typeof(setmetatable({} :: AnimatedObjectStruct, {__index = animatedObject}))
+export type AnimatedObject =
+	typeof(setmetatable(
+		{} :: AnimatedObjectStruct,
+		{ __index = animatedObject }
+	))
 
 function animatedObject.Preload(self: AnimatedObject)
 	local t = base2d.Preload(self)
