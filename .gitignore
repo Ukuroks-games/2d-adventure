@@ -16,3 +16,5 @@ ServerPackages/
 
 build/
 2d-adventurelib.zip
+
+./*.json

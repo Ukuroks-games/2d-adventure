@@ -10,7 +10,10 @@ BUILD_DIR = build
 
 RBXM_BUILD = $(LIBNAME)lib.rbxm
 
+ROJO_PROJECTS = rojo-projects
+
 GENERATE_SOURCEMAP = defaultTests
+FULL_GENERATE_SOURCEMAP = $(ROJO_PROJECTS)/$(GENERATE_SOURCEMAP).project.json
 
 SOURCES =	src/init.lua			\
 			src/BaseCharacter.lua	\
@@ -27,22 +30,26 @@ SOURCES =	src/init.lua			\
 			src/ControlType.lua		\
 			src/defaultControls.lua	\
 			src/game.lua			\
-			src/config.luau
+			src/config.luau			\
+			src/Calc.luau
 
 $(BUILD_DIR):
 	mkdir $@
 
 wallyInstall:	wally.toml
 	wally install
-	rojo sourcemap defaultTests.project.json --output sourcemap.json
 
 wally.lock:	wallyInstall
 
 ./Packages:	wallyInstall
-	wally-package-types --sourcemap sourcemap.json $@
 
 ./DevPackages:	wallyInstall
-	wally-package-types --sourcemap sourcemap.json $@
+
+PackagesTypes:	./Packages	sourcemap.json
+	wally-package-types --sourcemap sourcemap.json Packages
+	
+DevPackagesTypes:	./DevPackages	sourcemap.json
+	wally-package-types --sourcemap sourcemap.json DevPackages
 
 
 BUILD_SOURCES = $(addprefix $(BUILD_DIR)/, $(notdir $(SOURCES)))
@@ -71,31 +78,37 @@ lint:
 	selene src/ tests/
 
 
-$(RBXM_BUILD): ./Packages	library.project.json	$(SOURCES)
-	rojo build library.project.json --output $@
+$(RBXM_BUILD): ./Packages	$(ROJO_PROJECTS)/library.project.json	$(SOURCES)
+	rojo build $(ROJO_PROJECTS)/library.project.json --output $@
 
+demo.rbxl:	./Packages	./DevPackages	$(ROJO_PROJECTS)/demo.project.json	$(SOURCES)	tests/demo/test.client.luau
+	rojo build $(ROJO_PROJECTS)/demo.project.json --output $@
 
-demo.rbxl:	./Packages	./DevPackages	demo.project.json	$(SOURCES)	tests/demo/test.client.luau
-	rojo build demo.project.json --output $@
+TestMovableObjects.rbxl:	./Packages	$(ROJO_PROJECTS)/TestMovableObjects.project.json	$(SOURCES)	tests/TestMovableObjects/test.client.luau
+	rojo build $(ROJO_PROJECTS)/TestMovableObjects.project.json --output $@
 
-TestMovableObjects.rbxl:	./Packages	TestMovableObjects.project.json	$(SOURCES)	tests/TestMovableObjects/test.client.luau
-	rojo build TestMovableObjects.project.json --output $@
+testCalc.rbxl:	./Packages	$(ROJO_PROJECTS)/testCalc.project.json	$(SOURCES)	tests/testCalc/tests.client.luau
+	rojo build $(ROJO_PROJECTS)/testCalc.project.json --output $@
 
 ALL_TESTS =	demo.rbxl	\
-			TestMovableObjects.rbxl
+			TestMovableObjects.rbxl	\
+			testCalc.rbxl
 
 tests: clean-tests $(ALL_TESTS)
 
 
-sourcemap.json:	./Packages	./DevPackages	$(GENERATE_SOURCEMAP).project.json $(SOURCES)
-	rojo sourcemap $(GENERATE_SOURCEMAP).project.json --output $@
+$(GENERATE_SOURCEMAP).project.json:	$(FULL_GENERATE_SOURCEMAP)
+	$(CP) $< $@
+	
+sourcemap.json:	$(GENERATE_SOURCEMAP).project.json
+	rojo sourcemap $< -o $@
 
-# Re gen sourcemap
-sourcemap:	sourcemap.json
+# for manual run
+sourcemap:	sourcemap.json	PackagesTypes	DevPackagesTypes 
 
 
-clean-sourcemap: 
-	$(RM) sourcemap.json
+clean-sourcemap:
+	$(RM) *.json
 
 clean-rbxm:
 	$(RM) $(RBXM_BUILD)
@@ -109,4 +122,4 @@ clean-build:
 clean-package:
 	$(RM) $(PACKAGE_NAME) 
 
-clean:	clean-tests	clean-build	clean-rbxm	clean-package
+clean:	clean-tests	clean-build	clean-rbxm	clean-package	clean-sourcemap

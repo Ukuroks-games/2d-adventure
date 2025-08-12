@@ -5,9 +5,9 @@
 		"ReplicatedStorage": {
 			"$className": "ReplicatedStorage",
 			"Packages": {
-				"$path": "../Packages",
+				"$path": "Packages",
 				"2d-adventure": {
-					"$path": "../src"
+					"$path": "src"
 				}
 			},
 			"DevPackages": {
@@ -33,7 +33,7 @@
 			"$className": "StarterPlayer",
 			"StarterPlayerScripts": {
 				"$className": "StarterPlayerScripts",
-				"$path": "../tests/testCalc"
+				"$path": "tests/testCalc"
 			}
 		}
 	}
