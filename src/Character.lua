@@ -31,10 +31,9 @@ export type Character2d = typeof(setmetatable(
 
 ]]
 function Character2d.CalcSize(
-	self: Character2d,
-	mapImage: ExImage.ExImage
+	self: Character2d
 ): Vector3
-	return Calc.CalcSize(self.Size, mapImage)
+	return Calc.CalcSize(self.Size, self.background)
 end
 
 function Character2d.SetZIndex(self: Character2d, ZIndex: number)

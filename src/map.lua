@@ -104,7 +104,7 @@ end
 
 function map.CalcPositions(self: Map)
 	for _, v in pairs(self.Objects) do
-		v:CalcSizeAndPos(self.Image)
+		v:CalcSizeAndPos()
 	end
 end
 
@@ -170,6 +170,10 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 	self:SetPlayer(Player)
 
 	Player:SetPosition(Vector2.new())
+
+	for _, v in pairs(self.Objects) do
+		v:SetBackground(self.Image)
+	end
 
 	CalcPositions() -- первоначальный расчет
 

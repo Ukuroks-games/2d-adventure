@@ -26,12 +26,22 @@ export type Object2d = typeof(setmetatable(
 	{ __index = Object2d }
 ))
 
-function Object2d.CalcSize(self: Object2d, background: ExImage.ExImage): Vector3
-	return Calc.CalcSize(self.Size, background)
+function Object2d.CalcSize(self: Object2d): Vector3
+	return Calc.CalcSize(self.Size, self.background)
 end
 
-function Object2d.CalcPosition(self: Object2d, background: ExImage.ExImage): Vector2
-	return Calc.CalcPosition(self.AnchorPosition, background)
+function Object2d.CalcPosition(self: Object2d): Vector2
+	return Calc.CalcPosition(self.AnchorPosition, self.background)
+end
+
+function Object2d.SetPosition(self: Object2d, pos:Vector2)
+	self.AnchorPosition = Calc.ReturnPosition(pos, self.background)
+	physicObject.SetPosition(self, pos)	
+end
+
+function Object2d.SetSize(self: Object2d, size: Vector3)
+
+	physicObject.SetSize(self, size)
 end
 
 --[[

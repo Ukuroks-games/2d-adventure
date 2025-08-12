@@ -76,6 +76,8 @@ export type PhysicObjectStruct = {
 	TouchMsgMutex: stdlib.Mutex,
 
 	ID: number,
+
+	background: ExImage.ExImage,
 } & base2d.Base2dStruct
 
 --[[
@@ -146,31 +148,22 @@ end
 --[[
 
 ]]
-function physicObject.CalcSizeAndPos(
-	self: PhysicObject,
-	background: ExImage.ExImage
-)
-	self:SetSize(self:GetSize(background))
-	self:SetPosition(self:GetPosition(background))
+function physicObject.CalcSizeAndPos(self: PhysicObject)
+	self:SetSize(self:GetSize())
+	self:SetPosition(self:GetPosition())
 end
 
 --[[
 
 ]]
-function physicObject.GetPosition(
-	self: PhysicObject,
-	background: ExImage.ExImage
-): Vector2
-	return self:CalcPosition(background)
+function physicObject.GetPosition(self: PhysicObject): Vector2
+	return self:CalcPosition()
 end
 
 --[[
 
 ]]
-function physicObject.CalcSize(
-	self: PhysicObject,
-	background: ExImage.ExImage
-): Vector3
+function physicObject.CalcSize(self: PhysicObject): Vector3
 	return Vector3.new(
 		self.Image.ImageInstance.AbsoluteSize.X,
 		self.Image.ImageInstance.AbsolutePosition.Y,
@@ -181,35 +174,31 @@ end
 --[[
 
 ]]
-function physicObject.CalcPosition(
-	self: PhysicObject,
-	background: ExImage.ExImage
-): Vector2
+function physicObject.CalcPosition(self: PhysicObject): Vector2
 	return self.Image.ImageInstance.AbsolutePosition
 end
 
 --[[
 
 ]]
-function physicObject.GetSize(
-	self: PhysicObject,
-	background: ExImage.ExImage
-): Vector3
-	return self:CalcSize(background)
+function physicObject.GetSize(self: PhysicObject): Vector3
+	return self:CalcSize()
 end
 
 --[[
 
 ]]
-function physicObject.SetParent(
-	self: PhysicObject,
-	parent: ExImage.ExImage | Frame
-)
+function physicObject.SetParent(self: PhysicObject, parent: Frame | ExImage.ExImage)
 	if typeof(parent) == "table" then
 		self.physicImage.Parent = parent.ImageInstance
+		self: SetBackground(parent)
 	else
 		self.physicImage.Parent = parent
 	end
+end
+
+function physicObject.SetBackground(self: PhysicObject, background: ExImage.ExImage)
+	self.background = background
 end
 
 --[[
@@ -289,9 +278,7 @@ function physicObject.GetTouchMsg(
 	self: PhysicObject,
 	obj: PhysicObject
 ): boolean?
-	print("ab1")
 	mutex.wait(obj.TouchMsgMutex)
-	print("ab2")
 	return self.TouchMsg[obj]
 end
 
@@ -350,8 +337,6 @@ function physicObject.new(
 	)
 
 	physicObject.Id += 1
-
-	print("create", this)
 
 	this.Image.ImageInstance.Parent = this.physicImage
 

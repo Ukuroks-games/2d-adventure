@@ -34,16 +34,10 @@ SOURCES =	src/init.lua			\
 			src/Calc.luau
 
 $(BUILD_DIR):
-	mkdir $@
+	mkdir $@	
 
-wallyInstall:	wally.toml
+wally.lock ./Packages ./DevPackages: wally.toml
 	wally install
-
-wally.lock:	wallyInstall
-
-./Packages:	wallyInstall
-
-./DevPackages:	wallyInstall
 
 PackagesTypes:	./Packages	sourcemap.json
 	wally-package-types --sourcemap sourcemap.json Packages
@@ -66,10 +60,10 @@ $(BUILD_SOURCES):	MV_SOURCES
 $(PACKAGE_NAME):	$(BUILD_SOURCES)	$(BUILD_DIR)/wally.toml
 	wally package --output $(PACKAGE_NAME) --project-path $(BUILD_DIR)
 
-
+# Zip package
 package:	clean-package	clean-build	$(PACKAGE_NAME)
 	
-
+# Publish
 publish:	clean-build	$(BUILD_SOURCES)	$(BUILD_DIR)/wally.toml	
 	wally publish --project-path $(BUILD_DIR)
 
@@ -78,23 +72,34 @@ lint:
 	selene src/ tests/
 
 
-$(RBXM_BUILD): ./Packages	$(ROJO_PROJECTS)/library.project.json	$(SOURCES)
-	rojo build $(ROJO_PROJECTS)/library.project.json --output $@
+$(RBXM_BUILD): library.project.json
+	rojo build library.project.json --output $@
 
-demo.rbxl:	./Packages	./DevPackages	$(ROJO_PROJECTS)/demo.project.json	$(SOURCES)	tests/demo/test.client.luau
-	rojo build $(ROJO_PROJECTS)/demo.project.json --output $@
+library.project.json: $(SOURCES)	./Packages
+	make "GENERATE_SOURCEMAP=library" $@
 
-TestMovableObjects.rbxl:	./Packages	$(ROJO_PROJECTS)/TestMovableObjects.project.json	$(SOURCES)	tests/TestMovableObjects/test.client.luau
-	rojo build $(ROJO_PROJECTS)/TestMovableObjects.project.json --output $@
+## RBXL
 
-testCalc.rbxl:	./Packages	$(ROJO_PROJECTS)/testCalc.project.json	$(SOURCES)	tests/testCalc/tests.client.luau
-	rojo build $(ROJO_PROJECTS)/testCalc.project.json --output $@
+%.rbxl: %.project.json
+	rojo build $*.project.json --output $@
 
 ALL_TESTS =	demo.rbxl	\
 			TestMovableObjects.rbxl	\
 			testCalc.rbxl
 
+### rebuild add tests
 tests: clean-tests $(ALL_TESTS)
+
+### projects define
+
+demo.project.json:	$(ROJO_PROJECTS)/demo.project.json	$(SOURCES)	tests/demo/test.client.luau	./Packages	./DevPackages
+	make "GENERATE_SOURCEMAP=demo" $@
+
+TestMovableObjects.project.json:	$(ROJO_PROJECTS)/TestMovableObjects.project.json	$(SOURCES)	tests/TestMovableObjects/test.client.luau	./Packages
+	make "GENERATE_SOURCEMAP=TestMovableObjects" $@
+
+testCalc.project.json:	$(ROJO_PROJECTS)/testCalc.project.json	$(SOURCES)	tests/testCalc/tests.client.luau	./Packages
+	make "GENERATE_SOURCEMAP=testCalc" $@
 
 
 $(GENERATE_SOURCEMAP).project.json:	$(FULL_GENERATE_SOURCEMAP)
