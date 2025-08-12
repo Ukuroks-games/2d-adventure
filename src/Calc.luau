@@ -37,8 +37,9 @@ function calc.CalcPosition(
 	if background.ImageInstance.ScaleType == Enum.ScaleType.Fit then
 		--отношение текущих размеров
 		local currentSizes = RelativeSizes(background)
+		local ResSizes = background.RealSize.X / background.RealSize.Y
 
-		if currentSizes < 1 then -- то есть если есть поля сверху и снизу
+		if currentSizes < ResSizes then -- то есть если есть поля сверху и снизу
 			-- высота самого изображения
 			local h = height(background)
 
@@ -51,7 +52,7 @@ function calc.CalcPosition(
 				AnchorPosition.Y * (h / background.RealSize.Y)
 					+ UpSpace(h, background)
 			)
-		elseif currentSizes > 1 then -- поля справа и слева
+		elseif currentSizes > ResSizes then -- поля справа и слева
 			-- ширина самого изображения
 			local w = width(background)
 
@@ -84,8 +85,9 @@ function calc.CalcSize(Size: Vector3, background: ExImage.ExImage): Vector3
 
 		--отношение текущих размеров
 		local currentSizes = RelativeSizes(background)
+		local ResSizes = background.RealSize.X / background.RealSize.Y
 
-		if currentSizes < 1 then -- то есть если есть поля сверху и снизу
+		if currentSizes < ResSizes then -- то есть если есть поля сверху и снизу
 			-- высота самого изображения
 			local h = height(background)
 
@@ -98,7 +100,7 @@ function calc.CalcSize(Size: Vector3, background: ExImage.ExImage): Vector3
 				Size.Y * (h / background.RealSize.Y),
 				Size.Z * (h / background.RealSize.Y)
 			)
-		elseif currentSizes > 1 then -- поля справа и слева
+		elseif currentSizes > ResSizes then -- поля справа и слева
 			local w = width(background)
 
 			return Vector3.new(
@@ -133,8 +135,9 @@ function calc.ReturnPosition(
 ): Vector2
 	if background.ImageInstance.ScaleType == Enum.ScaleType.Fit then
 		local currentSizes = RelativeSizes(background)
+		local ResSizes = background.RealSize.X / background.RealSize.Y
 
-		if currentSizes < 1 then
+		if currentSizes < ResSizes then
 			local h = height(background)
 
 			return Vector2.new(
@@ -145,7 +148,7 @@ function calc.ReturnPosition(
 					/ h
 					* background.RealSize.Y
 			)
-		elseif currentSizes > 1 then
+		elseif currentSizes > ResSizes then
 			local w = width(background)
 
 			return Vector2.new(
@@ -181,8 +184,9 @@ function calc.ReturnSize(
 
 		--отношение текущих размеров
 		local currentSizes = RelativeSizes(background)
+		local ResSizes = background.RealSize.X / background.RealSize.Y
 
-		if currentSizes < 1 then -- то есть если есть поля сверху и снизу
+		if currentSizes < ResSizes then -- то есть если есть поля сверху и снизу
 			-- высота самого изображения
 			local h = height(background)
 
@@ -193,7 +197,7 @@ function calc.ReturnSize(
 				AbsoluteSize.Y / h * background.RealSize.Y,
 				AbsoluteSize.Z / h * background.RealSize.Y
 			)
-		elseif currentSizes > 1 then -- поля справа и слева
+		elseif currentSizes > ResSizes then -- поля справа и слева
 			local w = width(background)
 
 			return Vector3.new(
