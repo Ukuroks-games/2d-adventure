@@ -53,15 +53,7 @@ end
 function Object2d.SetPositionRaw(self: Object2d, pos: Vector2)
 	physicObject.SetPositionRaw(self, pos)
 	if self.background then
-		self.AnchorPosition = Calc.ReturnPosition(
-			Vector2.new(
-				self.physicImage.Position.X.Offset,
-				self.physicImage.Position.Y.Offset
-					- self.Image.ImageInstance.AbsoluteSize.Y
-					+ self.physicImage.AbsoluteSize.Y
-			),
-			self.background
-		)
+		self.AnchorPosition = physicObject.GetCoordinates(self)
 	end
 end
 

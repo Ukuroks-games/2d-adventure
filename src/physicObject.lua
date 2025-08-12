@@ -1,5 +1,6 @@
 --!strict
 
+local Calc = require(script.Parent.Calc)
 local stdlib = require(script.Parent.Parent.stdlib)
 
 local ExImage = require(script.Parent.ExImage)
@@ -300,6 +301,22 @@ function physicObject.SetTouchMsg(
 	self.TouchMsgMutex:lock()
 	self.TouchMsg[obj] = val or true
 	self.TouchMsgMutex:unlock()
+end
+
+function physicObject.GetCoordinates(self: PhysicObject): Vector2
+	if self.background then
+		return Calc.ReturnPosition(
+			Vector2.new(
+				self.physicImage.Position.X.Offset,
+				self.physicImage.Position.Y.Offset
+					- self.Image.ImageInstance.AbsoluteSize.Y
+					+ self.physicImage.AbsoluteSize.Y
+			),
+			self.background
+		)
+	else
+		error("self.background = nil")
+	end
 end
 
 --[[
