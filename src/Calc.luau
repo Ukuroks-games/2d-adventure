@@ -141,15 +141,17 @@ function calc.ReturnPosition(
 				AbsolutePosition.X
 					/ background.ImageInstance.AbsoluteSize.X
 					* background.RealSize.X,
-				AbsolutePosition.Y / h * background.RealSize.Y
-					- UpSpace(h, background)
+				(AbsolutePosition.Y - UpSpace(h, background))
+					/ h
+					* background.RealSize.Y
 			)
 		elseif currentSizes > 1 then
 			local w = width(background)
 
 			return Vector2.new(
-				AbsolutePosition.X / w * background.RealSize.X
-					- LeftSpace(w, background),
+				(AbsolutePosition.X - LeftSpace(w, background))
+					/ w
+					* background.RealSize.X,
 				AbsolutePosition.Y
 					/ background.ImageInstance.AbsoluteSize.Y
 					* background.RealSize.Y
@@ -195,7 +197,7 @@ function calc.ReturnSize(
 			local w = width(background)
 
 			return Vector3.new(
-				AbsoluteSize.X * w / background.RealSize.X,
+				AbsoluteSize.X / w * background.RealSize.X,
 				AbsoluteSize.Y
 					/ background.ImageInstance.AbsoluteSize.Y
 					* background.RealSize.Y,

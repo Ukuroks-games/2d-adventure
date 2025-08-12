@@ -77,7 +77,7 @@ export type PhysicObjectStruct = {
 
 	ID: number,
 
-	background: ExImage.ExImage,
+	background: ExImage.ExImage?,
 } & base2d.Base2dStruct
 
 --[[
@@ -188,16 +188,22 @@ end
 --[[
 
 ]]
-function physicObject.SetParent(self: PhysicObject, parent: Frame | ExImage.ExImage)
+function physicObject.SetParent(
+	self: PhysicObject,
+	parent: Frame | ExImage.ExImage
+)
 	if typeof(parent) == "table" then
 		self.physicImage.Parent = parent.ImageInstance
-		self: SetBackground(parent)
+		self:SetBackground(parent)
 	else
 		self.physicImage.Parent = parent
 	end
 end
 
-function physicObject.SetBackground(self: PhysicObject, background: ExImage.ExImage)
+function physicObject.SetBackground(
+	self: PhysicObject,
+	background: ExImage.ExImage
+)
 	self.background = background
 end
 
@@ -303,38 +309,37 @@ function physicObject.new(
 	Image: ExImage.ExImage,
 	canCollide: boolean?,
 	checkingTouchedSize: boolean?,
-	anchored: boolean?
+	anchored: boolean?,
+	background: ExImage.ExImage?
 ): PhysicObject
 	local TouchedEvent = Instance.new("BindableEvent")
 
-	local this: PhysicObject = setmetatable(
-		{
-			Touched = TouchedEvent.Event,
-			TouchedEvent = TouchedEvent,
-			physicImage = Instance.new("Frame"),
-			CanCollide = canCollide or true,
-			TouchedSideMutex = mutex.new(false),
-			TouchedSide = {
-				Right = {},
-				Left = {},
-				Up = {},
-				Down = {},
-			},
-			Anchored = (function()
-				if anchored ~= nil then
-					return anchored
-				else
-					return true
-				end
-			end)(),
-			Size = Vector3.new(),
-			Image = Image,
-			TouchMsg = {},
-			TouchMsgMutex = mutex.new(),
-			ID = physicObject.Id,
-		} :: PhysicObjectStruct,
-		{ __index = physicObject }
-	)
+	local this: PhysicObjectStruct = {
+		Touched = TouchedEvent.Event,
+		TouchedEvent = TouchedEvent,
+		physicImage = Instance.new("Frame"),
+		CanCollide = canCollide or true,
+		TouchedSideMutex = mutex.new(false),
+		TouchedSide = {
+			Right = {},
+			Left = {},
+			Up = {},
+			Down = {},
+		},
+		Anchored = (function()
+			if anchored ~= nil then
+				return anchored
+			else
+				return true
+			end
+		end)(),
+		Size = Vector3.new(),
+		Image = Image,
+		TouchMsg = {},
+		TouchMsgMutex = mutex.new(),
+		ID = physicObject.Id,
+		background = background,
+	}
 
 	physicObject.Id += 1
 
