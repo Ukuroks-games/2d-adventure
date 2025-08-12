@@ -21,6 +21,7 @@
 		"setmetatable",
 		"shee",
 		"stdlib",
+		"testlib",
 		"Thumbstick",
 		"tostring"
 	],

@@ -7,14 +7,35 @@ local testlib = require(ReplicatedStorage.DevPackages.testlib)
 local Calc = require(ReplicatedStorage.Packages["2d-adventure"].Calc)
 local ExImage = require(ReplicatedStorage.Packages["2d-adventure"].ExImage)
 
-local GameFrame: Frame = Players.LocalPlayer
-	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui").Frame
+local Gui =
+	Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui")
+
+local GameFrame: Frame = Gui.Frame
 GameFrame.Size = UDim2.fromScale(1, 1)
 
 local background = ExImage.new("114575775575709")
 background.ImageInstance.Parent = GameFrame
 background.ImageInstance.Size = UDim2.fromScale(1, 1)
+background.ImageInstance.ScaleType = Enum.ScaleType.Fit
+
+local XSpace = Instance.new("Frame")
+XSpace.Position = UDim2.fromScale(0, 0.5)
+XSpace.Parent = Gui
+XSpace.BackgroundColor3 = Color3.new()
+
+local YSpace = Instance.new("Frame")
+YSpace.Position = UDim2.fromScale(0.5, 0)
+YSpace.Parent = Gui
+YSpace.BackgroundColor3 = Color3.new()
+
+GameFrame.Changed:Connect(function(_)
+	local Pos = Calc.CalcPosition(Vector2.new(200, 200), background)
+
+	XSpace.Size = UDim2.fromOffset(Pos.X, 64)
+	YSpace.Size = UDim2.fromOffset(64, Pos.Y)
+	XSpace.Position = UDim2.fromOffset(0, Pos.Y)
+	YSpace.Position = UDim2.fromOffset(Pos.X, 0)
+end)
 
 local TestsNum = 1000
 

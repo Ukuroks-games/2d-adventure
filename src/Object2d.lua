@@ -35,11 +35,7 @@ function Object2d.CalcPosition(self: Object2d): Vector2
 end
 
 function Object2d.SetPosition(self: Object2d, pos: Vector2)
-	print("from", self.AnchorPosition)
-	local x = self.AnchorPosition
 	self.AnchorPosition = Calc.ReturnPosition(pos, self.background)
-	print("to", self.AnchorPosition)
-	print("diff:", x.X - self.AnchorPosition.X, x.Y - self.AnchorPosition.Y )
 	physicObject.SetPosition(self, pos)
 end
 
