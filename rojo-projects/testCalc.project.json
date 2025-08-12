@@ -1,0 +1,40 @@
+{
+	"name": "all tests",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Packages": {
+				"$path": "../Packages",
+				"2d-adventure": {
+					"$path": "../src"
+				}
+			},
+			"DevPackages": {
+				"$path": "../DevPackages"
+			}
+		},
+		"Workspace": {
+			"$className": "Workspace",
+			"$properties": {
+				"Gravity": 0
+			}
+		},
+		"StarterGui": {
+			"$className": "StarterGui",
+			"ScreenGui": {
+				"$className": "ScreenGui",
+				"Frame": {
+					"$className": "Frame"
+				}
+			}
+		},
+		"StarterPlayer": {
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+				"$path": "../tests/testCalc"
+			}
+		}
+	}
+}
