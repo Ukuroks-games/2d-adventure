@@ -434,47 +434,23 @@ function physicObject.new(
 					s.physicImage.Position.X.Offset,
 					s.physicImage.Position.Y.Offset
 
-				if
-					stdlib.algorithm.find_if(
-						s.TouchedSide.Up,
-						function(value): boolean
-							return value.ID == b.ID
-						end
-					)
-				then
+				local function cmp(value: PhysicObject): boolean
+					return value.ID == b.ID
+				end
+
+				if stdlib.algorithm.find_if(s.TouchedSide.Up, cmp) then
 					Y += (b.physicImage.AbsolutePosition.Y + b.physicImage.AbsoluteSize.Y - s.physicImage.AbsolutePosition.Y) / m
 				end
 
-				if
-					stdlib.algorithm.find_if(
-						s.TouchedSide.Down,
-						function(value): boolean
-							return value.ID == b.ID
-						end
-					)
-				then
+				if stdlib.algorithm.find_if(s.TouchedSide.Down, cmp) then
 					Y -= (s.physicImage.AbsolutePosition.Y + s.physicImage.AbsoluteSize.Y - b.physicImage.AbsolutePosition.Y) / m
 				end
 
-				if
-					stdlib.algorithm.find_if(
-						s.TouchedSide.Left,
-						function(value): boolean
-							return value.ID == b.ID
-						end
-					)
-				then
+				if stdlib.algorithm.find_if(s.TouchedSide.Left, cmp) then
 					X += (b.physicImage.AbsolutePosition.X + b.physicImage.AbsoluteSize.X - s.physicImage.AbsolutePosition.X) / m
 				end
 
-				if
-					stdlib.algorithm.find_if(
-						s.TouchedSide.Right,
-						function(value): boolean
-							return value.ID == b.ID
-						end
-					)
-				then
+				if stdlib.algorithm.find_if(s.TouchedSide.Right, cmp) then
 					X -= (s.physicImage.AbsolutePosition.X + s.physicImage.AbsoluteSize.X - b.physicImage.AbsolutePosition.X) / m
 				end
 

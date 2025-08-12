@@ -1,4 +1,5 @@
 --!strict
+local RemoteCursorService = game:GetService("RemoteCursorService")
 
 local Calc = require(script.Parent.Calc)
 local ExImage = require(script.Parent.ExImage)
@@ -27,20 +28,47 @@ export type Object2d = typeof(setmetatable(
 ))
 
 function Object2d.CalcSize(self: Object2d): Vector3
-	return Calc.CalcSize(self.Size, self.background)
+	if self.background then
+		return Calc.CalcSize(self.Size, self.background)
+	else
+		error("self.background = nil")
+	end
 end
 
 function Object2d.CalcPosition(self: Object2d): Vector2
-	return Calc.CalcPosition(self.AnchorPosition, self.background)
+	if self.background then
+		return Calc.CalcPosition(self.AnchorPosition, self.background)
+	else
+		error("self.background = nil")
+	end
 end
 
 function Object2d.SetPosition(self: Object2d, pos: Vector2)
-	self.AnchorPosition = Calc.ReturnPosition(pos, self.background)
+	if self.background then
+		self.AnchorPosition = Calc.ReturnPosition(pos, self.background)
+	end
 	physicObject.SetPosition(self, pos)
 end
 
+function Object2d.SetPositionRaw(self: Object2d, pos: Vector2)
+	physicObject.SetPositionRaw(self, pos)
+	if self.background then
+		self.AnchorPosition = Calc.ReturnPosition(
+			Vector2.new(
+				self.physicImage.Position.X.Offset,
+				self.physicImage.Position.Y.Offset
+					- self.Image.ImageInstance.AbsoluteSize.Y
+					+ self.physicImage.AbsoluteSize.Y
+			),
+			self.background
+		)
+	end
+end
+
 function Object2d.SetSize(self: Object2d, size: Vector3)
-	self.Size = Calc.ReturnSize(size, self.background)
+	if self.background then
+		self.Size = Calc.ReturnSize(size, self.background)
+	end
 	physicObject.SetSize(self, size)
 end
 

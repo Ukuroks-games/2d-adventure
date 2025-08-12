@@ -1,3 +1,5 @@
+--!strict
+
 local ExImage = require(script.Parent.ExImage)
 
 local calc = {}
@@ -130,7 +132,7 @@ function calc.CalcSize(Size: Vector3, background: ExImage.ExImage): Vector3
 end
 
 function calc.ReturnPosition(
-	AbsolutePosition,
+	AbsolutePosition: Vector2,
 	background: ExImage.ExImage
 ): Vector2
 	if background.ImageInstance.ScaleType == Enum.ScaleType.Fit then
