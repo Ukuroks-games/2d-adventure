@@ -23,7 +23,7 @@
         {
             "type": "shell",
             "label": "Build tests",
-            "detail": "Build tests place",
+            "detail": "Build all tests places",
             "command": "make tests -j$(nproc) && exit",
             "group": {
                 "kind": "build",

@@ -1,6 +1,7 @@
 local stdlib = require(script.Parent.Parent.stdlib)
 local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
+local Calc = require(script.Parent.Calc)
 local ExImage = require(script.Parent.ExImage)
 local Object2d = require(script.Parent.Object2d)
 local physicObject = require(script.Parent.physicObject)
@@ -30,10 +31,9 @@ export type Character2d = typeof(setmetatable(
 
 ]]
 function Character2d.CalcSize(
-	self: Character2d,
-	mapImage: ExImage.ExImage
+	self: Character2d
 ): Vector3
-	return Object2d.CalcSize(self.Size, mapImage)
+	return Calc.CalcSize(self.Size, self.background)
 end
 
 function Character2d.SetZIndex(self: Character2d, ZIndex: number)
@@ -57,6 +57,7 @@ function Character2d.WalkMoveRaw(
 ): Tween
 	if self.MoveStopConnection then
 		self.MoveStopConnection:Disconnect()
+		self.MoveStopConnection = nil
 	end
 
 	local touchedSide = self:GetTouchedSide()
@@ -126,8 +127,10 @@ function Character2d.WalkMoveRaw(
 		BaseCharacter.WalkMoveRaw(self, X, Y, RelativeObject, cooldownTime)
 
 	self.MoveStopConnection = t.Completed:Connect(
-		function(_: Enum.PlaybackState)
-			self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
+		function(state: Enum.PlaybackState)
+			if state == Enum.PlaybackState.Completed then
+				self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
+			end
 		end
 	)
 

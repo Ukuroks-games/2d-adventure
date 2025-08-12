@@ -21,6 +21,7 @@
 		"setmetatable",
 		"shee",
 		"stdlib",
+		"testlib",
 		"Thumbstick",
 		"tostring"
 	],
@@ -33,7 +34,7 @@
 	],
 	"luau-lsp.sourcemap.rojoProjectFile": "defaultTests.project.json",
 	"luau-lsp.platform.type": "roblox",
-	"luau-lsp.sourcemap.generatorCommand": "make sourcemap.json -j8",
+	"luau-lsp.sourcemap.generatorCommand": "make sourcemap.json -j$(nproc)",
 	"makefile.configureOnOpen": false,
 	"luau-lsp.sourcemap.autogenerate": false,
 }

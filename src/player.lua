@@ -1,11 +1,8 @@
 --!strict
 
-local TweenService = game:GetService("TweenService")
-
 local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
 local Character = require(script.Parent.Character)
-local ExImage = require(script.Parent.ExImage)
 
 --[[
 	Player class
@@ -17,9 +14,12 @@ local player2d = setmetatable({}, { __index = Character })
 
 	По сути является классом Character2d с несколькими переопределёнными 
 ]]
-export type Player2dStruct = {} & Character.Character2d
+export type Player2dStruct = Character.Character2dStruct
 
-export type Player2d = Player2dStruct & typeof(player2d)
+export type Player2d = typeof(setmetatable(
+	{} :: Player2dStruct,
+	{ __index = player2d }
+))
 
 function player2d.SetPositionX(self: Player2dStruct, _: number)
 	self.physicImage.Position = UDim2.new(

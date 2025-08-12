@@ -34,12 +34,12 @@ export type GameStruct = {
 	--[[
 		Sent on physic step end
 	]]
-	CollideStepped: RBXScriptSignal,
+	CollideStepped: RBXScriptSignal<>,
 
 	--[[
 	
 	]]
-	Destroying: RBXScriptSignal,
+	Destroying: RBXScriptSignal<>,
 
 	--[[
 	
@@ -72,7 +72,7 @@ export type GameStruct = {
 	--[[
 	
 	]]
-	CollideSteppedEvent: BindableEvent,
+	CollideSteppedEvent: BindableEvent<>,
 
 	MoveTween: Tween?,
 
@@ -183,8 +183,9 @@ function Game.Move(self: Game, X: number, Y: number)
 
 		if self.MoveTween then
 			self.MoveTween:Play()
-			self.Moving = false
 		end
+
+		self.Moving = false
 	end
 end
 
@@ -294,48 +295,44 @@ function Game.Start(self: Game)
 			and self.DestroyableObjects.Left
 			and self.DestroyableObjects.Gamepad
 		then
-			local Move = cooldown.new(
-				self.CooldownTime,
-				function(_self: Game, XPos: number?, YPos: number?)
-					if
-						self.DestroyableObjects.Up.State.Value
-						and self.DestroyableObjects.Right.State.Value
-					then --	Right Up
-						Game.RightUp(_self)
-					elseif
-						self.DestroyableObjects.Down.State.Value
-						and self.DestroyableObjects.Right.State.Value
-					then -- Right Down
-						Game.RightDown(_self)
-					elseif
-						self.DestroyableObjects.Down.State.Value
-						and self.DestroyableObjects.Left.State.Value
-					then --	Left Down
-						Game.LeftDown(_self)
-					elseif
-						self.DestroyableObjects.Up.State.Value
-						and self.DestroyableObjects.Left.State.Value
-					then --	Left Up
-						Game.LeftUp(_self)
-					elseif self.DestroyableObjects.Up.State.Value then --	Up
-						Game.Up(_self)
-					elseif self.DestroyableObjects.Down.State.Value then --	Down
-						Game.Down(_self)
-					elseif self.DestroyableObjects.Left.State.Value then --	Left
-						Game.Left(_self)
-					elseif self.DestroyableObjects.Right.State.Value then --	Right
-						Game.Right(_self)
-					elseif YPos and XPos then
-						Game.Move(_self, XPos, YPos)
-					else
-						warn(
-							"No key pressed and positions of X and Y are not indicated"
-						)
-					end
-
-					return nil
+			local function Move(_self: Game, XPos: number?, YPos: number?)
+				self.CollideSteppedEvent:Fire()
+				if
+					self.DestroyableObjects.Up.State.Value
+					and self.DestroyableObjects.Right.State.Value
+				then --	Right Up
+					Game.RightUp(_self)
+				elseif
+					self.DestroyableObjects.Down.State.Value
+					and self.DestroyableObjects.Right.State.Value
+				then -- Right Down
+					Game.RightDown(_self)
+				elseif
+					self.DestroyableObjects.Down.State.Value
+					and self.DestroyableObjects.Left.State.Value
+				then --	Left Down
+					Game.LeftDown(_self)
+				elseif
+					self.DestroyableObjects.Up.State.Value
+					and self.DestroyableObjects.Left.State.Value
+				then --	Left Up
+					Game.LeftUp(_self)
+				elseif self.DestroyableObjects.Up.State.Value then --	Up
+					Game.Up(_self)
+				elseif self.DestroyableObjects.Down.State.Value then --	Down
+					Game.Down(_self)
+				elseif self.DestroyableObjects.Left.State.Value then --	Left
+					Game.Left(_self)
+				elseif self.DestroyableObjects.Right.State.Value then --	Right
+					Game.Right(_self)
+				elseif YPos and XPos then
+					Game.Move(_self, XPos, YPos)
+				else
+					warn(
+						"No key pressed and positions of X and Y are not indicated"
+					)
 				end
-			)
+			end
 
 			local KeyboardMoveEvent = stdlib.events.AnyEvent({
 				self.DestroyableObjects.Up.Called,
@@ -357,10 +354,6 @@ function Game.Start(self: Game)
 			end)
 
 			-- other
-
-			stdlib.events.AnyEvent({
-				Move.CallEvent.Event,
-			}, self.Player.MoveEvent)
 
 			stdlib.events.AnyEvent({
 				self.Map.ObjectMovement,
@@ -403,7 +396,7 @@ function Game.Start(self: Game)
 				self.CollideMutex:unlock()
 			end)
 
-			self.CollideSteppedEvent.Event:Connect(function()
+			self.CollideStepped:Connect(function()
 				self.Map:CalcZIndexs()
 			end)
 

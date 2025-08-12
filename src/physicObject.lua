@@ -1,5 +1,6 @@
 --!strict
 
+local Calc = require(script.Parent.Calc)
 local stdlib = require(script.Parent.Parent.stdlib)
 
 local ExImage = require(script.Parent.ExImage)
@@ -76,6 +77,8 @@ export type PhysicObjectStruct = {
 	TouchMsgMutex: stdlib.Mutex,
 
 	ID: number,
+
+	background: ExImage.ExImage?,
 } & base2d.Base2dStruct
 
 --[[
@@ -146,31 +149,22 @@ end
 --[[
 
 ]]
-function physicObject.CalcSizeAndPos(
-	self: PhysicObject,
-	background: ExImage.ExImage
-)
-	self:SetSize(self:GetSize(background))
-	self:SetPosition(self:GetPosition(background))
+function physicObject.CalcSizeAndPos(self: PhysicObject)
+	self:SetSize(self:GetSize())
+	self:SetPosition(self:GetPosition())
 end
 
 --[[
 
 ]]
-function physicObject.GetPosition(
-	self: PhysicObject,
-	background: ExImage.ExImage
-): Vector2
-	return self:CalcPosition(background)
+function physicObject.GetPosition(self: PhysicObject): Vector2
+	return self:CalcPosition()
 end
 
 --[[
 
 ]]
-function physicObject.CalcSize(
-	self: PhysicObject,
-	background: ExImage.ExImage
-): Vector3
+function physicObject.CalcSize(self: PhysicObject): Vector3
 	return Vector3.new(
 		self.Image.ImageInstance.AbsoluteSize.X,
 		self.Image.ImageInstance.AbsolutePosition.Y,
@@ -181,21 +175,15 @@ end
 --[[
 
 ]]
-function physicObject.CalcPosition(
-	self: PhysicObject,
-	background: ExImage.ExImage
-): Vector2
+function physicObject.CalcPosition(self: PhysicObject): Vector2
 	return self.Image.ImageInstance.AbsolutePosition
 end
 
 --[[
 
 ]]
-function physicObject.GetSize(
-	self: PhysicObject,
-	background: ExImage.ExImage
-): Vector3
-	return self:CalcSize(background)
+function physicObject.GetSize(self: PhysicObject): Vector3
+	return self:CalcSize()
 end
 
 --[[
@@ -203,13 +191,21 @@ end
 ]]
 function physicObject.SetParent(
 	self: PhysicObject,
-	parent: ExImage.ExImage | Frame
+	parent: Frame | ExImage.ExImage
 )
 	if typeof(parent) == "table" then
 		self.physicImage.Parent = parent.ImageInstance
+		self:SetBackground(parent)
 	else
 		self.physicImage.Parent = parent
 	end
+end
+
+function physicObject.SetBackground(
+	self: PhysicObject,
+	background: ExImage.ExImage
+)
+	self.background = background
 end
 
 --[[
@@ -289,9 +285,7 @@ function physicObject.GetTouchMsg(
 	self: PhysicObject,
 	obj: PhysicObject
 ): boolean?
-	print("ab1")
 	mutex.wait(obj.TouchMsgMutex)
-	print("ab2")
 	return self.TouchMsg[obj]
 end
 
@@ -309,6 +303,22 @@ function physicObject.SetTouchMsg(
 	self.TouchMsgMutex:unlock()
 end
 
+function physicObject.GetCoordinates(self: PhysicObject): Vector2
+	if self.background then
+		return Calc.ReturnPosition(
+			Vector2.new(
+				self.physicImage.Position.X.Offset,
+				self.physicImage.Position.Y.Offset
+					- self.Image.ImageInstance.AbsoluteSize.Y
+					+ self.physicImage.AbsoluteSize.Y
+			),
+			self.background
+		)
+	else
+		error("self.background = nil")
+	end
+end
+
 --[[
 	Physic object constructor
 ]]
@@ -316,42 +326,39 @@ function physicObject.new(
 	Image: ExImage.ExImage,
 	canCollide: boolean?,
 	checkingTouchedSize: boolean?,
-	anchored: boolean?
+	anchored: boolean?,
+	background: ExImage.ExImage?
 ): PhysicObject
 	local TouchedEvent = Instance.new("BindableEvent")
 
-	local this: PhysicObject = setmetatable(
-		{
-			Touched = TouchedEvent.Event,
-			TouchedEvent = TouchedEvent,
-			physicImage = Instance.new("Frame"),
-			CanCollide = canCollide or true,
-			TouchedSideMutex = mutex.new(false),
-			TouchedSide = {
-				Right = {},
-				Left = {},
-				Up = {},
-				Down = {},
-			},
-			Anchored = (function()
-				if anchored ~= nil then
-					return anchored
-				else
-					return true
-				end
-			end)(),
-			Size = Vector3.new(),
-			Image = Image,
-			TouchMsg = {},
-			TouchMsgMutex = mutex.new(),
-			ID = physicObject.Id,
-		} :: PhysicObjectStruct,
-		{ __index = physicObject }
-	)
+	local this: PhysicObjectStruct = {
+		Touched = TouchedEvent.Event,
+		TouchedEvent = TouchedEvent,
+		physicImage = Instance.new("Frame"),
+		CanCollide = canCollide or true,
+		TouchedSideMutex = mutex.new(false),
+		TouchedSide = {
+			Right = {},
+			Left = {},
+			Up = {},
+			Down = {},
+		},
+		Anchored = (function()
+			if anchored ~= nil then
+				return anchored
+			else
+				return true
+			end
+		end)(),
+		Size = Vector3.new(),
+		Image = Image,
+		TouchMsg = {},
+		TouchMsgMutex = mutex.new(),
+		ID = physicObject.Id,
+		background = background,
+	}
 
 	physicObject.Id += 1
-
-	print("create", this)
 
 	this.Image.ImageInstance.Parent = this.physicImage
 
@@ -444,47 +451,23 @@ function physicObject.new(
 					s.physicImage.Position.X.Offset,
 					s.physicImage.Position.Y.Offset
 
-				if
-					stdlib.algorithm.find_if(
-						s.TouchedSide.Up,
-						function(value): boolean
-							return value.ID == b.ID
-						end
-					)
-				then
+				local function cmp(value: PhysicObject): boolean
+					return value.ID == b.ID
+				end
+
+				if stdlib.algorithm.find_if(s.TouchedSide.Up, cmp) then
 					Y += (b.physicImage.AbsolutePosition.Y + b.physicImage.AbsoluteSize.Y - s.physicImage.AbsolutePosition.Y) / m
 				end
 
-				if
-					stdlib.algorithm.find_if(
-						s.TouchedSide.Down,
-						function(value): boolean
-							return value.ID == b.ID
-						end
-					)
-				then
+				if stdlib.algorithm.find_if(s.TouchedSide.Down, cmp) then
 					Y -= (s.physicImage.AbsolutePosition.Y + s.physicImage.AbsoluteSize.Y - b.physicImage.AbsolutePosition.Y) / m
 				end
 
-				if
-					stdlib.algorithm.find_if(
-						s.TouchedSide.Left,
-						function(value): boolean
-							return value.ID == b.ID
-						end
-					)
-				then
+				if stdlib.algorithm.find_if(s.TouchedSide.Left, cmp) then
 					X += (b.physicImage.AbsolutePosition.X + b.physicImage.AbsoluteSize.X - s.physicImage.AbsolutePosition.X) / m
 				end
 
-				if
-					stdlib.algorithm.find_if(
-						s.TouchedSide.Right,
-						function(value): boolean
-							return value.ID == b.ID
-						end
-					)
-				then
+				if stdlib.algorithm.find_if(s.TouchedSide.Right, cmp) then
 					X -= (s.physicImage.AbsolutePosition.X + s.physicImage.AbsoluteSize.X - b.physicImage.AbsolutePosition.X) / m
 				end
 
