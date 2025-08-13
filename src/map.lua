@@ -156,6 +156,9 @@ end
 	Init map
 ]]
 function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
+	local b = 0
+	local c = 0
+
 	local function CalcPositions()
 		self:CalcPositions()
 		self:CalcZIndexs()
@@ -166,6 +169,44 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 		)
 
 		Player.WalkSpeed.Calculated = Vector2.new(speed.X, speed.Y)
+
+		if
+			self.Image.ImageInstance.ScaleType == Enum.ScaleType.Fit
+			and self.Image.ImageInstance.Parent
+		then
+
+			print(self.Image.ImageInstance.Position)
+			print(self.Image.ImageInstance.Size)
+
+			local A = (
+				self.Image.ImageInstance.AbsoluteSize.X
+				/ self.Image.ImageInstance.AbsoluteSize.Y
+			)
+			local B = (self.Image.RealSize.X / self.Image.RealSize.Y)
+			if A > B then
+				local a = (
+					Calc.LeftSpace(Calc.width(self.Image), self.Image)
+					/ self.Image.ImageInstance.Parent.AbsoluteSize.X
+				) / 4
+				self.Image.ImageInstance.Position = UDim2.fromScale(
+					self.Image.ImageInstance.Position.X.Scale - (a - b),
+					self.Image.ImageInstance.Position.Y.Scale
+				)
+				b = a
+			elseif A < B then
+				local d = (
+					Calc.UpSpace(Calc.height(self.Image), self.Image)
+					/ self.Image.ImageInstance.Parent.AbsoluteSize.Y
+				) / 4
+
+				self.Image.ImageInstance.Position = UDim2.fromScale(
+					self.Image.ImageInstance.Position.X.Scale,
+					self.Image.ImageInstance.Position.Y.Scale - (d - c) 
+				)
+				c = d
+			end
+
+		end
 	end
 
 	self.Image.ImageInstance.Parent = GameFrame

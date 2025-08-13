@@ -23,7 +23,7 @@ export type Character2dStruct = {
 --[[
 	Character with animations
 ]]
-export type Character2d = Character2dStruct & typeof(Character2d)
+export type Character2d = Character2dStruct & typeof(Character2d) & BaseCharacter.BaseCharacter2d
 
 --[[
 
@@ -122,13 +122,15 @@ function Character2d.WalkMoveRaw(
 	local t =
 		BaseCharacter.WalkMoveRaw(self, X, Y, RelativeObject, cooldownTime)
 
-	self.MoveStopConnection = t.Completed:Connect(
-		function(state: Enum.PlaybackState)
-			if state == Enum.PlaybackState.Completed then
-				self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
+	if t then
+		self.MoveStopConnection = t.Completed:Connect(
+			function(state: Enum.PlaybackState)
+				if state == Enum.PlaybackState.Completed then
+					self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
+				end
 			end
-		end
-	)
+		)
+	end
 
 	return t
 end

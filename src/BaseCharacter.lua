@@ -40,7 +40,7 @@ export type BaseCharacter2dStruct = {
 --[[
 
 ]]
-export type BaseCharacter2d = BaseCharacter2dStruct & typeof(BaseCharacter2d)
+export type BaseCharacter2d = BaseCharacter2dStruct & typeof(BaseCharacter2d) & physicObject.PhysicObject
 
 --[[
 	Destroy player
@@ -62,21 +62,32 @@ function BaseCharacter2d.GetMoveTween(
 ): Tween?
 	local tween
 
-	if self.WalkSpeed.Calculated then
-		local instance = RelativeObject.ImageInstance
+	local instance = RelativeObject.ImageInstance
 
+	if
+		self.WalkSpeed.Calculated
+		and instance.Parent
+		and (
+			instance.Parent.ClassName == "Frame"
+			or instance.Parent.ClassName == "ImageLabel"
+		)
+	then
 		tween = TweenService:Create(instance, TweenInfo.new(cooldownTime), {
-			["Position"] = UDim2.new(
-				UDim.new(
-					instance.Position.X.Scale,
-					instance.Position.X.Offset
-						- (X * self.WalkSpeed.Calculated.X)
-				),
-				UDim.new(
-					instance.Position.Y.Scale,
-					instance.Position.Y.Offset
-						+ (Y * self.WalkSpeed.Calculated.Y)
-				)
+			["Position"] = UDim2.fromScale(
+				instance.Position.X.Scale
+					+ (
+						(
+							instance.Position.X.Offset
+							- (X * self.WalkSpeed.Calculated.X)
+						) / instance.Parent.AbsoluteSize.X
+					),
+				instance.Position.Y.Scale
+					- (
+						(
+							instance.Position.Y.Offset
+							- (Y * self.WalkSpeed.Calculated.Y)
+						) / instance.Parent.AbsoluteSize.Y
+					)
 			),
 		})
 	else

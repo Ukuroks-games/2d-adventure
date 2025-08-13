@@ -9,21 +9,27 @@ local function RelativeSizes(background: ExImage.ExImage): number
 		/ background.ImageInstance.AbsoluteSize.Y
 end
 
-local function height(background: ExImage.ExImage): number
+function calc.height(background: ExImage.ExImage): number
 	return (background.RealSize.Y * background.ImageInstance.AbsoluteSize.X)
 		/ background.RealSize.X
 end
 
-local function width(background: ExImage.ExImage): number
+--[[
+	ширина изображения
+]]
+function calc.width(background: ExImage.ExImage): number
 	return (background.RealSize.X * background.ImageInstance.AbsoluteSize.Y)
 		/ background.RealSize.Y
 end
 
-local function UpSpace(h: number, background: ExImage.ExImage): number
+function calc.UpSpace(h: number, background: ExImage.ExImage): number
 	return ((background.ImageInstance.AbsoluteSize.Y - h) / 2)
 end
 
-local function LeftSpace(w: number, background: ExImage.ExImage): number
+--[[
+	Пространство между левым краем изображения и самим изображением
+]]
+function calc.LeftSpace(w: number, background: ExImage.ExImage): number
 	return ((background.ImageInstance.AbsoluteSize.X - w) / 2)
 end
 
@@ -43,7 +49,7 @@ function calc.CalcPosition(
 
 		if currentSizes < ResSizes then -- то есть если есть поля сверху и снизу
 			-- высота самого изображения
-			local h = height(background)
+			local h = calc.height(background)
 
 			return Vector2.new(
 				AnchorPosition.X
@@ -52,15 +58,15 @@ function calc.CalcPosition(
 						/ background.RealSize.X
 					),
 				AnchorPosition.Y * (h / background.RealSize.Y)
-					+ UpSpace(h, background)
+					+ calc.UpSpace(h, background)
 			)
 		elseif currentSizes > ResSizes then -- поля справа и слева
 			-- ширина самого изображения
-			local w = width(background)
+			local w = calc.width(background)
 
 			return Vector2.new(
 				AnchorPosition.X * (w / background.RealSize.X)
-					+ LeftSpace(w, background),
+					+ calc.LeftSpace(w, background),
 				AnchorPosition.Y
 					* (
 						background.ImageInstance.AbsoluteSize.Y
@@ -91,7 +97,7 @@ function calc.CalcSize(Size: Vector3, background: ExImage.ExImage): Vector3
 
 		if currentSizes < ResSizes then -- то есть если есть поля сверху и снизу
 			-- высота самого изображения
-			local h = height(background)
+			local h = calc.height(background)
 
 			return Vector3.new(
 				Size.X
@@ -103,7 +109,7 @@ function calc.CalcSize(Size: Vector3, background: ExImage.ExImage): Vector3
 				Size.Z * (h / background.RealSize.Y)
 			)
 		elseif currentSizes > ResSizes then -- поля справа и слева
-			local w = width(background)
+			local w = calc.width(background)
 
 			return Vector3.new(
 				Size.X * (w / background.RealSize.X),
@@ -140,21 +146,21 @@ function calc.ReturnPosition(
 		local ResSizes = background.RealSize.X / background.RealSize.Y
 
 		if currentSizes < ResSizes then
-			local h = height(background)
+			local h = calc.height(background)
 
 			return Vector2.new(
 				AbsolutePosition.X
 					/ background.ImageInstance.AbsoluteSize.X
 					* background.RealSize.X,
-				(AbsolutePosition.Y - UpSpace(h, background))
+				(AbsolutePosition.Y - calc.UpSpace(h, background))
 					/ h
 					* background.RealSize.Y
 			)
 		elseif currentSizes > ResSizes then
-			local w = width(background)
+			local w = calc.width(background)
 
 			return Vector2.new(
-				(AbsolutePosition.X - LeftSpace(w, background))
+				(AbsolutePosition.X - calc.LeftSpace(w, background))
 					/ w
 					* background.RealSize.X,
 				AbsolutePosition.Y
@@ -190,7 +196,7 @@ function calc.ReturnSize(
 
 		if currentSizes < ResSizes then -- то есть если есть поля сверху и снизу
 			-- высота самого изображения
-			local h = height(background)
+			local h = calc.height(background)
 
 			return Vector3.new(
 				AbsoluteSize.X
@@ -200,7 +206,7 @@ function calc.ReturnSize(
 				AbsoluteSize.Z / h * background.RealSize.Y
 			)
 		elseif currentSizes > ResSizes then -- поля справа и слева
-			local w = width(background)
+			local w = calc.width(background)
 
 			return Vector3.new(
 				AbsoluteSize.X / w * background.RealSize.X,
