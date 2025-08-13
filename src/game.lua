@@ -219,17 +219,13 @@ function Game.Loading(self: Game)
 	end)
 
 	local a = setmetatable({
-		Wait = function()
+		Wait = function(_)
 			print(Progress.Value)
 			if Progress.Value < 1 then
 				DoneEvent.Event:Wait()
 			end
 		end,
 	}, { __index = DoneEvent.Event })
-
-	DoneEvent.Destroying:Connect(function(_: any)
-		table.clear(a)
-	end)
 
 	return {
 		Done = a,

@@ -1,9 +1,10 @@
+--!nonstrict
+
 local stdlib = require(script.Parent.Parent.stdlib)
 local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
 local Calc = require(script.Parent.Calc)
 local ExImage = require(script.Parent.ExImage)
-local Object2d = require(script.Parent.Object2d)
 local physicObject = require(script.Parent.physicObject)
 
 --[[
@@ -22,17 +23,12 @@ export type Character2dStruct = {
 --[[
 	Character with animations
 ]]
-export type Character2d = typeof(setmetatable(
-	{} :: Character2dStruct,
-	{ __index = Character2d }
-))
+export type Character2d = Character2dStruct & typeof(Character2d)
 
 --[[
 
 ]]
-function Character2d.CalcSize(
-	self: Character2d
-): Vector3
+function Character2d.CalcSize(self: Character2d): Vector3
 	return Calc.CalcSize(self.Size, self.background)
 end
 
@@ -52,7 +48,7 @@ function Character2d.WalkMoveRaw(
 	self: Character2d,
 	X: number,
 	Y: number,
-	RelativeObject: GuiObject? | ExImage.ExImage,
+	RelativeObject: ExImage.ExImage,
 	cooldownTime: number?
 ): Tween
 	if self.MoveStopConnection then

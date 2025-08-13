@@ -1,3 +1,5 @@
+--!strict
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -7,9 +9,11 @@ local gifInfo = adventure2d.GifInfo
 
 adventure2d.config.ShowHitboxes = true
 
-local GameFrame = Players.LocalPlayer
+Players.LocalPlayer
 	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui").Frame
+	:WaitForChild("ScreenGui")
+
+local GameFrame = Players.LocalPlayer.PlayerGui.ScreenGui.Frame
 GameFrame.Size = UDim2.fromScale(1, 1)
 
 local _game = adventure2d.Game.new(

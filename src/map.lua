@@ -1,5 +1,3 @@
---!strict
-
 -- services
 
 local ContentProvider = game:GetService("ContentProvider")

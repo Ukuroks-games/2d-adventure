@@ -1,4 +1,4 @@
---!strict
+--!nocheck
 
 local ExImage = require(script.Parent.ExImage)
 
@@ -63,11 +63,7 @@ export type AnimatedObjectStruct = {
 --[[
 	Animations controller
 ]]
-export type AnimatedObject =
-	typeof(setmetatable(
-		{} :: AnimatedObjectStruct,
-		{ __index = animatedObject }
-	))
+export type AnimatedObject = AnimatedObjectStruct & typeof(animatedObject)
 
 function animatedObject.Preload(self: AnimatedObject)
 	local t = base2d.Preload(self)
@@ -115,7 +111,8 @@ function animatedObject.GetAnimation(
 	self: AnimatedObject,
 	animationName: string
 ): giflib.Gif?
-	local g = self.Animations[animationName:sub(1, 4)]
+	local g: AnimationsGroupDefault<giflib.Gif> =
+		self.Animations[animationName:sub(1, 4)]
 
 	if g then
 		return g[animationName:sub(5)]

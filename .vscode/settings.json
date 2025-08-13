@@ -12,6 +12,7 @@
 		"CalcZIndexs",
 		"cooldown",
 		"giflib",
+		"nonstrict",
 		"pcall",
 		"rbxassetid",
 		"rbxl",

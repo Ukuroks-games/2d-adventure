@@ -109,7 +109,7 @@ sourcemap.json:	$(GENERATE_SOURCEMAP).project.json
 	rojo sourcemap $< -o $@
 
 # for manual run
-sourcemap:	sourcemap.json	PackagesTypes	DevPackagesTypes 
+sourcemap:	sourcemap.json
 
 
 clean-sourcemap:

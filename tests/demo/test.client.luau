@@ -1,3 +1,5 @@
+--!strict
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -281,6 +283,8 @@ local d = dialoglib.dialog.new(DialogFrame, {
 })
 
 local lock = false
+
+shee:GetCoordinates()
 
 shee.Touched:Connect(function(_)
 	if not lock then

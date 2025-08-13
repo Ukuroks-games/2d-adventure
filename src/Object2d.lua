@@ -1,5 +1,4 @@
 --!strict
-local RemoteCursorService = game:GetService("RemoteCursorService")
 
 local Calc = require(script.Parent.Calc)
 local ExImage = require(script.Parent.ExImage)
@@ -22,10 +21,7 @@ export type Object2dStruct = {
 	Image: ExImage.ExImage,
 } & physicObject.PhysicObjectStruct
 
-export type Object2d = typeof(setmetatable(
-	{} :: Object2dStruct,
-	{ __index = Object2d }
-))
+export type Object2d = Object2dStruct & typeof(Object2d)
 
 function Object2d.CalcSize(self: Object2d): Vector3
 	if self.background then

@@ -40,10 +40,7 @@ export type BaseCharacter2dStruct = {
 --[[
 
 ]]
-export type BaseCharacter2d = typeof(setmetatable(
-	{} :: BaseCharacter2dStruct,
-	{ __index = BaseCharacter2d }
-))
+export type BaseCharacter2d = BaseCharacter2dStruct & typeof(BaseCharacter2d)
 
 --[[
 	Destroy player
@@ -127,7 +124,10 @@ function BaseCharacter2d.WalkMoveRaw(
 		RelativeObject = self.Image
 	end
 
-	local t = self:GetMoveTween(X, Y, RelativeObject, cooldownTime)
+	local t
+	if RelativeObject then
+		t = self:GetMoveTween(X, Y, RelativeObject, cooldownTime)
+	end
 
 	if t then
 		self.MoveEvent:Fire()
