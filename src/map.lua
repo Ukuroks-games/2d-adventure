@@ -159,6 +159,13 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 	local function CalcPositions()
 		self:CalcPositions()
 		self:CalcZIndexs()
+
+		local speed = Calc.CalcSize(
+			Vector3.new(Player.WalkSpeed.X, Player.WalkSpeed.Y, 0),
+			self.Image
+		)
+
+		Player.WalkSpeed.Calculated = Vector2.new(speed.X, speed.Y)
 	end
 
 	self.Image.ImageInstance.Parent = GameFrame
@@ -176,13 +183,6 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 	CalcPositions() -- первоначальный расчет
 
 	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
-
-	local speed = Calc.CalcSize(
-		Vector3.new(Player.WalkSpeed.X, Player.WalkSpeed.Y, 0),
-		self.Image
-	)
-
-	Player.WalkSpeed.Calculated = Vector2.new(speed.X, speed.Y)
 
 	--[[
 		расчет после изменения фрейма игры
