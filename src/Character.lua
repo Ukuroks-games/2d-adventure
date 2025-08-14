@@ -23,7 +23,11 @@ export type Character2dStruct = {
 --[[
 	Character with animations
 ]]
-export type Character2d = Character2dStruct & typeof(Character2d)
+export type Character2d =
+	Character2dStruct
+	& typeof(Character2d)
+	& AnimatedObject.AnimatedObject
+	& BaseCharacter.BaseCharacter2d
 
 --[[
 

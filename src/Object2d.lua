@@ -21,7 +21,10 @@ export type Object2dStruct = {
 	Image: ExImage.ExImage,
 } & physicObject.PhysicObjectStruct
 
-export type Object2d = Object2dStruct & typeof(Object2d)
+export type Object2d =
+	Object2dStruct
+	& typeof(Object2d)
+	& physicObject.PhysicObject
 
 function Object2d.CalcSize(self: Object2d): Vector3
 	if self.background then

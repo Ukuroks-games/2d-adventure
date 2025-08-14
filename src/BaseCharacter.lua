@@ -40,7 +40,7 @@ export type BaseCharacter2dStruct = {
 --[[
 
 ]]
-export type BaseCharacter2d = BaseCharacter2dStruct & typeof(BaseCharacter2d)
+export type BaseCharacter2d = BaseCharacter2dStruct & typeof(BaseCharacter2d) & physicObject.PhysicObject
 
 --[[
 	Destroy player

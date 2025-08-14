@@ -16,7 +16,7 @@ local player2d = setmetatable({}, { __index = Character })
 ]]
 export type Player2dStruct = Character.Character2dStruct
 
-export type Player2d = Player2dStruct & typeof(player2d)
+export type Player2d = Player2dStruct & typeof(player2d) & Character.Character2d
 
 function player2d.SetPositionX(self: Player2dStruct, _: number)
 	self.physicImage.Position = UDim2.new(
