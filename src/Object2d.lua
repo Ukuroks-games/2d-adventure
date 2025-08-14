@@ -17,8 +17,6 @@ export type Object2dStruct = {
 		то в каких координатах находился левый верхний угол изначально
 	]]
 	AnchorPosition: Vector2,
-
-	Image: ExImage.ExImage,
 } & physicObject.PhysicObjectStruct
 
 export type Object2d =
