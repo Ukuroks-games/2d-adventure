@@ -184,6 +184,8 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 
 	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
 
+	Player:CalcSizeAndPos()
+
 	--[[
 		расчет после изменения фрейма игры
 	]]
@@ -221,8 +223,9 @@ function map.CalcZIndexs(self: Map)
 			a: physicObject.PhysicObject,
 			b: physicObject.PhysicObject
 		): boolean
-			return a.physicImage.AbsolutePosition.Y
-				< b.physicImage.AbsolutePosition.Y
+			local A = a.physicImage.AbsolutePosition.Y
+			local B = b.physicImage.AbsolutePosition.Y
+			return A < B
 		end
 	)
 

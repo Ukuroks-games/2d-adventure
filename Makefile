@@ -60,7 +60,7 @@ $(PACKAGE_NAME):	$(BUILD_SOURCES)	$(BUILD_DIR)/wally.toml
 	wally package --output $(PACKAGE_NAME) --project-path $(BUILD_DIR)
 
 # Zip package
-package:	clean-package	clean-build	$(PACKAGE_NAME)
+package:	clean-build	$(PACKAGE_NAME)
 	
 # Publish
 publish:	clean-build	$(BUILD_SOURCES)	$(BUILD_DIR)/wally.toml	
@@ -87,7 +87,7 @@ ALL_TESTS =	demo.rbxl	\
 			testCalc.rbxl
 
 ### rebuild add tests
-tests: clean-tests $(ALL_TESTS)
+tests: $(ALL_TESTS)
 
 ### projects define
 

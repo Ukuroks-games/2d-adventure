@@ -154,6 +154,7 @@ end
 function physicObject.CalcSizeAndPos(self: PhysicObject)
 	self:SetSize(self:GetSize())
 	self:SetPosition(self:GetPosition())
+	self:SetImageOffset(self.ImageOffset)
 end
 
 --[[
@@ -239,6 +240,22 @@ function physicObject.SetPositionY(self: PhysicObject, pos: number)
 end
 
 --[[
+
+]]
+function physicObject.SetImageOffset(self: PhysicObject, pos: Vector2)
+	self.ImageOffset = pos
+
+	if self.background then
+		local p = Calc.CalcSize(
+			Vector3.new(self.ImageOffset.X, self.ImageOffset.Y),
+			self.background
+		)
+
+		self.Image.ImageInstance.Position += UDim2.fromOffset(p.X, p.Y)
+	end
+end
+
+--[[
 	Изменить координаты напрямую
 ]]
 function physicObject.SetPositionRaw(self: PhysicObject, pos: Vector2)
@@ -257,6 +274,7 @@ function physicObject.SetSize(self: PhysicObject, size: Vector3)
 	self.Image.ImageInstance.Size = UDim2.new(0, size.X, 0, size.Y)
 
 	self.Image.ImageInstance.Position = UDim2.new(0, 0, 0, size.Z - size.Y)
+	self:SetImageOffset(self.ImageOffset)
 
 	self.physicImage.Size = UDim2.fromOffset(size.X, size.Z)
 end
@@ -360,8 +378,8 @@ function physicObject.new(
 		TouchMsgMutex = mutex.new(),
 		ID = physicObject.Id,
 		background = background,
-		ImageOffset = imageOffset,
-		ImageSize = imageSize,
+		ImageOffset = imageOffset or Vector2.new(),
+		ImageSize = imageSize or Vector2.new(),
 	}
 
 	physicObject.Id += 1
