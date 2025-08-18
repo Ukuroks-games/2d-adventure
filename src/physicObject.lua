@@ -155,6 +155,7 @@ function physicObject.CalcSizeAndPos(self: PhysicObject)
 	self:SetSize(self:GetSize())
 	self:SetPosition(self:GetPosition())
 	self:SetImageOffset(self.ImageOffset)
+	self:SetImageSize(self.ImageSize)
 end
 
 --[[
@@ -256,6 +257,30 @@ function physicObject.SetImageOffset(self: PhysicObject, pos: Vector2)
 end
 
 --[[
+
+]]
+function physicObject.SetImageSize(self: PhysicObject, size: Vector2)
+	self.ImageSize = size
+
+	if self.background then
+		local s = Calc.CalcSize(
+			Vector3.new(self.ImageSize.X, self.ImageSize.Y),
+			self.background
+		)
+
+		if self.ImageSize.X == -1 and self.ImageSize.Y ~= -1 then
+			self.Image.ImageInstance.Size =
+				UDim2.new(self.Image.ImageInstance.Size.X, UDim.new(0, s.X))
+		elseif self.ImageSize.Y == -1 and self.ImageSize.X ~= -1 then
+			self.Image.ImageInstance.Size =
+				UDim2.new(UDim.new(0, s.X), self.Image.ImageInstance.Size.Y)
+		elseif self.ImageSize.X ~= -1 and self.ImageSize.Y ~= -1 then
+			self.Image.ImageInstance.Size = UDim2.fromOffset(s.X, s.Y)
+		end
+	end
+end
+
+--[[
 	Изменить координаты напрямую
 ]]
 function physicObject.SetPositionRaw(self: PhysicObject, pos: Vector2)
@@ -277,6 +302,7 @@ function physicObject.SetSize(self: PhysicObject, size: Vector3)
 	self:SetImageOffset(self.ImageOffset)
 
 	self.physicImage.Size = UDim2.fromOffset(size.X, size.Z)
+	self:SetImageSize(self.ImageSize)
 end
 
 --[[
@@ -341,6 +367,8 @@ end
 
 --[[
 	Physic object constructor
+
+	`imageSize` by default -1, -1 (ignore)
 ]]
 function physicObject.new(
 	Image: ExImage.ExImage,
@@ -379,7 +407,7 @@ function physicObject.new(
 		ID = physicObject.Id,
 		background = background,
 		ImageOffset = imageOffset or Vector2.new(),
-		ImageSize = imageSize or Vector2.new(),
+		ImageSize = imageSize or Vector2.new(-1, -1),
 	}
 
 	physicObject.Id += 1

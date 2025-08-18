@@ -73,12 +73,7 @@ function Object2d.new(
 	CheckTouchedSide: boolean?,
 	anchored: boolean?
 ): Object2d
-	local self: Object2d = physicObject.new(
-		Image,
-		canCollide,
-		CheckTouchedSide,
-		anchored
-	) :: Object2d
+	local self = physicObject.new(Image, canCollide, CheckTouchedSide, anchored)
 
 	self.AnchorPosition = AnchorPosition
 	self.Size = Size
