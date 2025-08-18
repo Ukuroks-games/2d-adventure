@@ -36,15 +36,14 @@ SOURCES =	src/init.lua			\
 $(BUILD_DIR):
 	mkdir $@	
 
-wally.lock ./Packages ./DevPackages: wally.toml
+wally.lock	./Packages	./DevPackages:	wally.toml
 	wally install
 
-PackagesTypes:	./Packages	sourcemap.json
-	wally-package-types --sourcemap sourcemap.json Packages
+PackagesTypes:	./Packages	pre-sourcemap
+	-wally-package-types --sourcemap sourcemap.json Packages
 	
-DevPackagesTypes:	./DevPackages	sourcemap.json
-	wally-package-types --sourcemap sourcemap.json DevPackages
-
+DevPackagesTypes:	./DevPackages	pre-sourcemap
+	-wally-package-types --sourcemap sourcemap.json DevPackages
 
 BUILD_SOURCES = $(addprefix $(BUILD_DIR)/, $(notdir $(SOURCES)))
 
@@ -75,12 +74,12 @@ lint:
 $(RBXM_BUILD): library.project.json
 	rojo build library.project.json --output $@
 
-library.project.json: $(SOURCES)	./Packages
+library.project.json:	$(SOURCES)	./Packages
 	make "GENERATE_SOURCEMAP=library" $@
 
 ## RBXL
 
-%.rbxl: %.project.json
+%.rbxl:	%.project.json
 	rojo build $*.project.json --output $@
 
 ALL_TESTS =	demo.rbxl	\
@@ -101,15 +100,21 @@ TestMovableObjects.project.json:	$(ROJO_PROJECTS)/TestMovableObjects.project.jso
 testCalc.project.json:	$(ROJO_PROJECTS)/testCalc.project.json	$(SOURCES)	tests/testCalc/tests.client.luau	./Packages
 	make "GENERATE_SOURCEMAP=testCalc" $@
 
+defaultTests.project.json:	./Packages	./DevPackages
 
 $(GENERATE_SOURCEMAP).project.json:	$(FULL_GENERATE_SOURCEMAP)
 	$(CP) $< $@
-	
-sourcemap.json:	$(GENERATE_SOURCEMAP).project.json
+
+
+pre-sourcemap:
+	$(CP) $(ROJO_PROJECTS)/defaultTests.project.json defaultTests.project.json
+	rojo sourcemap defaultTests.project.json -o sourcemap.json
+
+sourcemap.json:	$(GENERATE_SOURCEMAP).project.json PackagesTypes DevPackagesTypes
 	rojo sourcemap $< -o $@
 
 # for manual run
-sourcemap:	sourcemap.json
+sourcemap:	clean-sourcemap	sourcemap.json
 
 
 clean-sourcemap:
@@ -128,3 +133,21 @@ clean-package:
 	$(RM) $(PACKAGE_NAME) 
 
 clean:	clean-tests	clean-build	clean-rbxm	clean-package	clean-sourcemap
+
+
+.PHONY:	clean	\
+		clean-sourcemap	\
+		clean-rbxm	\
+		clean-build	\
+		clean-package	\
+		pre-sourcemap	\
+		PackagesTypes	\
+		DevPackagesTypes	\
+		package	\
+		publish	\
+		tests	\
+		lint	\
+		MV_SOURCES	\
+		
+	
+.NOTPARALLEL: ./Packages ./DevPackages

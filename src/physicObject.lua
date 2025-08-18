@@ -1,5 +1,3 @@
---!nocheck
-
 local Calc = require(script.Parent.Calc)
 local stdlib = require(script.Parent.Parent.stdlib)
 
@@ -63,6 +61,10 @@ export type PhysicObjectStruct = {
 	TouchedSideMutex: stdlib.Mutex,
 
 	physicImage: Frame,
+
+	ImageOffset: Vector2,
+
+	ImageSize: Vector2,
 
 	Size: Vector3,
 
@@ -327,7 +329,9 @@ function physicObject.new(
 	canCollide: boolean?,
 	checkingTouchedSize: boolean?,
 	anchored: boolean?,
-	background: ExImage.ExImage?
+	background: ExImage.ExImage?,
+	imageOffset: Vector2?,
+	imageSize: Vector2?
 ): PhysicObject
 	local TouchedEvent = Instance.new("BindableEvent")
 
@@ -356,6 +360,8 @@ function physicObject.new(
 		TouchMsgMutex = mutex.new(),
 		ID = physicObject.Id,
 		background = background,
+		ImageOffset = imageOffset,
+		ImageSize = imageSize,
 	}
 
 	physicObject.Id += 1
