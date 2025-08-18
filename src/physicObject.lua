@@ -366,6 +366,18 @@ function physicObject.GetCoordinates(self: PhysicObject): Vector2
 end
 
 --[[
+	Simple calculation of distance using the Pythagorean theorem.
+
+	Returns the distance to `obj`
+]]
+function physicObject.GetDistanceTo(self: PhysicObject, obj: PhysicObject)
+	local p1 = self:GetCoordinates()
+	local p2 = obj:GetCoordinates()
+
+	return math.sqrt(math.pow(p1.X - p2.X, 2) + math.pow(p1.Y - p2.X, 2))
+end
+
+--[[
 	Physic object constructor
 
 	`imageSize` by default -1, -1 (ignore)
