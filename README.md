@@ -5,3 +5,28 @@
 This is "Engine" for creating 2d isometric game in roblox. Not platformer. 
 
 [demo](https://www.roblox.com/games/81880122162557/2d-Adventure-demo)
+
+[wiki](https://github.com/Ukuroks-games/2d-adventure/wiki)
+
+
+## Get it
+
+You can get [wally](https://github.com/upliftgames/wally) package.
+```toml
+adventure2d = "egor00f/2d-adventure@version"
+```
+
+Or download `rbxm` file from [releases](https://github.com/Ukuroks-games/2d-adventure/releases). `rbxm` version contain all depends.
+
+
+## Versions
+
+Versioning tends to be as follows:
+
+`A.B.C` versions
+
+`A` — Major changes. Possible compatibility with previous versions.
+
+`B` — Minor changes. Possibly a new feature. Might need to change function calls/arguments slightly.
+
+`C` — Minor changes/bug fixes.
