@@ -37,5 +37,4 @@
 	"luau-lsp.platform.type": "roblox",
 	"luau-lsp.sourcemap.generatorCommand": "make sourcemap.json -j$(nproc)",
 	"makefile.configureOnOpen": false,
-	"luau-lsp.sourcemap.autogenerate": false,
 }
