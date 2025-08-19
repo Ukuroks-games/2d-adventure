@@ -9,9 +9,7 @@ local gifInfo = adventure2d.GifInfo
 
 adventure2d.config.ShowHitboxes = true
 
-Players.LocalPlayer
-	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui")
+Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui")
 
 local GameFrame = Players.LocalPlayer.PlayerGui.ScreenGui.Frame
 GameFrame.Size = UDim2.fromScale(1, 1)
@@ -331,5 +329,9 @@ local _game = adventure2d.Game.new(
 )
 
 _game:Loading().Done:Wait()
+
+_game.Player.Move:Connect(function()
+	print("Player pos:", _game.Player:GetCoordinates())
+end)
 
 _game:Start()

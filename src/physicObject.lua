@@ -353,10 +353,10 @@ function physicObject.GetCoordinates(self: PhysicObject): Vector2
 	if self.background then
 		return Calc.ReturnPosition(
 			Vector2.new(
-				self.physicImage.Position.X.Offset,
-				self.physicImage.Position.Y.Offset
-					- self.Image.ImageInstance.AbsoluteSize.Y
-					+ self.physicImage.AbsoluteSize.Y
+				self.physicImage.AbsolutePosition.X
+					- self.background.ImageInstance.AbsolutePosition.X,
+				self.physicImage.AbsolutePosition.Y
+					- self.background.ImageInstance.AbsolutePosition.Y
 			),
 			self.background
 		)
