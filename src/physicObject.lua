@@ -42,6 +42,13 @@ export type TouchedSides = {
 	Down: TouchSide,
 }
 
+physicObject.PhysicMode = {
+	NoPhysic = 0,
+	CanTouch = 1,
+	CanCheckSide = 2,
+	CanCollide = 3,
+}
+
 export type PhysicObjectStruct = {
 
 	--[[
@@ -84,6 +91,8 @@ export type PhysicObjectStruct = {
 	ID: number,
 
 	background: ExImage.ExImage?,
+
+	PhysicMode: number,
 } & base2d.Base2dStruct
 
 --[[
@@ -299,9 +308,9 @@ end
 
 ]]
 function physicObject.SetSize(self: PhysicObject, size: Vector3)
-	self.Image.ImageInstance.Size = UDim2.new(0, size.X, 0, size.Y)
+	self.Image.ImageInstance.Size = UDim2.fromOffset(size.X, size.Y)
 
-	self.Image.ImageInstance.Position = UDim2.new(0, 0, 0, size.Z - size.Y)
+	self.Image.ImageInstance.Position = UDim2.fromOffset(0, size.Z - size.Y)
 	self:SetImageOffset(self.ImageOffset)
 
 	self.physicImage.Size = UDim2.fromOffset(size.X, size.Z)
@@ -395,7 +404,8 @@ function physicObject.new(
 	anchored: boolean?,
 	background: ExImage.ExImage?,
 	imageOffset: Vector2?,
-	imageSize: Vector2?
+	imageSize: Vector2?,
+	PhysicMode: number?
 ): PhysicObject
 	local TouchedEvent = Instance.new("BindableEvent")
 
@@ -426,6 +436,7 @@ function physicObject.new(
 		background = background,
 		ImageOffset = imageOffset or Vector2.new(),
 		ImageSize = imageSize or Vector2.new(-1, -1),
+		PhysicMode = PhysicMode or physicObject.PhysicMode.CanCollide,
 	}
 
 	physicObject.Id += 1
@@ -451,7 +462,10 @@ function physicObject.new(
 
 			Касание по двум осям возможно если область пересечения - квадрат.
 		]]
-		if not this.Anchored or checkingTouchedSize then
+		if
+			(not this.Anchored or checkingTouchedSize)
+			and (this.PhysicMode >= physicObject.PhysicMode.CanCheckSide)
+		then
 			local p1x = this.physicImage.AbsolutePosition.X
 				+ (this.physicImage.AbsoluteSize.X / 2)
 			local p1y = this.physicImage.AbsolutePosition.Y
@@ -513,7 +527,10 @@ function physicObject.new(
 	end)
 
 	this.Touched:Connect(function(obj: PhysicObject)
-		if not this.Anchored then
+		if
+			not this.Anchored
+			and this.PhysicMode >= physicObject.PhysicMode.CanCollide
+		then
 			this.TouchedSideMutex:wait()
 
 			local function calc(s: PhysicObject, b: PhysicObject, m: number)

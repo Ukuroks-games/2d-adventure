@@ -47,7 +47,7 @@ export type Map = typeof(setmetatable({} :: MapStruct, { __index = map }))
 --[[
 	Calc position for move Player to position on the map
 
-	Зечем? Игрок находится в центре а координаты от левого верхнего угла изображения
+	Зачем? Игрок находится в центре а координаты от левого верхнего угла изображения
 ]]
 function map.CalcPlayerPositionAbsolute(
 	self: Map,
@@ -112,6 +112,7 @@ function map.CalcCollide(self: Map)
 	]]
 	local Objects = algorithm.copy_if(self.Objects, function(value): boolean
 		return value.CanCollide
+			and (value.PhysicMode > physicObject.PhysicMode.NoPhysic)
 	end)
 
 	for _, v in pairs(Objects) do
