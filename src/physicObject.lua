@@ -16,6 +16,9 @@ local physicObject = setmetatable({}, { __index = base2d })
 
 export type TouchSide = { PhysicObject }
 
+--[[
+	Struct contain list of another `PhysicObject`s  that touched this `PhysicObject`
+]]
 export type TouchedSides = {
 
 	--[[
@@ -349,6 +352,9 @@ function physicObject.SetTouchMsg(
 	self.TouchMsgMutex:unlock()
 end
 
+--[[
+	Get `PhysicObject` coordinates
+]]
 function physicObject.GetCoordinates(self: PhysicObject): Vector2
 	if self.background then
 		return Calc.ReturnPosition(
@@ -360,8 +366,8 @@ function physicObject.GetCoordinates(self: PhysicObject): Vector2
 			),
 			self.background
 		)
-	else
-		error("self.background = nil")
+	else -- без фона не получится посчитать
+		error("self.background = nil") -- ошибка чтоб ненадобыло возвращать что-либо
 	end
 end
 
