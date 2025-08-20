@@ -6,9 +6,6 @@ local physicObject = require(script.Parent.physicObject)
 
 local Object2d = setmetatable({}, { __index = physicObject })
 
---[[
-	Just static object without animations
-]]
 export type Object2dStruct = {
 
 	--[[
@@ -19,11 +16,17 @@ export type Object2dStruct = {
 	AnchorPosition: Vector2,
 } & physicObject.PhysicObjectStruct
 
+--[[
+	Just static object without animations
+]]
 export type Object2d =
 	Object2dStruct
 	& typeof(Object2d)
 	& physicObject.PhysicObject
 
+--[[
+
+]]
 function Object2d.CalcSize(self: Object2d): Vector3
 	if self.background then
 		return Calc.CalcSize(self.Size, self.background)
@@ -32,6 +35,9 @@ function Object2d.CalcSize(self: Object2d): Vector3
 	end
 end
 
+--[[
+
+]]
 function Object2d.CalcPosition(self: Object2d): Vector2
 	if self.background then
 		return Calc.CalcPosition(self.AnchorPosition, self.background)
@@ -40,25 +46,43 @@ function Object2d.CalcPosition(self: Object2d): Vector2
 	end
 end
 
+--[[
+
+]]
 function Object2d.SetPosition(self: Object2d, pos: Vector2)
 	if self.background then
 		self.AnchorPosition = Calc.ReturnPosition(pos, self.background)
 	end
+
 	physicObject.SetPosition(self, pos)
 end
 
+--[[
+
+]]
 function Object2d.SetPositionRaw(self: Object2d, pos: Vector2)
 	physicObject.SetPositionRaw(self, pos)
+
 	if self.background then
 		self.AnchorPosition = physicObject.GetCoordinates(self)
 	end
 end
 
+--[[
+
+]]
 function Object2d.SetSize(self: Object2d, size: Vector3)
 	if self.background then
 		self.Size = Calc.ReturnSize(size, self.background)
 	end
 	physicObject.SetSize(self, size)
+end
+
+--[[
+
+]]
+function Object2d.GetCoordinates(self: Object2d): Vector2
+	return self.AnchorPosition
 end
 
 --[[

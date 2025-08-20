@@ -16,6 +16,9 @@ local physicObject = setmetatable({}, { __index = base2d })
 
 export type TouchSide = { PhysicObject }
 
+--[[
+	Struct contain list of another `PhysicObject`s  that touched this `PhysicObject`
+]]
 export type TouchedSides = {
 
 	--[[
@@ -349,20 +352,35 @@ function physicObject.SetTouchMsg(
 	self.TouchMsgMutex:unlock()
 end
 
+--[[
+	Get `PhysicObject` coordinates
+]]
 function physicObject.GetCoordinates(self: PhysicObject): Vector2
 	if self.background then
 		return Calc.ReturnPosition(
 			Vector2.new(
-				self.physicImage.Position.X.Offset,
-				self.physicImage.Position.Y.Offset
-					- self.Image.ImageInstance.AbsoluteSize.Y
-					+ self.physicImage.AbsoluteSize.Y
+				self.physicImage.AbsolutePosition.X
+					- self.background.ImageInstance.AbsolutePosition.X,
+				self.physicImage.AbsolutePosition.Y
+					- self.background.ImageInstance.AbsolutePosition.Y
 			),
 			self.background
 		)
-	else
-		error("self.background = nil")
+	else -- без фона не получится посчитать
+		error("self.background = nil") -- ошибка чтоб ненадобыло возвращать что-либо
 	end
+end
+
+--[[
+	Simple calculation of distance using the Pythagorean theorem.
+
+	Returns the distance to `obj`
+]]
+function physicObject.GetDistanceTo(self: PhysicObject, obj: PhysicObject)
+	local p1 = self:GetCoordinates()
+	local p2 = obj:GetCoordinates()
+
+	return math.sqrt(math.pow(p1.X - p2.X, 2) + math.pow(p1.Y - p2.X, 2))
 end
 
 --[[

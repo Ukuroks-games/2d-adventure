@@ -2,6 +2,7 @@
 
 local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
+local Calc = require(script.Parent.Calc)
 local Character = require(script.Parent.Character)
 
 --[[
