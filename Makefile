@@ -84,7 +84,8 @@ library.project.json:	$(SOURCES)	./Packages
 
 ALL_TESTS =	demo.rbxl	\
 			TestMovableObjects.rbxl	\
-			testCalc.rbxl
+			testCalc.rbxl	\
+			testPhysic.rbxl
 
 ### rebuild add tests
 tests: $(ALL_TESTS)
