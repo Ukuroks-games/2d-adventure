@@ -101,6 +101,9 @@ TestMovableObjects.project.json:	$(ROJO_PROJECTS)/TestMovableObjects.project.jso
 testCalc.project.json:	$(ROJO_PROJECTS)/testCalc.project.json	$(SOURCES)	tests/testCalc/tests.client.luau	./Packages
 	make "GENERATE_SOURCEMAP=testCalc" $@
 
+testPhysic.project.json:	$(ROJO_PROJECTS)/testPhysic.project.json	tests/testPhysic/test.client.luau	./Packages
+	make "GENERATE_SOURCEMAP=testPhysic" $@
+
 defaultTests.project.json:	./Packages	./DevPackages
 
 $(GENERATE_SOURCEMAP).project.json:	$(FULL_GENERATE_SOURCEMAP)
