@@ -110,19 +110,27 @@ function map.CalcCollide(self: Map)
 	--[[
 		Список объектов которые имеют коллизию
 	]]
-	local Objects = algorithm.copy_if(self.Objects, function(value): boolean
-		return value.CanCollide
-			and (value.PhysicMode > physicObject.PhysicMode.NoPhysic)
-	end)
+	local Objects: { physicObject.PhysicObject } = algorithm.copy_if(
+		self.Objects,
+		function(value): boolean
+			return value.CanCollide
+				and (value.PhysicMode > physicObject.PhysicMode.NoPhysic)
+		end
+	)
 
-	for _, v in pairs(Objects) do
+	for _, v: physicObject.PhysicObject in pairs(Objects) do
 		v:StartPhysicCalc()
 	end
 
-	for _, v in pairs(Objects) do
-		local i = algorithm.find_if(Objects, function(value): boolean
-			return physicObject.CheckCollision(v, value)
-		end)
+	for _, v: physicObject.PhysicObject in pairs(Objects) do
+		local i: number? = algorithm.find_if(
+			Objects,
+			function(value: physicObject.PhysicObject): boolean
+				return value
+					and value ~= v
+					and physicObject.CheckCollision(v, value)
+			end
+		)
 
 		if i then
 			-- here checking side

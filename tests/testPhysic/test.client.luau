@@ -29,14 +29,14 @@ local canTouch = adventure2d.Object2d.new(
 canTouch.PhysicMode = adventure2d.PhysicObject.PhysicMode.CanTouch
 
 local CanCheckSide = adventure2d.Object2d.new(
-	Vector2.new(200, 200),
+	Vector2.new(100, 200),
 	Vector3.new(100, 30, 30),
 	adventure2d.ExImage.new("")
 )
 CanCheckSide.PhysicMode = adventure2d.PhysicObject.PhysicMode.CanCheckSide
 
 local CanCollide = adventure2d.Object2d.new(
-	Vector2.new(100, 100),
+	Vector2.new(200, 200),
 	Vector3.new(100, 30, 30),
 	adventure2d.ExImage.new("")
 )
