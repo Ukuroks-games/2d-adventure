@@ -253,3 +253,11 @@ local _game = adventure2d.Game.new(
 _game:Loading().Done:Wait()
 
 _game:Start()
+
+canTouch.Touched:Connect(function()
+	print("touched")
+end)
+
+CanCheckSide.Touched:Connect(function()
+	print(CanCheckSide:GetTouchedSide())
+end)

@@ -70,6 +70,10 @@ function Character2d.WalkMoveRaw(
 					value
 				): boolean -- Все один из коснувшихся являются anchored
 					return value.Anchored
+						and (
+							value.PhysicMode
+							>= physicObject.PhysicMode.CanCollide
+						)
 				end
 			)
 		else

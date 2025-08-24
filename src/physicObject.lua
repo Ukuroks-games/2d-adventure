@@ -462,66 +462,67 @@ function physicObject.new(
 
 			Касание по двум осям возможно если область пересечения - квадрат.
 		]]
-		if
-			(not this.Anchored or checkingTouchedSize)
-			and (this.PhysicMode >= physicObject.PhysicMode.CanCheckSide)
-		then
-			local p1x = this.physicImage.AbsolutePosition.X
-				+ (this.physicImage.AbsoluteSize.X / 2)
-			local p1y = this.physicImage.AbsolutePosition.Y
-				+ (this.physicImage.AbsoluteSize.Y / 2)
+		if not this.Anchored or checkingTouchedSize then
+			if
+				this.PhysicMode >= physicObject.PhysicMode.CanCheckSide
+				and obj.PhysicMode >= physicObject.PhysicMode.CanCheckSide
+			then
+				local p1x = this.physicImage.AbsolutePosition.X
+					+ (this.physicImage.AbsoluteSize.X / 2)
+				local p1y = this.physicImage.AbsolutePosition.Y
+					+ (this.physicImage.AbsoluteSize.Y / 2)
 
-			local p2x = obj.physicImage.AbsolutePosition.X
-				+ (obj.physicImage.AbsoluteSize.X / 2)
-			local p2y = obj.physicImage.AbsolutePosition.Y
-				+ (obj.physicImage.AbsoluteSize.Y / 2)
+				local p2x = obj.physicImage.AbsolutePosition.X
+					+ (obj.physicImage.AbsoluteSize.X / 2)
+				local p2y = obj.physicImage.AbsolutePosition.Y
+					+ (obj.physicImage.AbsoluteSize.Y / 2)
 
-			local w = (function()
-				if
-					this.physicImage.AbsolutePosition.X
-					> obj.physicImage.AbsolutePosition.X
-				then
-					return obj.physicImage.AbsolutePosition.X
-						+ obj.physicImage.AbsoluteSize.X
-						- this.physicImage.AbsolutePosition.X
-				else
-					return this.physicImage.AbsolutePosition.X
-						+ this.physicImage.AbsoluteSize.X
-						- obj.physicImage.AbsolutePosition.X
+				local w = (function()
+					if
+						this.physicImage.AbsolutePosition.X
+						> obj.physicImage.AbsolutePosition.X
+					then
+						return obj.physicImage.AbsolutePosition.X
+							+ obj.physicImage.AbsoluteSize.X
+							- this.physicImage.AbsolutePosition.X
+					else
+						return this.physicImage.AbsolutePosition.X
+							+ this.physicImage.AbsoluteSize.X
+							- obj.physicImage.AbsolutePosition.X
+					end
+				end)()
+
+				local h = (function()
+					if
+						this.physicImage.AbsolutePosition.Y
+						> obj.physicImage.AbsolutePosition.Y
+					then
+						return obj.physicImage.AbsolutePosition.Y
+							+ obj.physicImage.AbsoluteSize.Y
+							- this.physicImage.AbsolutePosition.Y
+					else
+						return this.physicImage.AbsolutePosition.Y
+							+ this.physicImage.AbsoluteSize.Y
+							- obj.physicImage.AbsolutePosition.Y
+					end
+				end)()
+
+				if h >= w then
+					if p1x < p2x then
+						table.insert(this.TouchedSide.Right, obj)
+					else
+						table.insert(this.TouchedSide.Left, obj)
+					end
 				end
-			end)()
 
-			local h = (function()
-				if
-					this.physicImage.AbsolutePosition.Y
-					> obj.physicImage.AbsolutePosition.Y
-				then
-					return obj.physicImage.AbsolutePosition.Y
-						+ obj.physicImage.AbsoluteSize.Y
-						- this.physicImage.AbsolutePosition.Y
-				else
-					return this.physicImage.AbsolutePosition.Y
-						+ this.physicImage.AbsoluteSize.Y
-						- obj.physicImage.AbsolutePosition.Y
-				end
-			end)()
-
-			if h >= w then
-				if p1x < p2x then
-					table.insert(this.TouchedSide.Right, obj)
-				else
-					table.insert(this.TouchedSide.Left, obj)
+				if h <= w then
+					if p1y > p2y then
+						table.insert(this.TouchedSide.Up, obj)
+					else
+						table.insert(this.TouchedSide.Down, obj)
+					end
 				end
 			end
-
-			if h <= w then
-				if p1y > p2y then
-					table.insert(this.TouchedSide.Up, obj)
-				else
-					table.insert(this.TouchedSide.Down, obj)
-				end
-			end
-
 			this.TouchedSideMutex:unlock()
 		end
 	end)
@@ -530,6 +531,7 @@ function physicObject.new(
 		if
 			not this.Anchored
 			and this.PhysicMode >= physicObject.PhysicMode.CanCollide
+			and obj.PhysicMode >= physicObject.PhysicMode.CanCollide
 		then
 			this.TouchedSideMutex:wait()
 
