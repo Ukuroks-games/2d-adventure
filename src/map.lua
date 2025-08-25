@@ -123,22 +123,21 @@ function map.CalcCollide(self: Map)
 	end
 
 	for _, v: physicObject.PhysicObject in pairs(Objects) do
-		local i: number? = algorithm.find_if(
+		local i = algorithm.copy_if(
 			Objects,
 			function(value: physicObject.PhysicObject): boolean
-				return value
-					and value ~= v
-					and physicObject.CheckCollision(v, value)
+				return value ~= v and physicObject.CheckCollision(v, value)
 			end
 		)
 
-		if i then
-			-- here checking side
-
-			v.TouchedEvent:Fire(Objects[i]) -- connection defined in physicObject constructor must unlock mutex
-		else
-			v.TouchedSideMutex:unlock()
+		for _, obj in pairs(i) do
+			v.TouchedEvent:Fire(obj)
+			v:CalcTouchedSide(obj)
 		end
+	end
+
+	for _, v: physicObject.PhysicObject in pairs(Objects) do
+		v:DonePhysicCalc()
 	end
 end
 

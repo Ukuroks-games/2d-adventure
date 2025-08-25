@@ -14,7 +14,7 @@ local mutex = stdlib.mutex
 ]]
 local physicObject = setmetatable({}, { __index = base2d })
 
-export type TouchSide = { PhysicObject }
+export type TouchSide = { number }
 
 --[[
 	Struct contain list of another `PhysicObject`s  that touched this `PhysicObject`
@@ -83,7 +83,7 @@ export type PhysicObjectStruct = {
 	Anchored: boolean,
 
 	TouchMsg: {
-		[PhysicObject]: boolean,
+		[number]: boolean,
 	},
 
 	TouchMsgMutex: stdlib.Mutex,
@@ -93,7 +93,13 @@ export type PhysicObjectStruct = {
 	background: ExImage.ExImage?,
 
 	PhysicMode: number,
+
+	checkingTouchedSize: boolean,
 } & base2d.Base2dStruct
+
+local ObjectsRegistry = {} :: { [number]: PhysicObject }
+
+physicObject.Registry = ObjectsRegistry
 
 --[[
 	Счётчик id. при создании нового `physicObject` увеличивается на 1. Вообще надо бы заменить на нормальный контроллер id, но пока пофиг думаю 10^30 (наверное столько) хватит
@@ -109,6 +115,7 @@ export type PhysicObject =
 
 ]]
 function physicObject.Destroy(self: PhysicObjectStruct)
+	ObjectsRegistry[self.ID] = nil
 	self.TouchedEvent:Destroy()
 	self.physicImage:Destroy()
 end
@@ -326,7 +333,7 @@ function physicObject.SetZIndex(self: PhysicObject, ZIndex: number)
 end
 
 --[[
-
+	Начать просчет физики
 ]]
 function physicObject.StartPhysicCalc(self: PhysicObject)
 	self.TouchedSideMutex:lock()
@@ -334,6 +341,10 @@ function physicObject.StartPhysicCalc(self: PhysicObject)
 	for _, v in pairs(self.TouchedSide) do
 		table.clear(v)
 	end
+end
+
+function physicObject.DonePhysicCalc(self: PhysicObject)
+	self.TouchedSideMutex:unlock()
 end
 
 --[[
@@ -344,7 +355,7 @@ function physicObject.GetTouchMsg(
 	obj: PhysicObject
 ): boolean?
 	mutex.wait(obj.TouchMsgMutex)
-	return self.TouchMsg[obj]
+	return self.TouchMsg[obj.ID]
 end
 
 --[[
@@ -357,7 +368,7 @@ function physicObject.SetTouchMsg(
 )
 	self.TouchMsgMutex:wait()
 	self.TouchMsgMutex:lock()
-	self.TouchMsg[obj] = val or true
+	self.TouchMsg[obj.ID] = val or true
 	self.TouchMsgMutex:unlock()
 end
 
@@ -390,6 +401,83 @@ function physicObject.GetDistanceTo(self: PhysicObject, obj: PhysicObject)
 	local p2 = obj:GetCoordinates()
 
 	return math.sqrt(math.pow(p1.X - p2.X, 2) + math.pow(p1.Y - p2.X, 2))
+end
+
+function physicObject.CalcTouchedSide(self: PhysicObject, obj: PhysicObject)
+	--[[
+			Кароч в чем смысол алгоритма:
+
+			находим центральные точки двух прямоугольников и смотрим как они расположены относительно друг друга
+
+			А для конечного определения по какой оси было касание (вверх-низ, право-лево, обе) смотрим отношение 
+			сторон области пересечения. 
+
+			Касание по двум осям возможно если область пересечения - квадрат.
+		]]
+	if not self.Anchored or self.checkingTouchedSize then
+		if
+			(self.PhysicMode :: number)
+				>= physicObject.PhysicMode.CanCheckSide
+			and obj.PhysicMode :: number
+				>= physicObject.PhysicMode.CanCheckSide
+		then
+			local p1x = self.physicImage.AbsolutePosition.X
+				+ (self.physicImage.AbsoluteSize.X / 2)
+			local p1y = self.physicImage.AbsolutePosition.Y
+				+ (self.physicImage.AbsoluteSize.Y / 2)
+
+			local p2x = obj.physicImage.AbsolutePosition.X
+				+ (obj.physicImage.AbsoluteSize.X / 2)
+			local p2y = obj.physicImage.AbsolutePosition.Y
+				+ (obj.physicImage.AbsoluteSize.Y / 2)
+
+			local w = (function()
+				if
+					(self.physicImage.AbsolutePosition.X :: number)
+					> obj.physicImage.AbsolutePosition.X
+				then
+					return obj.physicImage.AbsolutePosition.X
+						+ obj.physicImage.AbsoluteSize.X
+						- self.physicImage.AbsolutePosition.X
+				else
+					return self.physicImage.AbsolutePosition.X
+						+ self.physicImage.AbsoluteSize.X
+						- obj.physicImage.AbsolutePosition.X
+				end
+			end)()
+
+			local h = (function()
+				if
+					(self.physicImage.AbsolutePosition.Y :: number)
+					> obj.physicImage.AbsolutePosition.Y
+				then
+					return obj.physicImage.AbsolutePosition.Y
+						+ obj.physicImage.AbsoluteSize.Y
+						- self.physicImage.AbsolutePosition.Y
+				else
+					return self.physicImage.AbsolutePosition.Y
+						+ self.physicImage.AbsoluteSize.Y
+						- obj.physicImage.AbsolutePosition.Y
+				end
+			end)()
+
+			if h >= w then
+				if p1x < p2x then
+					table.insert(self.TouchedSide.Right, obj.ID)
+				else
+					table.insert(self.TouchedSide.Left, obj.ID)
+				end
+			end
+
+			if h <= w then
+				if p1y > p2y then
+					table.insert(self.TouchedSide.Up, obj.ID)
+				else
+					table.insert(self.TouchedSide.Down, obj.ID)
+				end
+			end
+		end
+	end
 end
 
 --[[
@@ -437,6 +525,7 @@ function physicObject.new(
 		ImageOffset = imageOffset or Vector2.new(),
 		ImageSize = imageSize or Vector2.new(-1, -1),
 		PhysicMode = PhysicMode or physicObject.PhysicMode.CanCollide,
+		checkingTouchedSize = checkingTouchedSize,
 	}
 
 	physicObject.Id += 1
@@ -451,84 +540,7 @@ function physicObject.new(
 		end
 	end)()
 
-	this.Touched:Connect(function(obj: PhysicObject)
-		--[[
-			Кароч в чем смысол алгоритма:
-
-			находим центральные точки двух прямоугольников и смотрим как они расположены относительно друг друга
-
-			А для конечного определения по какой оси было касание (вверх-низ, право-лево, обе) смотрим отношение 
-			сторон области пересечения. 
-
-			Касание по двум осям возможно если область пересечения - квадрат.
-		]]
-		if not this.Anchored or checkingTouchedSize then
-			if
-				this.PhysicMode >= physicObject.PhysicMode.CanCheckSide
-				and obj.PhysicMode >= physicObject.PhysicMode.CanCheckSide
-			then
-				local p1x = this.physicImage.AbsolutePosition.X
-					+ (this.physicImage.AbsoluteSize.X / 2)
-				local p1y = this.physicImage.AbsolutePosition.Y
-					+ (this.physicImage.AbsoluteSize.Y / 2)
-
-				local p2x = obj.physicImage.AbsolutePosition.X
-					+ (obj.physicImage.AbsoluteSize.X / 2)
-				local p2y = obj.physicImage.AbsolutePosition.Y
-					+ (obj.physicImage.AbsoluteSize.Y / 2)
-
-				local w = (function()
-					if
-						this.physicImage.AbsolutePosition.X
-						> obj.physicImage.AbsolutePosition.X
-					then
-						return obj.physicImage.AbsolutePosition.X
-							+ obj.physicImage.AbsoluteSize.X
-							- this.physicImage.AbsolutePosition.X
-					else
-						return this.physicImage.AbsolutePosition.X
-							+ this.physicImage.AbsoluteSize.X
-							- obj.physicImage.AbsolutePosition.X
-					end
-				end)()
-
-				local h = (function()
-					if
-						this.physicImage.AbsolutePosition.Y
-						> obj.physicImage.AbsolutePosition.Y
-					then
-						return obj.physicImage.AbsolutePosition.Y
-							+ obj.physicImage.AbsoluteSize.Y
-							- this.physicImage.AbsolutePosition.Y
-					else
-						return this.physicImage.AbsolutePosition.Y
-							+ this.physicImage.AbsoluteSize.Y
-							- obj.physicImage.AbsolutePosition.Y
-					end
-				end)()
-
-				if h >= w then
-					if p1x < p2x then
-						table.insert(this.TouchedSide.Right, obj)
-					else
-						table.insert(this.TouchedSide.Left, obj)
-					end
-				end
-
-				if h <= w then
-					if p1y > p2y then
-						table.insert(this.TouchedSide.Up, obj)
-					else
-						table.insert(this.TouchedSide.Down, obj)
-					end
-				end
-			end
-		end
-
-		if this.TouchedSideMutex.locked then
-			this.TouchedSideMutex:unlock()
-		end
-	end)
+	ObjectsRegistry[this.ID] = this
 
 	this.Touched:Connect(function(obj: PhysicObject)
 		if
@@ -543,8 +555,8 @@ function physicObject.new(
 					s.physicImage.Position.X.Offset,
 					s.physicImage.Position.Y.Offset
 
-				local function cmp(value: PhysicObject): boolean
-					return value.ID == b.ID
+				local function cmp(value: number): boolean
+					return value == b.ID
 				end
 
 				if stdlib.algorithm.find_if(s.TouchedSide.Up, cmp) then

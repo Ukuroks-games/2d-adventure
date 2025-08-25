@@ -57,7 +57,8 @@
             "command": "make sourcemap -j$(nproc) && exit",
             "group": {
                 "kind": "none"
-            }
+            },
+            "problemMatcher": []
         },
         {
             "type": "shell",

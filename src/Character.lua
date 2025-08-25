@@ -69,9 +69,11 @@ function Character2d.WalkMoveRaw(
 				function(
 					value
 				): boolean -- Все один из коснувшихся являются anchored
-					return value.Anchored
+					local v = physicObject.Registry[value]
+				
+					return v.Anchored
 						and (
-							value.PhysicMode
+							v.PhysicMode
 							>= physicObject.PhysicMode.CanCollide
 						)
 				end

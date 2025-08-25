@@ -43,7 +43,11 @@ local CanCollide = adventure2d.Object2d.new(
 	Vector3.new(100, 30, 30),
 	adventure2d.ExImage.new("")
 )
-CanCollide.PhysicMode = adventure2d.PhysicObject.PhysicMode.CanCollide
+local CanCollide2 = adventure2d.Object2d.new(
+	Vector2.new(220, 220),
+	Vector3.new(100, 30, 30),
+	adventure2d.ExImage.new("")
+)
 
 local _game = adventure2d.Game.new(
 	GameFrame,
@@ -247,6 +251,7 @@ local _game = adventure2d.Game.new(
 			canTouch,
 			CanCheckSide,
 			CanCollide,
+			CanCollide2,
 		},
 		Vector2.new(80, 300),
 		Vector3.new(22, 48, 8)
