@@ -62,9 +62,9 @@ export type PhysicObjectStruct = {
 		end)
 		```
 	]]
-	Touched: RBXScriptSignal,
+	Touched: RBXScriptSignal<PhysicObject>,
 
-	TouchedEvent: BindableEvent,
+	TouchedEvent: BindableEvent<>,
 
 	TouchedSide: TouchedSides,
 
@@ -523,6 +523,9 @@ function physicObject.new(
 					end
 				end
 			end
+		end
+
+		if this.TouchedSideMutex.locked then
 			this.TouchedSideMutex:unlock()
 		end
 	end)

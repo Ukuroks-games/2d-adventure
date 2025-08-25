@@ -16,14 +16,14 @@ GameFrame.Size = UDim2.fromScale(1, 1)
 
 local NoPhysic = adventure2d.Object2d.new(
 	Vector2.new(100, 100),
-	Vector3.new(100, 30, 30),
+	Vector3.new(80, 30, 30),
 	adventure2d.ExImage.new("")
 )
 NoPhysic.PhysicMode = adventure2d.PhysicObject.PhysicMode.NoPhysic
 
 local canTouch = adventure2d.Object2d.new(
 	Vector2.new(200, 100),
-	Vector3.new(100, 30, 30),
+	Vector3.new(80, 30, 30),
 	adventure2d.ExImage.new("")
 )
 canTouch.PhysicMode = adventure2d.PhysicObject.PhysicMode.CanTouch
@@ -31,7 +31,10 @@ canTouch.PhysicMode = adventure2d.PhysicObject.PhysicMode.CanTouch
 local CanCheckSide = adventure2d.Object2d.new(
 	Vector2.new(100, 200),
 	Vector3.new(100, 30, 30),
-	adventure2d.ExImage.new("")
+	adventure2d.ExImage.new(""),
+	nil,
+	nil,
+	true
 )
 CanCheckSide.PhysicMode = adventure2d.PhysicObject.PhysicMode.CanCheckSide
 
@@ -243,7 +246,7 @@ local _game = adventure2d.Game.new(
 			NoPhysic,
 			canTouch,
 			CanCheckSide,
-			CanCollide
+			CanCollide,
 		},
 		Vector2.new(80, 300),
 		Vector3.new(22, 48, 8)
@@ -258,6 +261,6 @@ canTouch.Touched:Connect(function()
 	print("touched")
 end)
 
-CanCheckSide.Touched:Connect(function()
-	print(CanCheckSide:GetTouchedSide())
+CanCheckSide.Touched:Connect(function(obj)
+	print(" Touched with: ", obj, "touched in: ", CanCheckSide:GetTouchedSide())
 end)
