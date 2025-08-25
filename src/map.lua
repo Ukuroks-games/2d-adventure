@@ -47,7 +47,7 @@ export type Map = typeof(setmetatable({} :: MapStruct, { __index = map }))
 --[[
 	Calc position for move Player to position on the map
 
-	Зечем? Игрок находится в центре а координаты от левого верхнего угла изображения
+	Зачем? Игрок находится в центре а координаты от левого верхнего угла изображения
 ]]
 function map.CalcPlayerPositionAbsolute(
 	self: Map,
@@ -110,26 +110,34 @@ function map.CalcCollide(self: Map)
 	--[[
 		Список объектов которые имеют коллизию
 	]]
-	local Objects = algorithm.copy_if(self.Objects, function(value): boolean
-		return value.CanCollide
-	end)
+	local Objects: { physicObject.PhysicObject } = algorithm.copy_if(
+		self.Objects,
+		function(value): boolean
+			return value.CanCollide
+				and (value.PhysicMode > physicObject.PhysicMode.NoPhysic)
+		end
+	)
 
-	for _, v in pairs(Objects) do
+	for _, v: physicObject.PhysicObject in pairs(Objects) do
 		v:StartPhysicCalc()
 	end
 
-	for _, v in pairs(Objects) do
-		local i = algorithm.find_if(Objects, function(value): boolean
-			return physicObject.CheckCollision(v, value)
-		end)
+	for _, v: physicObject.PhysicObject in pairs(Objects) do
+		local i = algorithm.copy_if(
+			Objects,
+			function(value: physicObject.PhysicObject): boolean
+				return value ~= v and physicObject.CheckCollision(v, value)
+			end
+		)
 
-		if i then
-			-- here checking side
-
-			v.TouchedEvent:Fire(Objects[i]) -- connection defined in physicObject constructor must unlock mutex
-		else
-			v.TouchedSideMutex:unlock()
+		for _, obj in pairs(i) do
+			v.TouchedEvent:Fire(obj)
+			v:CalcTouchedSide(obj)
 		end
+	end
+
+	for _, v: physicObject.PhysicObject in pairs(Objects) do
+		v:DonePhysicCalc()
 	end
 end
 

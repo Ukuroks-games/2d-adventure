@@ -84,7 +84,8 @@ library.project.json:	$(SOURCES)	./Packages
 
 ALL_TESTS =	demo.rbxl	\
 			TestMovableObjects.rbxl	\
-			testCalc.rbxl
+			testCalc.rbxl	\
+			testPhysic.rbxl
 
 ### rebuild add tests
 tests: $(ALL_TESTS)
@@ -99,6 +100,9 @@ TestMovableObjects.project.json:	$(ROJO_PROJECTS)/TestMovableObjects.project.jso
 
 testCalc.project.json:	$(ROJO_PROJECTS)/testCalc.project.json	$(SOURCES)	tests/testCalc/tests.client.luau	./Packages
 	make "GENERATE_SOURCEMAP=testCalc" $@
+
+testPhysic.project.json:	$(ROJO_PROJECTS)/testPhysic.project.json	tests/testPhysic/test.client.luau	$(SOURCES)	./Packages
+	make "GENERATE_SOURCEMAP=testPhysic" $@
 
 defaultTests.project.json:	./Packages	./DevPackages
 
