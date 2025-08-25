@@ -4,6 +4,7 @@ local stdlib = require(script.Parent.Parent.stdlib)
 local ExImage = require(script.Parent.ExImage)
 local base2d = require(script.Parent.base2d)
 local config = require(script.Parent.config)
+local physic = require(script.Parent.physic)
 
 local mutex = stdlib.mutex
 
@@ -92,6 +93,10 @@ export type PhysicObjectStruct = {
 
 	background: ExImage.ExImage?,
 
+	TransparencyOnFocusedBack: number,
+
+	InFocus: boolean,
+  
 	PhysicMode: number,
 
 	checkingTouchedSize: boolean,
@@ -127,36 +132,8 @@ function physicObject.CheckCollision(
 	self: PhysicObjectStruct,
 	other: PhysicObjectStruct
 ): boolean
-	local function Check(a: Frame, b: Frame)
-		return (
-			( -- тут тупо смотрим находится ли верхняя точка self где-то в other
-				(
-					a.AbsolutePosition.X
-					<= (b.AbsolutePosition.X + b.AbsoluteSize.X)
-				)
-				and (
-					(a.AbsolutePosition.X + a.AbsoluteSize.X)
-					>= b.AbsolutePosition.X
-				)
-			)
-			and (
-				(
-					a.AbsolutePosition.Y
-					<= (b.AbsolutePosition.Y + b.AbsoluteSize.Y)
-				)
-				and (
-					(a.AbsolutePosition.Y + a.AbsoluteSize.Y)
-					>= b.AbsolutePosition.Y
-				)
-			)
-		)
-	end
-
 	return other ~= self
-		and (
-			Check(self.physicImage, other.physicImage)
-			or Check(other.physicImage, self.physicImage) -- если наоборот верхня левая точка other находится в self
-		)
+		and physic.CheckCollision(self.physicImage, other.physicImage)
 end
 
 --[[
@@ -493,6 +470,7 @@ function physicObject.new(
 	background: ExImage.ExImage?,
 	imageOffset: Vector2?,
 	imageSize: Vector2?,
+	TransparencyOnFocusedBack: number?,
 	PhysicMode: number?
 ): PhysicObject
 	local TouchedEvent = Instance.new("BindableEvent")
@@ -524,6 +502,8 @@ function physicObject.new(
 		background = background,
 		ImageOffset = imageOffset or Vector2.new(),
 		ImageSize = imageSize or Vector2.new(-1, -1),
+		TransparencyOnFocusedBack = TransparencyOnFocusedBack or 0,
+		InFocus = false
 		PhysicMode = PhysicMode or physicObject.PhysicMode.CanCollide,
 		checkingTouchedSize = checkingTouchedSize,
 	}

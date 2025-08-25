@@ -14,6 +14,7 @@ local algorithm = stdlib.algorithm
 local ExImage = require(script.Parent.ExImage)
 local Object2d = require(script.Parent.Object2d)
 local camera2d = require(script.Parent.camera2d)
+local physic = require(script.Parent.physic)
 local physicObject = require(script.Parent.physicObject)
 local player2d = require(script.Parent.player)
 
@@ -239,6 +240,27 @@ function map.CalcZIndexs(self: Map)
 
 	for i, v in pairs(self.Objects) do
 		v:SetZIndex(i + 1)
+
+		if v.InFocus then
+			for j = i + 1, #self.Objects do
+				local f: physicObject.PhysicObject? = self.Objects[j]
+
+				if f then --  if v in the end
+					if
+						not f.InFocus
+						and physic.CheckCollision(
+							v.Image.ImageInstance,
+							f.Image.ImageInstance
+						)
+					then
+						f.Image.ImageInstance.ImageTransparency =
+							f.TransparencyOnFocusedBack
+					else
+						f.Image.ImageInstance.ImageTransparency = 0
+					end
+				end
+			end
+		end
 	end
 end
 
