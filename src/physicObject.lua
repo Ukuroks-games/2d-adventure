@@ -503,7 +503,7 @@ function physicObject.new(
 		ImageOffset = imageOffset or Vector2.new(),
 		ImageSize = imageSize or Vector2.new(-1, -1),
 		TransparencyOnFocusedBack = TransparencyOnFocusedBack or 0,
-		InFocus = false
+		InFocus = false,
 		PhysicMode = PhysicMode or physicObject.PhysicMode.CanCollide,
 		checkingTouchedSize = checkingTouchedSize,
 	}
