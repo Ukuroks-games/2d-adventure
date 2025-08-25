@@ -233,7 +233,7 @@ function map.CalcZIndexs(self: Map)
 	for i, v in pairs(self.Objects) do
 		v:SetZIndex(i + 1)
 
-		if v.InFocus and not (i + 1 >= #self.Objects) then
+		if v.InFocus then
 			for j = i + 1, #self.Objects do
 				local f: physicObject.PhysicObject? = self.Objects[j]
 

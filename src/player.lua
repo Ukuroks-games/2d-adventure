@@ -56,6 +56,8 @@ function player2d.new(
 ): Player2d
 	local self = Character.new(Animations, WalkSpeed, Size)
 
+	self.InFocus = true
+
 	setmetatable(self, {
 		__index = player2d,
 	})

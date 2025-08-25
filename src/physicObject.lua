@@ -372,7 +372,8 @@ function physicObject.new(
 	anchored: boolean?,
 	background: ExImage.ExImage?,
 	imageOffset: Vector2?,
-	imageSize: Vector2?
+	imageSize: Vector2?,
+	TransparencyOnFocusedBack: number?
 ): PhysicObject
 	local TouchedEvent = Instance.new("BindableEvent")
 
@@ -403,6 +404,8 @@ function physicObject.new(
 		background = background,
 		ImageOffset = imageOffset or Vector2.new(),
 		ImageSize = imageSize or Vector2.new(-1, -1),
+		TransparencyOnFocusedBack = TransparencyOnFocusedBack or 0,
+		InFocus = false
 	}
 
 	physicObject.Id += 1
