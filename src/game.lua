@@ -1,5 +1,10 @@
 --!strict
 
+local Players = game:GetService("Players")
+
+local PlayerModule =
+	require(Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"))
+
 local InputLib = require(script.Parent.Parent.InputLib)
 local cooldown = require(script.Parent.Parent.cooldown)
 local stdlib = require(script.Parent.Parent.stdlib)
@@ -243,7 +248,7 @@ function Game.Start(self: Game)
 
 		-- Keyboard controls
 
-		local function w(InputObject: InputObject, a1: boolean)
+		local function w(_: InputObject, _: boolean)
 			task.wait()
 		end
 
@@ -277,10 +282,17 @@ function Game.Start(self: Game)
 
 		self.DestroyableObjects.Gamepad = InputLib.WhileKeyPressed(
 			function(InputObject: InputObject, a1: boolean)
-				GamepadThumbStick1.Value = InputObject.Position
+				if
+					Players.LocalPlayer.Character.Humanoid.MoveDirection
+					~= Vector3.new()
+				then
+					GamepadThumbStick1.Value = PlayerModule:GetControls()
+						:GetMoveVector()
+				end
 			end,
 			{
 				Enum.KeyCode.Thumbstick1,
+				Enum.KeyCode.Unknown,
 			}
 		)
 
@@ -345,7 +357,7 @@ function Game.Start(self: Game)
 				Move(
 					self,
 					GamepadThumbStick1.Value.X,
-					GamepadThumbStick1.Value.Y
+					-GamepadThumbStick1.Value.Z
 				)
 			end)
 
