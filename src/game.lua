@@ -248,8 +248,9 @@ function Game.Start(self: Game)
 
 		-- Keyboard controls
 
-		local function w(_: InputObject, _: boolean)
+		local function w(_: InputObject, _: boolean): boolean
 			task.wait()
+			return true
 		end
 
 		self.DestroyableObjects.Up = InputLib.WhileKeyPressed(w, {
@@ -288,7 +289,10 @@ function Game.Start(self: Game)
 				then
 					GamepadThumbStick1.Value = PlayerModule:GetControls()
 						:GetMoveVector()
+					return true
 				end
+
+				return false
 			end,
 			{
 				Enum.KeyCode.Thumbstick1,
@@ -342,14 +346,12 @@ function Game.Start(self: Game)
 				end
 			end
 
-			local KeyboardMoveEvent = stdlib.events.AnyEvent({
+			stdlib.events.AnyEvent({
 				self.DestroyableObjects.Up.Called,
 				self.DestroyableObjects.Down.Called,
 				self.DestroyableObjects.Right.Called,
 				self.DestroyableObjects.Left.Called,
-			})
-
-			KeyboardMoveEvent.Event:Connect(function(_: any)
+			}).Event:Connect(function(_: any)
 				Move(self)
 			end)
 
