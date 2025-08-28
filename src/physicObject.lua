@@ -96,7 +96,7 @@ export type PhysicObjectStruct = {
 	TransparencyOnFocusedBack: number,
 
 	InFocus: boolean,
-  
+
 	PhysicMode: number,
 
 	checkingTouchedSize: boolean,
@@ -332,7 +332,8 @@ function physicObject.GetTouchMsg(
 	obj: PhysicObject
 ): boolean?
 	mutex.wait(obj.TouchMsgMutex)
-	return self.TouchMsg[obj.ID]
+	local a = self.TouchMsg
+	return a[obj.ID]
 end
 
 --[[
@@ -345,7 +346,8 @@ function physicObject.SetTouchMsg(
 )
 	self.TouchMsgMutex:wait()
 	self.TouchMsgMutex:lock()
-	self.TouchMsg[obj.ID] = val or true
+	local t = self.TouchMsg
+	t[obj.ID] = val or true
 	self.TouchMsgMutex:unlock()
 end
 
@@ -526,7 +528,8 @@ function physicObject.new(
 		if
 			not this.Anchored
 			and this.PhysicMode >= physicObject.PhysicMode.CanCollide
-			and obj.PhysicMode >= physicObject.PhysicMode.CanCollide
+			and obj.PhysicMode :: number
+				>= physicObject.PhysicMode.CanCollide
 		then
 			this.TouchedSideMutex:wait()
 
@@ -559,15 +562,16 @@ function physicObject.new(
 			end
 
 			if not obj.Anchored and physicObject.GetTouchMsg(obj, this) then
-				calc(this, obj, 2)
-				this:SetTouchMsg(obj)
+				local a = this :: PhysicObject
+				calc(a, obj, 2)
+				a:SetTouchMsg(obj)
 			else
-				calc(this, obj, 1)
+				calc(this :: PhysicObject, obj, 1)
 			end
 		end
 	end)
 
-	return this
+	return this :: PhysicObject
 end
 
 return physicObject

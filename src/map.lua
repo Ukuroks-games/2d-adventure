@@ -6,8 +6,6 @@ local TweenService = game:GetService("TweenService")
 -- libs
 
 local Calc = require(script.Parent.Calc)
-local stdlib = require(script.Parent.Parent.stdlib)
-local algorithm = stdlib.algorithm
 
 --
 
@@ -17,18 +15,17 @@ local camera2d = require(script.Parent.camera2d)
 local physic = require(script.Parent.physic)
 local physicObject = require(script.Parent.physicObject)
 local player2d = require(script.Parent.player)
+local PhysicController = require(script.Parent.PhysicController)
 
 --[[
 	Map class
 ]]
-local map = {}
+local map = setmetatable({}, { __index = PhysicController })
 
 export type MapStruct = {
 	-- fields
 
 	Image: ExImage.ExImage,
-
-	Objects: { [number]: physicObject.PhysicObject },
 
 	cam: camera2d.Camera2d,
 
@@ -41,9 +38,9 @@ export type MapStruct = {
 	PlayerSize: Vector3?,
 
 	Connections: { RBXScriptConnection },
-}
+} & PhysicController.PhysicControllerStruct
 
-export type Map = typeof(setmetatable({} :: MapStruct, { __index = map }))
+export type Map = MapStruct & typeof(map) & PhysicController.PhysicController
 
 --[[
 	Calc position for move Player to position on the map
@@ -99,47 +96,6 @@ function map.AddObject(self: Map, obj: physicObject.PhysicObject)
 	obj:SetParent(self.Image)
 
 	table.insert(self.Objects, obj)
-end
-
-function map.CalcPositions(self: Map)
-	for _, v in pairs(self.Objects) do
-		v:CalcSizeAndPos()
-	end
-end
-
-function map.CalcCollide(self: Map)
-	--[[
-		Список объектов которые имеют коллизию
-	]]
-	local Objects: { physicObject.PhysicObject } = algorithm.copy_if(
-		self.Objects,
-		function(value): boolean
-			return value.CanCollide
-				and (value.PhysicMode > physicObject.PhysicMode.NoPhysic)
-		end
-	)
-
-	for _, v: physicObject.PhysicObject in pairs(Objects) do
-		v:StartPhysicCalc()
-	end
-
-	for _, v: physicObject.PhysicObject in pairs(Objects) do
-		local i = algorithm.copy_if(
-			Objects,
-			function(value: physicObject.PhysicObject): boolean
-				return value ~= v and physicObject.CheckCollision(v, value)
-			end
-		)
-
-		for _, obj in pairs(i) do
-			v.TouchedEvent:Fire(obj)
-			v:CalcTouchedSide(obj)
-		end
-	end
-
-	for _, v: physicObject.PhysicObject in pairs(Objects) do
-		v:DonePhysicCalc()
-	end
 end
 
 function map.Destroy(self: Map, Player: player2d.Player2d)
@@ -243,7 +199,9 @@ function map.CalcZIndexs(self: Map)
 
 		if v.InFocus then
 			for j = i + 1, #self.Objects do
-				local f: physicObject.PhysicObject? = self.Objects[j]
+				local f: physicObject.PhysicObject? = (
+					self.Objects :: { physicObject.PhysicObject }
+				)[j]
 
 				if f then --  if v in the end
 					if
@@ -265,9 +223,12 @@ function map.CalcZIndexs(self: Map)
 end
 
 function map.DeletePlayer(self: Map, Player: player2d.Player2d)
-	local p = table.find(self.Objects, Player)
+	local Objects = self.Objects
+
+	local p = table.find(Objects, Player)
+
 	if p then
-		self.Objects[p] = nil
+		Objects[p] = nil
 	end
 end
 
@@ -330,14 +291,14 @@ function map.new(
 
 	if Objects then
 		for _, v in pairs(Objects) do
-			self:AddObject(v)
+			map.AddObject(self, v)
 		end
 	end
 
 	self.Image.ImageInstance.Size = UDim2.fromScale(Size.X, Size.Y)
 	self.Image.ImageInstance.ScaleType = Enum.ScaleType.Fit
 
-	return self
+	return self :: Map
 end
 
 return map
