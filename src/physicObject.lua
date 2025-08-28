@@ -96,7 +96,7 @@ export type PhysicObjectStruct = {
 	TransparencyOnFocusedBack: number,
 
 	InFocus: boolean,
-  
+
 	PhysicMode: number,
 
 	checkingTouchedSize: boolean,
@@ -528,7 +528,8 @@ function physicObject.new(
 		if
 			not this.Anchored
 			and this.PhysicMode >= physicObject.PhysicMode.CanCollide
-			and obj.PhysicMode >= physicObject.PhysicMode.CanCollide
+			and obj.PhysicMode :: number
+				>= physicObject.PhysicMode.CanCollide
 		then
 			this.TouchedSideMutex:wait()
 

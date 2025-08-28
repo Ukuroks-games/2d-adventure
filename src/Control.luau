@@ -1,3 +1,5 @@
+--!strict
+
 local Players = game:GetService("Players")
 
 local PlayerModule =

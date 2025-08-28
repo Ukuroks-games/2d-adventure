@@ -1,6 +1,3 @@
---!strict
-
-local cooldown = require(script.Parent.Parent.cooldown)
 local stdlib = require(script.Parent.Parent.stdlib)
 local mutex = stdlib.mutex
 
