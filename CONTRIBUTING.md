@@ -1,4 +1,4 @@
-#How to contribute
+# How to contribute
 
 Just fork the repository, make changes, open a pull request.
 
