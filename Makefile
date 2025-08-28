@@ -15,23 +15,25 @@ ROJO_PROJECTS = rojo-projects
 GENERATE_SOURCEMAP = defaultTests
 FULL_GENERATE_SOURCEMAP = $(ROJO_PROJECTS)/$(GENERATE_SOURCEMAP).project.json
 
-SOURCES =	src/init.lua			\
-			src/BaseCharacter.lua	\
-			src/AnimatedObject.lua	\
-			src/Character.lua		\
-			src/player.lua			\
-			src/Object2d.lua		\
-			src/map.lua				\
-			src/physicObject.lua	\
-			src/gifInfo.lua			\
-			src/ExImage.lua			\
-			src/camera2d.lua		\
-			src/ControlClass.lua	\
-			src/ControlType.lua		\
-			src/defaultControls.lua	\
-			src/game.lua			\
-			src/config.luau			\
-			src/Calc.luau
+SOURCES =	src/init.lua				\
+			src/BaseCharacter.lua		\
+			src/AnimatedObject.lua		\
+			src/Character.lua			\
+			src/player.lua				\
+			src/Object2d.lua			\
+			src/map.lua					\
+			src/physicObject.lua		\
+			src/gifInfo.lua				\
+			src/ExImage.lua				\
+			src/camera2d.lua			\
+			src/ControlClass.lua		\
+			src/ControlType.lua			\
+			src/defaultControls.lua		\
+			src/game.lua				\
+			src/config.luau				\
+			src/Calc.luau				\
+			src/Control.luau			\
+			src/PhysicController.luau	\
 
 $(BUILD_DIR):
 	mkdir $@	

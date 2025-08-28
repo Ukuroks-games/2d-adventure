@@ -77,7 +77,7 @@ local _game = Game.new(
 	GameFrame,
 	player.new({
 		["IDLE"] = {
-			[""] = gifInfo.new(
+			["a"] = gifInfo.new(
 				{ -- IDLE animation frames
 					giflib.Frame.new("123651728909570", 0.5), -- 1
 					giflib.Frame.new("73880862501758", 0.08), -- 2

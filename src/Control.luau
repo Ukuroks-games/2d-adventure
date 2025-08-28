@@ -69,25 +69,20 @@ export type Control = typeof(setmetatable(
 	{ __index = Control }
 ))
 
-local function showAnimation(self: Control, animationName: string)
+function Control.IDLE(self: Control, name: string?)
 	if self.MoveTween then
 		self.MoveTween:Destroy()
 		self.MoveTween = nil -- set to nil for this IF can working
-	else
-		print("bbb")
 	end
 
-	self.Player:SetAnimation(animationName)
-end
+	task.wait()
 
-function Control.IDLE(self: Control)
-	showAnimation(
-		self,
-		"IDLE"
-			.. stdlib.algorithm.GetIndexs(self.Player.Animations.IDLE)[math.random(
-				#self.Player.Animations.IDLE
-			)]
-	)
+	--[[
+		#self.Player.Animations.IDLE == 0 (idk why)
+	]]
+	local n = stdlib.algorithm.GetIndexs(self.Player.Animations.IDLE)
+
+	self.Player:SetAnimation("IDLE" .. (name or n[math.random(#n)]))
 end
 
 function Control.Up(self: Control)
@@ -152,7 +147,7 @@ end
 ]]
 function Control.Start(self: Control)
 	self.ControlThread = task.spawn(function()
-		self.Player:SetAnimation("IDLE")
+		self:IDLE()
 
 		-- Keyboard controls
 

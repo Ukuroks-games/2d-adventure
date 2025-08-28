@@ -98,7 +98,6 @@ function Game.Loading(self: Game)
 
 	local a = setmetatable({
 		Wait = function(_)
-			print(Progress.Value)
 			if Progress.Value < 1 then
 				DoneEvent.Event:Wait()
 			end

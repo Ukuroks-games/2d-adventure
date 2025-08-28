@@ -3,12 +3,9 @@
 local ContentProvider = game:GetService("ContentProvider")
 local TweenService = game:GetService("TweenService")
 
--- libs
-
-local Calc = require(script.Parent.Calc)
-
 --
 
+local Calc = require(script.Parent.Calc)
 local ExImage = require(script.Parent.ExImage)
 local Object2d = require(script.Parent.Object2d)
 local camera2d = require(script.Parent.camera2d)
@@ -248,14 +245,17 @@ end
 
 function map.Loading(self: Map, Progress: NumberValue)
 	local i = 0
+	local PreloadList = { self.Image.ImageInstance }
 	for _, v in pairs(self.Objects) do
-		v:Preload()
+		for _, v in pairs(v:Preload()) do
+			table.insert(PreloadList, v)
+		end
 
 		i += 1
 		Progress.Value = i / (#self.Objects + 1)
 	end
 
-	ContentProvider:PreloadAsync({ self.Image.ImageInstance.Image })
+	ContentProvider:PreloadAsync(PreloadList)
 
 	Progress.Value = 1
 end
