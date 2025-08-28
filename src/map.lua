@@ -247,8 +247,8 @@ function map.Loading(self: Map, Progress: NumberValue)
 	local i = 0
 	local PreloadList = { self.Image.ImageInstance }
 	for _, v in pairs(self.Objects) do
-		for _, v in pairs(v:Preload()) do
-			table.insert(PreloadList, v)
+		for _, j in pairs(v:Preload()) do
+			table.insert(PreloadList, j)
 		end
 
 		i += 1
