@@ -13,8 +13,8 @@ export type Base2d = typeof(setmetatable(
 	{ __index = base2d }
 ))
 
-function base2d.Preload(self: Base2d): { string }
-	return { self.Image.ImageInstance.Image }
+function base2d.Preload(self: Base2d): { Instance }
+	return { self.Image.ImageInstance }
 end
 
 function base2d.new(image: ExImage.ExImage): Base2d

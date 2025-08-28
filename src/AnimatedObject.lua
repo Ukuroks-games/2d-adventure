@@ -65,13 +65,13 @@ export type AnimatedObjectStruct = {
 ]]
 export type AnimatedObject = AnimatedObjectStruct & typeof(animatedObject)
 
-function animatedObject.Preload(self: AnimatedObject)
+function animatedObject.Preload(self: AnimatedObject): { Instance }
 	local t = base2d.Preload(self)
 
 	for _, group in pairs(self.Animations) do
 		for _, gif in pairs(group) do
 			for _, frame in pairs(gif.Frames) do
-				table.insert(t, frame.Image.Image)
+				table.insert(t, frame.Image)
 			end
 		end
 	end
