@@ -13,6 +13,10 @@ local gifInfo = {}
 ]=]
 export type Func = (parent: Frame?) -> giflib.Gif
 
+--[=[
+	@function new
+	@within gifInfo
+]=]
 function gifInfo.new(
 	frames,
 	loopAnimation: boolean?,

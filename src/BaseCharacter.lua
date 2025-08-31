@@ -57,9 +57,9 @@ function BaseCharacter2d.Destroy(self: BaseCharacter2d)
 	physicObject.Destroy(self)
 end
 
---[[
+--[=[
 
-]]
+]=]
 function BaseCharacter2d.GetMoveTween(
 	self: BaseCharacter2d,
 	X: number,
@@ -93,9 +93,9 @@ function BaseCharacter2d.GetMoveTween(
 	return tween
 end
 
---[[
+--[=[
 
-]]
+]=]
 function BaseCharacter2d.NormalizeXY(X: number, Y: number): (number, number)
 	-- Привидение значений X и Y к [-1; 1]
 	if not (X == 0 and Y == 0) then
@@ -143,9 +143,9 @@ function BaseCharacter2d.WalkMoveRaw(
 	return t
 end
 
---[[
+--[=[
 
-]]
+]=]
 function BaseCharacter2d.WalkMove(
 	self: BaseCharacter2d,
 	X: number,
@@ -158,9 +158,9 @@ function BaseCharacter2d.WalkMove(
 	return self:WalkMoveRaw(X, Y, RelativeObject, cooldownTime)
 end
 
---[[
+--[=[
 	BaseCharacter2d constructor
-]]
+]=]
 function BaseCharacter2d.new(
 	WalkSpeed: CharacterSpeed,
 	Size: Vector3

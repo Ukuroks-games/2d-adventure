@@ -12,6 +12,9 @@ export type Camera2d = {
 	CameraMoveSpeed: number,
 }
 
+--[=[
+	Constructor
+]=]
 function Camera2d.new(CameraMoveSpeed: number): Camera2d
 	return {
 		CameraMoveSpeed = CameraMoveSpeed,

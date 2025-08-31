@@ -3,7 +3,11 @@
 local AssetService = game:GetService("AssetService")
 
 --[=[
-	Extended Image
+	Extended Image.
+
+	> Attributes?	NO!
+	>
+	> THIS SHIT?	YES!
 
 	@class ExImage
 ]=]
