@@ -5,9 +5,11 @@ local BaseCharacter = require(script.Parent.BaseCharacter)
 local Calc = require(script.Parent.Calc)
 local Character = require(script.Parent.Character)
 
---[[
+--[=[
 	Player class
-]]
+
+	@class Player2d
+]=]
 local player2d = setmetatable({}, { __index = Character })
 
 --[[
@@ -46,9 +48,11 @@ function player2d.SetPositionRaw(self: Player2d, _: Vector2)
 	) -- move to center PlayerFrame
 end
 
---[[
+--[=[
 	Player2d constructor
-]]
+
+	@within Player2d
+]=]
 function player2d.new(
 	Animations: AnimatedObject.ConstructorAnimations,
 	WalkSpeed: BaseCharacter.CharacterSpeed,

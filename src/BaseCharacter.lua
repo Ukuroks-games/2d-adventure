@@ -9,9 +9,13 @@ local TweenService = game:GetService("TweenService")
 local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 
---[[
-	Player class
-]]
+--[=[
+	Base character.
+
+	inherited from PhysicObject
+
+	@class BaseCharacter2d
+]=]
 local BaseCharacter2d = setmetatable({}, {
 	__index = physicObject,
 })
@@ -40,7 +44,10 @@ export type BaseCharacter2dStruct = {
 --[[
 
 ]]
-export type BaseCharacter2d = BaseCharacter2dStruct & typeof(BaseCharacter2d) & physicObject.PhysicObject
+export type BaseCharacter2d =
+	BaseCharacter2dStruct
+	& typeof(BaseCharacter2d)
+	& physicObject.PhysicObject
 
 --[[
 	Destroy player

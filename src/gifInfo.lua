@@ -2,8 +2,15 @@
 
 local giflib = require(script.Parent.Parent.giflib)
 
+--[=[
+	@class gifInfo
+]=]
 local gifInfo = {}
 
+--[=[
+	@type Func (parent: Frame?)->giflib.Gif
+	@within gifInfo
+]=]
 export type Func = (parent: Frame?) -> giflib.Gif
 
 function gifInfo.new(

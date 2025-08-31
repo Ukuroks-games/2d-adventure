@@ -8,18 +8,31 @@ local physic = require(script.Parent.physic)
 
 local mutex = stdlib.mutex
 
---[[
+--[=[
 	Physic object
 
 	interface for another classes, that can have physic
-]]
+
+	@class PhysicObject
+]=]
 local physicObject = setmetatable({}, { __index = base2d })
 
+--[=[
+	Contain IDs of PhysicObject
+
+	@type TouchedSide {number}
+
+	@within PhysicObject
+]=]
 export type TouchSide = { number }
 
---[[
+--[=[
 	Struct contain list of another `PhysicObject`s  that touched this `PhysicObject`
-]]
+
+	@type TouchedSides { Right: TouchedSide, Left: TouchedSide, Up: TouchedSide, Down: TouchedSide }
+
+	@within PhysicObject
+]=]
 export type TouchedSides = {
 
 	--[[
@@ -43,6 +56,11 @@ export type TouchedSides = {
 	Down: TouchSide,
 }
 
+--[=[
+	@type PhysicMode {NoPhysic: 0, CanTouch: 1, CanCheckSide: 2, CanCollide: 3}
+	@tag Enum
+	@within PhysicObject
+]=]
 physicObject.PhysicMode = {
 	NoPhysic = 0,
 	CanTouch = 1,
@@ -459,11 +477,21 @@ function physicObject.CalcTouchedSide(self: PhysicObject, obj: PhysicObject)
 	end
 end
 
---[[
+--[=[
 	Physic object constructor
 
-	`imageSize` by default -1, -1 (ignore)
-]]
+	@param Image ExImage
+	@param canCollide boolean?
+	@param checkingTouchedSize?
+	@param anchored boolean?
+	@param background ExImage?
+	@param imageOffset Vector2?
+	@param imageSize Vector2? -- by default -1, -1 (ignore)
+	@param TransparencyOnFocusedBack number?
+	@param PhysicMode number?
+
+	@within PhysicObject
+]=]
 function physicObject.new(
 	Image: ExImage.ExImage,
 	canCollide: boolean?,

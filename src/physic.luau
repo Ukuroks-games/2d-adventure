@@ -1,11 +1,13 @@
---[[
+--[=[
 	Сборник базовых функций для расчета физики
-]]
+
+	@class Physic
+]=]
 local Physic = {}
 
---[[
+--[=[
 	Check frames collide
-]]
+]=]
 function Physic.CheckCollision(A: Frame, B: Frame): boolean
 	local function Check(a: Frame, b: Frame)
 		return (
