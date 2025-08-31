@@ -7,9 +7,11 @@ local map = require(script.Parent.map)
 local player = require(script.Parent.player)
 local Control = require(script.Parent.Control)
 
---[[
+--[=[
 	Класс игры
-]]
+
+	@class Game
+]=]
 local Game = setmetatable({}, { __index = Control })
 
 export type GameStruct = {
@@ -43,9 +45,12 @@ export type GameStruct = {
 
 export type Game = GameStruct & typeof(Game) & Control.Control
 
---[[
+--[=[
+	@param self Game
 
-]]
+	@method Destroy
+	@within Game
+]=]
 function Game.Destroy(self: GameStruct)
 	self.DestroyingEvent:Fire()
 
@@ -67,26 +72,43 @@ function Game.Destroy(self: GameStruct)
 	self.DestroyingEvent:Destroy()
 end
 
---[[
+--[=[
 	Set current map
-]]
+
+	@param self Game
+	@param newMap Map
+
+	@method SetMap
+	@within Game
+]=]
 function Game.SetMap(self: Game, newMap: map.Map)
 	self.Map:Done(self.Player)
 	self.Map = newMap
 	newMap:Init(self.Player, self.Frame)
 end
 
---[[
+--[=[
 	Set player
-]]
+
+	@param self Game
+	@param newPlayer Player2d
+
+	@method SetPlayer
+	@within Game
+]=]
 function Game.SetPlayer(self: Game, newPlayer: player.Player2d)
 	self.Map:SetPlayer(newPlayer, self.Player)
 	self.Player = newPlayer
 end
 
---[[
+--[=[
 	Loading game
-]]
+
+	@param self Game
+
+	@method Loading
+	@within Game
+]=]
 function Game.Loading(self: Game)
 	local DoneEvent = Instance.new("BindableEvent")
 	local Progress = Instance.new("NumberValue")
@@ -111,9 +133,18 @@ function Game.Loading(self: Game)
 	}
 end
 
---[[
+--[=[
 	Game constructor
-]]
+
+	@param FameFrame Frame
+	@param Player Player2d
+	@param Map Map
+	@param cooldownTime number?
+	@param controllerSettings Control?
+
+	@function new
+	@within Game
+]=]
 function Game.new(
 	GameFrame: Frame,
 	Player: player.Player2d,

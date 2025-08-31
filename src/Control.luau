@@ -11,6 +11,9 @@ local ControlType = require(script.Parent.ControlType)
 local stdlib = require(script.Parent.Parent.stdlib)
 local map = require(script.Parent.map)
 
+--[=[
+	@class Control
+]=]
 local Control = {}
 
 export type ControlStruct = {
@@ -69,6 +72,9 @@ export type Control = typeof(setmetatable(
 	{ __index = Control }
 ))
 
+--[=[
+		
+]=]
 function Control.IDLE(self: Control, name: string?)
 	if self.MoveTween then
 		self.MoveTween:Destroy()

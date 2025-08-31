@@ -2,9 +2,15 @@
 
 local AssetService = game:GetService("AssetService")
 
---[[
-	Extended Image
-]]
+--[=[
+	Extended Image.
+
+	> Attributes?	NO!
+	>
+	> THIS SHIT?	YES!
+
+	@class ExImage
+]=]
 local ExImage = {}
 
 export type Image = ImageLabel
@@ -18,6 +24,9 @@ export type ExImage = {
 	ImageInstance: Image,
 }
 
+--[=[
+	ExImage constructor
+]=]
 function ExImage.new(
 	id: string,
 	isButton: boolean?,

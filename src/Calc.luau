@@ -2,6 +2,11 @@
 
 local ExImage = require(script.Parent.ExImage)
 
+--[=[
+	collection of functions
+
+	@class calc
+]=]
 local calc = {}
 
 local function RelativeSizes(background: ExImage.ExImage): number
@@ -27,11 +32,12 @@ local function LeftSpace(w: number, background: ExImage.ExImage): number
 	return ((background.ImageInstance.AbsoluteSize.X - w) / 2)
 end
 
---[[
+--[=[
 	Рассчитать координаты объекта на экране по размеру изображения.
 
-	`AnchorPosition` - координаты объекта на изображении
-]]
+	@param AnchorPosition Vector2 -- координаты объекта на изображении
+	@param background ExImage
+]=]
 function calc.CalcPosition(
 	AnchorPosition: Vector2,
 	background: ExImage.ExImage
@@ -78,9 +84,10 @@ function calc.CalcPosition(
 	)
 end
 
---[[
-
-]]
+--[=[
+	@param Size Vector3
+	@param background ExImage
+]=]
 function calc.CalcSize(Size: Vector3, background: ExImage.ExImage): Vector3
 	if background.ImageInstance.ScaleType == Enum.ScaleType.Fit then
 		-- отношение изначальных размеров
@@ -131,6 +138,12 @@ function calc.CalcSize(Size: Vector3, background: ExImage.ExImage): Vector3
 	)
 end
 
+--[=[
+	Обратная CalcPosition функция
+
+	@param AbsolutePosition Vector2 -- координаты
+	@param background ExImage
+]=]
 function calc.ReturnPosition(
 	AbsolutePosition: Vector2,
 	background: ExImage.ExImage
@@ -174,9 +187,10 @@ function calc.ReturnPosition(
 	)
 end
 
---[[
-
-]]
+--[=[
+	@param AbsoluteSize Vector3
+	@param background ExImage
+]=]
 function calc.ReturnSize(
 	AbsoluteSize: Vector3,
 	background: ExImage.ExImage

@@ -4,6 +4,11 @@ local Calc = require(script.Parent.Calc)
 local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 
+--[=[
+	inherited from PhysicObject
+
+	@class Object2d
+]=]
 local Object2d = setmetatable({}, { __index = physicObject })
 
 export type Object2dStruct = {
@@ -16,9 +21,6 @@ export type Object2dStruct = {
 	AnchorPosition: Vector2,
 } & physicObject.PhysicObjectStruct
 
---[[
-	Just static object without animations
-]]
 export type Object2d =
 	Object2dStruct
 	& typeof(Object2d)
@@ -85,9 +87,9 @@ function Object2d.GetCoordinates(self: Object2d): Vector2
 	return self.AnchorPosition
 end
 
---[[
+--[=[
 	Constructor
-]]
+]=]
 function Object2d.new(
 	AnchorPosition: Vector2,
 	Size: Vector3,

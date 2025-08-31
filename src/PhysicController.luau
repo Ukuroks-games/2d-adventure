@@ -3,6 +3,9 @@ local algorithm = stdlib.algorithm
 
 local physicObject = require(script.Parent.physicObject)
 
+--[=[
+	@class PhysicController
+]=]
 local PhysicController = {}
 
 export type PhysicControllerStruct = {

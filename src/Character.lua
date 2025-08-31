@@ -7,9 +7,11 @@ local Calc = require(script.Parent.Calc)
 local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 
---[[
-	Character
-]]
+--[=[
+	inherited from [BaseCharacter2d](BaseCharacter2d) and [AnimatedObject](AnimatedObject)
+
+	@class Character2d
+]=]
 local Character2d = setmetatable({}, {
 	__index = function(self, key: string)
 		return AnimatedObject[key] or BaseCharacter[key]
@@ -70,12 +72,9 @@ function Character2d.WalkMoveRaw(
 					value
 				): boolean -- Все один из коснувшихся являются anchored
 					local v = physicObject.Registry[value]
-				
+
 					return v.Anchored
-						and (
-							v.PhysicMode
-							>= physicObject.PhysicMode.CanCollide
-						)
+						and (v.PhysicMode >= physicObject.PhysicMode.CanCollide)
 				end
 			)
 		else

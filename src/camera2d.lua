@@ -1,17 +1,23 @@
 --!strict
 
+--[=[
+	@class Camera2d
+]=]
 local Camera2d = {}
 
 export type Camera2d = {
 	--[[
 		Скорость следования за игроком
 	]]
-	CameraMoveSpeed: number
+	CameraMoveSpeed: number,
 }
 
+--[=[
+	Constructor
+]=]
 function Camera2d.new(CameraMoveSpeed: number): Camera2d
 	return {
-		CameraMoveSpeed = CameraMoveSpeed
+		CameraMoveSpeed = CameraMoveSpeed,
 	}
 end
 

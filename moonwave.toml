@@ -1,0 +1,24 @@
+title = "2d-adventure"                                       # From Git
+gitRepoUrl = "https://github.com/ukuroks-games/2d-adventure" # From Git
+
+gitSourceBranch = "master"
+changelog = true
+classOrder = []
+
+includeReadme = true
+
+[docusaurus]
+onBrokenLinks = "throw"
+onBrokenMarkdownLinks = "warn"
+favicon = "no"
+
+# From git:
+organizationName = "Ukuroks Games"
+projectName = "Giflib"
+url = "https://ukuroks-games.github.io/"
+baseUrl = "/2d-adventure"
+tagline = ""
+
+[footer]
+style = "dark"
+copyright = "Copyright © 2025 Egor00f. Built with Moonwave and Docusaurus"

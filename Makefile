@@ -50,7 +50,7 @@ DevPackagesTypes:	./DevPackages	pre-sourcemap
 BUILD_SOURCES = $(addprefix $(BUILD_DIR)/, $(notdir $(SOURCES)))
 
 $(BUILD_DIR)/wally.toml:	$(BUILD_DIR)	wally.toml
-	$(CP) wally.toml build/
+	$(CP) wally.toml $(BUILD_DIR)/
 
 MV_SOURCES:	$(BUILD_DIR)	$(SOURCES)
 	$(CP) src/* $(BUILD_DIR)
@@ -68,6 +68,20 @@ package:	clean-build	$(PACKAGE_NAME)
 publish:	clean-build	$(BUILD_SOURCES)	$(BUILD_DIR)/wally.toml	
 	wally publish --project-path $(BUILD_DIR)
 
+NPM_ROOT = $(shell npm root)
+MOONWAVE_CMD = build
+
+$(NPM_ROOT)/.bin/moonwave:
+	npm i moonwave@latest
+
+
+$(BUILD_DIR)/html: $(NPM_ROOT)/.bin/moonwave moonwave.toml $(SOURCES)
+	$(NPM_ROOT)/.bin/moonwave $(MOONWAVE_CMD) --out-dir $@
+
+docs: $(BUILD_DIR)/html
+
+docs-dev:
+	make "MOONWAVE_CMD=dev" docs
 
 lint:
 	selene src/ tests/
