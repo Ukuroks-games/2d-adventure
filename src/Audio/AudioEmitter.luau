@@ -1,34 +1,41 @@
+local Audio2dObject = require(script.Parent.Audio2dObject)
 local physicObject = require(script.Parent.Parent.physicObject)
 
-local AudioObject = {}
+--[=[
+	@class AudioEmitter2d
+]=]
+local AudioEmitter = setmetatable({}, { __index = Audio2dObject })
 
-export type AudioObject2dStruct = {
-	Parent: physicObject.PhysicObject,
+export type AudioEmitter2dStruct = {
 	Input: Wire,
 	Emitter: AudioEmitter,
-	Part: Part,
-}
+} & Audio2dObject.Audio2dObjectStruct
 
-export type AudioObject2d = typeof(setmetatable(
-	{} :: AudioObject2dStruct,
-	{ __index = AudioObject }
-))
+export type AudioEmitter2d =
+	AudioEmitter2dStruct
+	& typeof(AudioEmitter)
+	& Audio2dObject.Audio2dObject
 
-function AudioObject.UpdatePosition(self: AudioObject2d)
-	local pos = self.Parent:GetCoordinates()
-	self.Part.Position = Vector3.new(pos.X, pos.Y, 0)
-end
+--[=[
+	Constructor
 
-function AudioObject.new(
+	@param parent PhysicObject
+	@param input Wire
+
+	@within AudioEmitter2d
+]=]
+function AudioEmitter.new(
 	parent: physicObject.PhysicObject,
 	input: Wire
-): AudioObject2d
-	local self: AudioObject2dStruct = {
+): AudioEmitter2d
+	local self = Audio2dObject.new({
 		Parent = parent,
 		Input = input,
 		Emitter = Instance.new("AudioEmitter"),
-		Part = Instance.new("Part"),
-	}
+	})
+
+	setmetatable(self :: AudioEmitter2dStruct, { __index = AudioEmitter })
+
 	self.Part.CanCollide = false
 	self.Part.CanTouch = false
 
@@ -36,11 +43,7 @@ function AudioObject.new(
 
 	self.Input.TargetInstance = self.Emitter
 
-	setmetatable(self, { __index = AudioObject })
-
-	self:UpdatePosition()
-
 	return self
 end
 
-return AudioObject
+return AudioEmitter

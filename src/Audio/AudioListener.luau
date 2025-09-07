@@ -1,34 +1,46 @@
+local Audio2dObject = require(script.Parent.Audio2dObject)
 local physicObject = require(script.Parent.Parent.physicObject)
 
-local AudioListener = {}
+--[=[
+	inherit from [AudioListener2d](AudioListener2d)
+
+	@class AudioListener2d
+
+]=]
+local AudioListener = setmetatable({}, { __index = Audio2dObject })
 
 export type AudioListener2dStruct = {
-	Parent: physicObject.PhysicObject,
 	Output: Wire,
 	Listener: AudioListener,
-	Part: Part,
-}
+} & Audio2dObject.Audio2dObjectStruct
 
-export type AudioListener2d = typeof(setmetatable(
-	{} :: AudioListener2dStruct,
-	{ __index = AudioListener }
-))
+export type AudioListener2d =
+	AudioListener2dStruct
+	& typeof(AudioListener)
+	& Audio2dObject.Audio2dObject
 
+--[=[
+	Constructor
+
+	@param p PhysicObject
+	@param output Wire
+
+	@within AudioListener2d
+]=]
 function AudioListener.new(
 	p: physicObject.PhysicObject,
 	output: Wire
 ): AudioListener2d
-	local self: AudioListener2dStruct = {
+	local self = Audio2dObject.new({
 		Parent = p,
 		Output = output,
 		Listener = Instance.new("AudioListener"),
-		Part = Instance.new("Part"),
-	}
+	})
+
+	setmetatable(self, { __index = AudioListener })
 
 	self.Listener.Parent = self.Part
 	self.Output.SourceInstance = self.Listener
-
-	setmetatable(self, { __index = AudioListener })
 
 	return self
 end

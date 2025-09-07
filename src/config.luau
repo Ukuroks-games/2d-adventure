@@ -17,4 +17,10 @@ config.ShowHitboxes = false
 ]=]
 config.HitboxesTransparent = 0.75
 
+--[=[
+	@prop AudioPosition Vector3
+	@within config
+]=]
+config.AudioPosition = Vector3.new()
+
 return config
