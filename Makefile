@@ -34,6 +34,9 @@ SOURCES =	src/init.lua				\
 			src/Calc.luau				\
 			src/Control.luau			\
 			src/PhysicController.luau	\
+			src/Audio/Audio2dObject.luau	\
+			src/Audio/AudioListener.luau	\
+			src/Audio/AudioEmitter.luau	\
 
 $(BUILD_DIR):
 	mkdir $@	
@@ -101,7 +104,8 @@ library.project.json:	$(SOURCES)	./Packages
 ALL_TESTS =	demo.rbxl	\
 			TestMovableObjects.rbxl	\
 			testCalc.rbxl	\
-			testPhysic.rbxl
+			testPhysic.rbxl	\
+			audio.rbxl
 
 ### rebuild add tests
 tests: $(ALL_TESTS)
@@ -119,6 +123,9 @@ testCalc.project.json:	$(ROJO_PROJECTS)/testCalc.project.json	$(SOURCES)	tests/t
 
 testPhysic.project.json:	$(ROJO_PROJECTS)/testPhysic.project.json	tests/testPhysic/test.client.luau	$(SOURCES)	./Packages
 	make "GENERATE_SOURCEMAP=testPhysic" $@
+
+audio.project.json: 	$(ROJO_PROJECTS)/audio.project.json	tests/audio/test.client.luau	$(SOURCES)	./Packages
+	make "GENERATE_SOURCEMAP=audio" $@
 
 defaultTests.project.json:	./Packages	./DevPackages
 

@@ -32,15 +32,21 @@ end
 
 	@param override
 ]=]
-function Audio2dObject.new<I, T>(
-	override: { Parent: physicObject.PhysicObject, [I]: T }
-): Audio2dObject & {[I]: T}
+function Audio2dObject.new<I, T>(override: {
+	Parent: physicObject.PhysicObject,
+	[I]: T,
+}): Audio2dObject & { [I]: T }
 	local self = setmetatable(
 		{
 			Part = Instance.new("Part"),
 		} :: Audio2dObjectStruct,
 		{ __index = Audio2dObject }
 	)
+
+	self.Part.Parent = workspace
+	self.Part.CanCollide = false
+	self.Part.CanTouch = false
+	self.Part.Anchored = true
 
 	for i, v in pairs(override) do
 		self[i] = v

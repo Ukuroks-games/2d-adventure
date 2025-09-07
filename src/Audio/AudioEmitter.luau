@@ -36,9 +36,6 @@ function AudioEmitter.new(
 
 	setmetatable(self :: AudioEmitter2dStruct, { __index = AudioEmitter })
 
-	self.Part.CanCollide = false
-	self.Part.CanTouch = false
-
 	self.Emitter.Parent = self.Part
 
 	self.Input.TargetInstance = self.Emitter

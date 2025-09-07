@@ -1,5 +1,7 @@
 --!strict
 
+local AudioEmitter = require(script.Audio.AudioEmitter)
+local AudioListener = require(script.Audio.AudioListener)
 local Game = require(script.game)
 local Object2d = require(script.Object2d)
 local Player2d = require(script.player)
@@ -20,6 +22,8 @@ local lib = {
 	GifInfo = GifInfo,
 	ExImage = ExImage,
 	config = config,
+	AudioEmitter = AudioEmitter,
+	AudioListener = AudioListener
 }
 
 export type Game = Game.Game
