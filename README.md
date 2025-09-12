@@ -1,4 +1,6 @@
+[![release](https://release-badges-generator.vercel.app/api/releases.svg?user=ukuroks-games&repo=2d-adventure&gradient=4259f7,8bfaec)](https://github.com/Ukuroks-games/2d-adventure/releases/latest)
 [![Lint](https://github.com/Ukuroks-games/2d-adventure/actions/workflows/Lint.yaml/badge.svg)](https://github.com/Ukuroks-games/2d-adventure/actions/workflows/Lint.yaml)
+[![Docs](https://github.com/Ukuroks-games/2d-adventure/actions/workflows/publish-docs.yaml/badge.svg)](https://ukuroks-games.github.io/2d-adventure/)
 
 # 2d Adventure
 
