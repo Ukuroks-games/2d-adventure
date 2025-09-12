@@ -41,7 +41,7 @@ SOURCES =	src/init.lua				\
 $(BUILD_DIR):
 	mkdir $@	
 
-wally.lock	./Packages	./DevPackages:	wally.toml
+wally.lock	./Packages	./DevPackages &:	wally.toml
 	wally install
 
 PackagesTypes:	./Packages	pre-sourcemap

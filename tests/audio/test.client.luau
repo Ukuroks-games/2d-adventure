@@ -3,6 +3,8 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local audioAnalyser = require(ReplicatedStorage.DevPackages.audioAnalyser)
+local InputLib = require(ReplicatedStorage.Packages.InputLib)
 local giflib = require(ReplicatedStorage.Packages.giflib)
 local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
 local ExImage = require(ReplicatedStorage.Packages["2d-adventure"].ExImage)
@@ -232,17 +234,45 @@ local _game = adventure2d.Game.new(
 local player = Instance.new("AudioPlayer")
 player.Asset = "rbxassetid://90342360691837"
 player.Looping = true
+player.Parent = workspace
 
 local wire = Instance.new("Wire")
 wire.SourceInstance = player
+wire.Parent = workspace
 
 local emitter = adventure2d.AudioEmitter.new(obj, wire)
 
 
 local out = Instance.new("AudioDeviceOutput")
+out.Parent = workspace
+
+
+local input = Instance.new("Wire")
+input.Parent = workspace
+
+local listener = adventure2d.AudioListener.new(_game.Player, input)
+
+
 local w = Instance.new("Wire")
 w.TargetInstance = out
-local listener = adventure2d.AudioListener.new(_game.Player, w)
+w.SourceInstance = listener.Listener
+w.Parent = workspace
+
+local ChannelsGraph = Instance.new("Frame")
+ChannelsGraph.Parent = Players.LocalPlayer.PlayerGui.ScreenGui
+ChannelsGraph.Size = UDim2.fromScale(0.6, 0.3)
+ChannelsGraph.ZIndex = 999
+
+audioAnalyser.new(ChannelsGraph, nil, input)
+
+local function setZIndex(list)
+	for _, v in pairs(list) do
+			v.ZIndex = 999
+			setZIndex(v:GetChildren())
+	end
+end
+
+setZIndex(ChannelsGraph:GetChildren())
 
 _game:Loading().Done:Wait()
 
@@ -254,3 +284,5 @@ _game.Player.Move:Connect(function()
 	emitter:UpdatePosition()
 	listener:UpdatePosition()
 end)
+
+

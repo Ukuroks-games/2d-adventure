@@ -3,6 +3,8 @@ local physicObject = require(script.Parent.Parent.physicObject)
 
 --[=[
 	@class AudioEmitter2d
+	@tag Audio
+	@since v0.6.0
 ]=]
 local AudioEmitter = setmetatable({}, { __index = Audio2dObject })
 

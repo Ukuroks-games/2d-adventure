@@ -5,7 +5,9 @@ local physicObject = require(script.Parent.Parent.physicObject)
 	inherit from [AudioListener2d](AudioListener2d)
 
 	@class AudioListener2d
+	@tag Audio
 
+	@since v0.6.0
 ]=]
 local AudioListener = setmetatable({}, { __index = Audio2dObject })
 

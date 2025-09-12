@@ -5,6 +5,8 @@ local physicObject = require(script.Parent.Parent.physicObject)
 	@class Audio2dObject
 
 	Abstract class for another classes
+	@tag Audio
+	@since v0.6.0
 ]=]
 local Audio2dObject = {}
 
@@ -23,8 +25,13 @@ export type Audio2dObject = typeof(setmetatable(
 	@within Audio2dObject
 ]=]
 function Audio2dObject.UpdatePosition(self: Audio2dObject)
-	local pos = self.Parent:GetCoordinates()
-	self.Part.Position = Vector3.new(pos.X, pos.Y, 0) + config.AudioPosition
+	local pos = self.Parent:GetCenterCoordinates()
+	
+	self.Part.Position = Vector3.new(
+		(pos.X) / self.Parent.background.RealSize.X * 10,
+		pos.Y / self.Parent.background.RealSize.Y * 10,
+		0
+	) + config.AudioPosition
 end
 
 --[=[
