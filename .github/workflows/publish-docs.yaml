@@ -7,6 +7,7 @@ on:
       - 'docs/**'
       - '.github/workflows/publish-docs.yaml'
       - 'moonwave.toml'
+      - 'README.md'
     branches:
       - main
 
