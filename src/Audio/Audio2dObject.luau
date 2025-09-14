@@ -1,4 +1,4 @@
-local config = require("../config")
+local config = require(script.Parent.Parent.config)
 local physicObject = require(script.Parent.Parent.physicObject)
 
 --[=[
@@ -28,8 +28,8 @@ function Audio2dObject.UpdatePosition(self: Audio2dObject)
 	local pos = self.Parent:GetCenterCoordinates()
 	
 	self.Part.Position = Vector3.new(
-		(pos.X) / self.Parent.background.RealSize.X * 10,
-		pos.Y / self.Parent.background.RealSize.Y * 10,
+		(pos.X) / self.Parent.background.RealSize.X * config.AudioDistanceFactor,
+		pos.Y / self.Parent.background.RealSize.Y * config.AudioDistanceFactor,
 		0
 	) + config.AudioPosition
 end

@@ -28,12 +28,15 @@ config.HitboxesTransparent = 0.75
 config.AudioPosition = Vector3.new()
 
 --[=[
-	by default 5
+	The more, the quieter the sounds
+
+	by default is `25`. 
+
 	@prop AudioDistanceFactor number
 	@within config
 	@tag Audio
 	@since v0.6.0
 ]=]
-config.AudioDistanceFactor = 5
+config.AudioDistanceFactor = 25
 
 return config

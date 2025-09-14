@@ -23,6 +23,7 @@ export type AudioEmitter2d =
 
 	@param parent PhysicObject
 	@param input Wire
+	@return AudioEmitter2d
 
 	@within AudioEmitter2d
 ]=]
