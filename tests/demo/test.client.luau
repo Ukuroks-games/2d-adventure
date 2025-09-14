@@ -77,7 +77,7 @@ local _game = Game.new(
 	GameFrame,
 	player.new({
 		["IDLE"] = {
-			["a"] = gifInfo.new(
+			["a"] = adventure2d.Animation.new(gifInfo.new(
 				{ -- IDLE animation frames
 					giflib.Frame.new("123651728909570", 0.5), -- 1
 					giflib.Frame.new("73880862501758", 0.08), -- 2
@@ -96,7 +96,7 @@ local _game = Game.new(
 				true,
 				giflib.gif.Mode.Replace,
 				Enum.ResamplerMode.Pixelated
-			),
+			),),
 		},
 		["Walk"] = {
 			["Up"] = gifInfo.new(

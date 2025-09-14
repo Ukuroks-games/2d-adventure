@@ -1,21 +1,23 @@
---!nocheck
-
 local ExImage = require(script.Parent.ExImage)
 
 local gifInfo = require(script.Parent.gifInfo)
 local giflib = require(script.Parent.Parent.giflib)
 local base2d = require(script.Parent.base2d)
-
 --[=[
 	character animation controller
 
 	@class AnimatedObject
 
-	@external Gif https://ukuroks-games.github.io/giflib/
+	@external Gif https://ukuroks-games.github.io/giflib/api/gif
 ]=]
-local animatedObject = setmetatable({}, { __index = base2d })
+local animatedObject = {}
 
-type AnimationsGroupDefault<T> = { [string]: T }
+export type Animation<T> = {
+	gif: T,
+	audio: AudioPlayer,
+}
+
+type AnimationsGroupDefault<T> = { [string]: Animation<T> }
 
 --[[
 	Animations list
@@ -24,25 +26,25 @@ type AnimationsGroupDefault<T> = { [string]: T }
 ]]
 type AnimationsList<T> = {
 	Walk: {
-		Up: T,
-		Down: T,
-		Right: T,
-		Left: T,
-		LeftUp: T,
-		LeftDown: T,
-		RightUp: T,
-		RightDown: T,
+		Up: Animation<T>,
+		Down: Animation<T>,
+		Right: Animation<T>,
+		Left: Animation<T>,
+		LeftUp: Animation<T>,
+		LeftDown: Animation<T>,
+		RightUp: Animation<T>,
+		RightDown: Animation<T>,
 	},
 
 	Stay: {
-		Up: T,
-		Down: T,
-		Right: T,
-		Left: T,
-		LeftUp: T,
-		LeftDown: T,
-		RightUp: T,
-		RightDown: T,
+		Up: Animation<T>,
+		Down: Animation<T>,
+		Right: Animation<T>,
+		Left: Animation<T>,
+		LeftUp: Animation<T>,
+		LeftDown: Animation<T>,
+		RightUp: Animation<T>,
+		RightDown: Animation<T>,
 	},
 
 	IDLE: AnimationsGroupDefault<T>,
@@ -75,7 +77,10 @@ export type AnimatedObjectStruct = {
 --[[
 	Animations controller
 ]]
-export type AnimatedObject = AnimatedObjectStruct & typeof(animatedObject)
+export type AnimatedObject =
+	base2d.Base2d
+	& AnimatedObjectStruct
+	& typeof(animatedObject)
 
 --[=[
 	@param self AnimatedObject
@@ -87,7 +92,7 @@ export type AnimatedObject = AnimatedObjectStruct & typeof(animatedObject)
 function animatedObject.Preload(self: AnimatedObject): { Instance }
 	local t = base2d.Preload(self)
 
-	for _, group in pairs(self.Animations) do
+	for _, group: AnimationsGroupDefault<giflib.Gif> in pairs(self.Animations) do
 		for _, gif in pairs(group) do
 			for _, frame in pairs(gif.Frames) do
 				table.insert(t, frame.Image)
@@ -128,7 +133,7 @@ end
 
 	@param self AnimatedObject
 	@param animationName string
-	@return Gif
+	@return found gif or nil
 
 	@method GetAnimation
 
@@ -137,9 +142,8 @@ end
 function animatedObject.GetAnimation(
 	self: AnimatedObject,
 	animationName: string
-): giflib.Gif?
-	local g: AnimationsGroupDefault<giflib.Gif> =
-		self.Animations[animationName:sub(1, 4)]
+): Animation<giflib.Gif>?
+	local g = self.Animations[animationName:sub(1, 4)] :: Animations
 
 	if g then
 		return g[animationName:sub(5)]
@@ -166,13 +170,13 @@ function animatedObject.SetAnimation(
 	animationName: string
 )
 	local Animation = self:GetAnimation(animationName)
-
 	if Animation and self.CurrentAnimation ~= animationName then
 		self:StopAnimation()
 
 		self.CurrentAnimation = animationName
 
-		Animation:RestartAnimation(true)
+		Animation.gif:RestartAnimation(true)
+		Animation.audio:Play()
 	end
 end
 
@@ -195,7 +199,7 @@ function animatedObject.StartAnimation(
 	local animation = self:GetAnimation(animationName or self.CurrentAnimation)
 
 	if animation then
-		animation:StartAnimation()
+		animation.gif:StartAnimation()
 	end
 end
 
@@ -205,12 +209,13 @@ end
 function animatedObject.StopAnimation(
 	self: AnimatedObject,
 	animationName: string?
-)
+): Animation<giflib.Gif>
 	local animation = self:GetAnimation(animationName or self.CurrentAnimation)
 
 	if animation then
-		animation:StopAnimation()
-		animation:Hide()
+		animation.gif:StopAnimation()
+		animation.gif:Hide()
+		animation.audio:Stop()
 	end
 
 	return animation
@@ -257,7 +262,7 @@ function animatedObject.new(
 
 	setmetatable(self, { __index = animatedObject })
 
-	return self
+	return self :: AnimatedObject
 end
 
 return animatedObject

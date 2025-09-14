@@ -1,5 +1,6 @@
 --!strict
 
+local Animation = require(script.Animations.Animation)
 local AudioEmitter = require(script.Audio.AudioEmitter)
 local AudioListener = require(script.Audio.AudioListener)
 local Game = require(script.game)
@@ -23,7 +24,8 @@ local lib = {
 	ExImage = ExImage,
 	config = config,
 	AudioEmitter = AudioEmitter,
-	AudioListener = AudioListener
+	AudioListener = AudioListener,
+	Animation = Animation
 }
 
 export type Game = Game.Game
