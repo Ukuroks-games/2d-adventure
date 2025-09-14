@@ -2,6 +2,8 @@ local Audio2dObject = require(script.Parent.Audio2dObject)
 local physicObject = require(script.Parent.Parent.physicObject)
 
 --[=[
+	inherit from [Audio2dObject](Audio2dObject)
+
 	@class AudioEmitter2d
 	@tag Audio
 	@since v0.6.0
@@ -13,6 +15,14 @@ export type AudioEmitter2dStruct = {
 	Emitter: AudioEmitter,
 } & Audio2dObject.Audio2dObjectStruct
 
+
+--[=[
+	@interface AudioEmitter2d
+	@within AudioEmitter2d
+
+	@field Input Wire
+	@field Emitter AudioEmitter
+]=]
 export type AudioEmitter2d =
 	AudioEmitter2dStruct
 	& typeof(AudioEmitter)

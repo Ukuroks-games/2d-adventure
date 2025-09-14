@@ -2,7 +2,7 @@ local Audio2dObject = require(script.Parent.Audio2dObject)
 local physicObject = require(script.Parent.Parent.physicObject)
 
 --[=[
-	inherit from [AudioListener2d](AudioListener2d)
+	inherit from [Audio2dObject](Audio2dObject)
 
 	@class AudioListener2d
 	@tag Audio
@@ -16,6 +16,13 @@ export type AudioListener2dStruct = {
 	Listener: AudioListener,
 } & Audio2dObject.Audio2dObjectStruct
 
+--[=[
+	@interface AudioListener2d
+	@within AudioListener2d
+
+	@field Output Wire
+	@field Listener AudioListener
+]=]
 export type AudioListener2d =
 	AudioListener2dStruct
 	& typeof(AudioListener)
