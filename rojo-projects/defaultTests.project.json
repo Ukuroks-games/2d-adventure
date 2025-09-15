@@ -33,7 +33,10 @@
 			"$className": "StarterPlayer",
 			"StarterPlayerScripts": {
 				"$className": "StarterPlayerScripts",
-				"$path": "tests"
+				"$path": "tests",
+				"shared": {
+					"$path": "tests/shared"
+				}
 			}
 		}
 	}

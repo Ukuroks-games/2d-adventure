@@ -30,7 +30,10 @@
 			"$className": "StarterPlayer",
 			"StarterPlayerScripts": {
 				"$className": "StarterPlayerScripts",
-				"$path": "tests/TestMovableObjects"
+				"$path": "tests/TestMovableObjects",
+				"shared": {
+					"$path": "tests/shared"
+				}
 			}
 		}
 	}
