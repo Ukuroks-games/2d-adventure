@@ -38,13 +38,13 @@ local _game = adventure2d.Game.new(
 	)
 )
 
-local player = Instance.new("AudioPlayer")
-player.Asset = "rbxassetid://90342360691837"
-player.Looping = true
-player.Parent = workspace
+local audioPlayer = Instance.new("AudioPlayer")
+audioPlayer.Asset = "rbxassetid://90342360691837"
+audioPlayer.Looping = true
+audioPlayer.Parent = workspace
 
 local wire = Instance.new("Wire")
-wire.SourceInstance = player
+wire.SourceInstance = audioPlayer
 wire.Parent = workspace
 
 local emitter = adventure2d.AudioEmitter.new(obj, wire)
@@ -82,7 +82,7 @@ _game:Loading().Done:Wait()
 
 _game:Start()
 
-player:Play()
+audioPlayer:Play()
 
 _game.Player.Move:Connect(function()
 	emitter:UpdatePosition()

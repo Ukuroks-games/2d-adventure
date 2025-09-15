@@ -8,15 +8,12 @@ local UserInputService = game:GetService("UserInputService")
 local player = require(StarterPlayer.StarterPlayerScripts.shared.player)
 local dialoglib = require(ReplicatedStorage.DevPackages.dialoglib)
 local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
-local giflib = require(ReplicatedStorage.Packages.giflib)
 
 local Game = adventure2d.Game
 local Object2d = adventure2d.Object2d
 local camera2d = adventure2d.Camera2d
 local map = adventure2d.Map
 local ExImage = adventure2d.ExImage
-local player = adventure2d.Player2d
-local gifInfo = adventure2d.GifInfo
 
 --adventure2d.config.ShowHitboxes = true
 
