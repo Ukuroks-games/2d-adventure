@@ -19,19 +19,19 @@ local ExImage = adventure2d.ExImage
 
 local GameFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui").Frame
+	:WaitForChild("ScreenGui"):WaitForChild("Frame") :: Frame
 GameFrame.Size = UDim2.fromScale(1, 1)
 
 local DialogFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui").Dialog
+	:WaitForChild("ScreenGui"):WaitForChild("Dialog") :: Frame
 DialogFrame.Size = UDim2.fromScale(1, 0.3)
 DialogFrame.Position = UDim2.fromScale(0, 0.7)
 DialogFrame.ZIndex = 999
 
 local Pause = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui").Pause
+	:WaitForChild("ScreenGui"):WaitForChild("Pause") :: TextButton
 
 Pause.Size = UDim2.fromScale(0.1, 0.1)
 Pause.Position = UDim2.fromScale(0.9, 0.01)
