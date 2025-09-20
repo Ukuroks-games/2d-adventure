@@ -126,14 +126,14 @@ function animatedObject.SetAnimation(
 	self: AnimatedObject,
 	animationName: string
 )
-	local Animation = self:GetAnimation(animationName)
-	if Animation and self.CurrentAnimation ~= animationName then
+	local animation = self:GetAnimation(animationName)
+	if animation and self.CurrentAnimation ~= animationName then
 		self:StopAnimation()
 
 		self.CurrentAnimation = animationName
 
-		Animation.gif:RestartAnimation(true)
-		Animation.audio:Play()
+		animation.gif:RestartAnimation(true)
+		animation.audio:Play()
 	end
 end
 
