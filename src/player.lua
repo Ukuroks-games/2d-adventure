@@ -2,7 +2,6 @@
 
 local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
-local Calc = require(script.Parent.Calc)
 local Character = require(script.Parent.Character)
 
 --[=[
@@ -54,7 +53,7 @@ end
 	@within Player2d
 ]=]
 function player2d.new(
-	Animations: AnimatedObject.ConstructorAnimations,
+	Animations: AnimatedObject.Animations,
 	WalkSpeed: BaseCharacter.CharacterSpeed,
 	Size: Vector3
 ): Player2d

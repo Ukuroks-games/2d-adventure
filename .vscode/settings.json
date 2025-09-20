@@ -11,6 +11,7 @@
 		"__newindex",
 		"CalcZIndexs",
 		"cooldown",
+		"getmetatable",
 		"giflib",
 		"nonstrict",
 		"pcall",
@@ -38,4 +39,5 @@
 	"luau-lsp.sourcemap.generatorCommand": "make sourcemap.json -j$(nproc)",
 	"makefile.configureOnOpen": false,
 	"luau-lsp.sourcemap.useVSCodeWatcher": true,
+	"stylua.targetReleaseVersion": "latest",
 }

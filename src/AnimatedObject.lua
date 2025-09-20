@@ -12,9 +12,6 @@ local base2d = require(script.Parent.base2d)
 ]=]
 local animatedObject = {}
 
-
-
-
 type AnimationsGroupDefault = { [string]: Animation.Animation }
 
 --[=[
@@ -78,8 +75,8 @@ function animatedObject.Preload(self: AnimatedObject): { Instance }
 	local t = base2d.Preload(self)
 
 	for _, group: AnimationsGroupDefault in pairs(self.Animations) do
-		for _, gif in pairs(group) do
-			for _, frame in pairs(gif.Frames) do
+		for _, animation in pairs(group) do
+			for _, frame in pairs(animation.gif.Frames) do
 				table.insert(t, frame.Image)
 			end
 		end
@@ -182,8 +179,6 @@ end
 --[=[
 	Stop all animations
 
-	@param self AnimatedObject
-
 	@method StopAnimation
 
 	@within AnimatedObject
@@ -192,6 +187,22 @@ function animatedObject.StopAnimations(self: AnimatedObject)
 	for _, v: AnimationsGroupDefault in pairs(self.Animations) do
 		for _, animation in pairs(v) do
 			animation:Stop()
+		end
+	end
+end
+
+--[=[
+	Set ZIndex
+
+	@param ZIndex number
+
+	@method SetZIndex
+	@within AnimatedObject
+]=]
+function animatedObject.SetZIndex(self: AnimatedObject, ZIndex: number)
+	for _, group: AnimationsGroupDefault in pairs(self.Animations) do
+		for _, animation in pairs(group) do
+			animation.gif:SetZIndex(ZIndex)
 		end
 	end
 end
@@ -216,6 +227,12 @@ function animatedObject.new(
 		Image = Parent,
 		CurrentAnimation = "IDLE",
 	}
+
+	for _, g: AnimationsGroupDefault in pairs(self.Animations) do
+		for _, a in pairs(g) do
+			a.gif:SetParent(Parent.ImageInstance)
+		end
+	end
 
 	setmetatable(self, { __index = animatedObject })
 

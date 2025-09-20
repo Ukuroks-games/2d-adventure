@@ -1,6 +1,5 @@
---!nonstrict
-
 local stdlib = require(script.Parent.Parent.stdlib)
+
 local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
 local Calc = require(script.Parent.Calc)
@@ -39,15 +38,8 @@ function Character2d.CalcSize(self: Character2d): Vector3
 end
 
 function Character2d.SetZIndex(self: Character2d, ZIndex: number)
+	AnimatedObject.SetZIndex(self, ZIndex)
 	BaseCharacter.SetZIndex(self, ZIndex)
-
-	for _, group in pairs(self.Animations) do
-		for _, animation in pairs(group) do
-			for _, frame in pairs(animation.Frames) do
-				frame.Image.ZIndex = ZIndex
-			end
-		end
-	end
 end
 
 function Character2d.WalkMoveRaw(
@@ -143,7 +135,7 @@ function Character2d.WalkMoveRaw(
 end
 
 function Character2d.new(
-	Animations: AnimatedObject.ConstructorAnimations,
+	Animations: AnimatedObject.Animations,
 	WalkSpeed: BaseCharacter.CharacterSpeed,
 	Size: Vector3
 ): Character2d

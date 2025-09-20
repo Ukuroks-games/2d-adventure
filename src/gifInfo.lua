@@ -22,7 +22,8 @@ function gifInfo.new(
 	loopAnimation: boolean?,
 	showFirstFrameBeforeStart: boolean?,
 	mode: number?,
-	resampleMode: Enum.ResamplerMode?
+	resampleMode: Enum.ResamplerMode?,
+	BackgroundTransparency: number?
 ): Func
 	return function(parent: Frame?)
 		local gif = giflib.gif.new(
@@ -32,6 +33,8 @@ function gifInfo.new(
 			showFirstFrameBeforeStart,
 			mode
 		)
+		
+		gif:SetBackgroundTransparency(BackgroundTransparency or 1)
 
 		if resampleMode then
 			gif:SetResampleMode(resampleMode)
