@@ -1,9 +1,6 @@
---!nocheck
-
+local Animation = require(script.Parent.Animations.Animation)
 local ExImage = require(script.Parent.ExImage)
 
-local gifInfo = require(script.Parent.gifInfo)
-local giflib = require(script.Parent.Parent.giflib)
 local base2d = require(script.Parent.base2d)
 
 --[=[
@@ -11,54 +8,41 @@ local base2d = require(script.Parent.base2d)
 
 	@class AnimatedObject
 
-	@external Gif https://ukuroks-games.github.io/giflib/
+	@external Gif https://ukuroks-games.github.io/giflib/api/gif
 ]=]
-local animatedObject = setmetatable({}, { __index = base2d })
+local animatedObject = {}
 
-type AnimationsGroupDefault<T> = { [string]: T }
-
---[[
-	Animations list
-
-	Group names only 4 symbols
-]]
-type AnimationsList<T> = {
-	Walk: {
-		Up: T,
-		Down: T,
-		Right: T,
-		Left: T,
-		LeftUp: T,
-		LeftDown: T,
-		RightUp: T,
-		RightDown: T,
-	},
-
-	Stay: {
-		Up: T,
-		Down: T,
-		Right: T,
-		Left: T,
-		LeftUp: T,
-		LeftDown: T,
-		RightUp: T,
-		RightDown: T,
-	},
-
-	IDLE: AnimationsGroupDefault<T>,
-}
+type AnimationsGroupDefault = { [string]: Animation.Animation }
 
 --[=[
 	@type Animations { Walk: {Up: Gif, Down: Gif, Right: Gif, Left: Gif, LeftUp: Gif, LeftDown: Gif, RightUp: Gif, RightDown: Gif}, Stay: {Up: Gif, Down: Gif, Right: Gif, Left: Gif, LeftUp: Gif, LeftDown: Gif, RightUp: Gif, RightDown: Gif}, IDLE: {[any]: Gif}}
 	@within AnimatedObject
 ]=]
-export type Animations = AnimationsList<giflib.Gif>
+export type Animations = {
+	Walk: {
+		Up: Animation.Animation,
+		Down: Animation.Animation,
+		Right: Animation.Animation,
+		Left: Animation.Animation,
+		LeftUp: Animation.Animation,
+		LeftDown: Animation.Animation,
+		RightUp: Animation.Animation,
+		RightDown: Animation.Animation,
+	},
 
---[=[
-	@type ConstructorAnimations { Walk: {Up: Func, Down: Func, Right: Func, Left: Func, LeftUp: Func, LeftDown: Func, RightUp: Func, RightDown: Func}, Stay: {Up: Func, Down: Func, Right: Func, Left: Func, LeftUp: Func, LeftDown: Func, RightUp: Func, RightDown: Func}, IDLE: {[any]: Func}}
-	@within AnimatedObject
-]=]
-export type ConstructorAnimations = AnimationsList<gifInfo.Func>
+	Stay: {
+		Up: Animation.Animation,
+		Down: Animation.Animation,
+		Right: Animation.Animation,
+		Left: Animation.Animation,
+		LeftUp: Animation.Animation,
+		LeftDown: Animation.Animation,
+		RightUp: Animation.Animation,
+		RightDown: Animation.Animation,
+	},
+
+	IDLE: AnimationsGroupDefault,
+}
 
 export type AnimatedObjectStruct = {
 	--[[
@@ -75,7 +59,10 @@ export type AnimatedObjectStruct = {
 --[[
 	Animations controller
 ]]
-export type AnimatedObject = AnimatedObjectStruct & typeof(animatedObject)
+export type AnimatedObject =
+	base2d.Base2d
+	& AnimatedObjectStruct
+	& typeof(animatedObject)
 
 --[=[
 	@param self AnimatedObject
@@ -87,9 +74,9 @@ export type AnimatedObject = AnimatedObjectStruct & typeof(animatedObject)
 function animatedObject.Preload(self: AnimatedObject): { Instance }
 	local t = base2d.Preload(self)
 
-	for _, group in pairs(self.Animations) do
-		for _, gif in pairs(group) do
-			for _, frame in pairs(gif.Frames) do
+	for _, group: AnimationsGroupDefault in pairs(self.Animations) do
+		for _, animation in pairs(group) do
+			for _, frame in pairs(animation.gif.Frames) do
 				table.insert(t, frame.Image)
 			end
 		end
@@ -98,37 +85,12 @@ function animatedObject.Preload(self: AnimatedObject): { Instance }
 	return t
 end
 
---[[
-
-]]
-local function CreateAnimationsFromConstructor(
-	Animations: ConstructorAnimations,
-	PlayerFrame: ExImage.ExImage
-): Animations
-	local CreatedAnimations = {}
-
-	for GroupName, Group in pairs(Animations) do
-		CreatedAnimations[GroupName] = {}
-
-		for i, v in pairs(Group) do
-			local gif = v(PlayerFrame.ImageInstance)
-
-			gif:Hide()
-			gif:SetBackgroundTransparency(1)
-
-			CreatedAnimations[GroupName][i] = gif
-		end
-	end
-
-	return CreatedAnimations
-end
-
 --[=[
 	GetAnimation
 
 	@param self AnimatedObject
 	@param animationName string
-	@return Gif
+	@return found gif or nil
 
 	@method GetAnimation
 
@@ -137,9 +99,8 @@ end
 function animatedObject.GetAnimation(
 	self: AnimatedObject,
 	animationName: string
-): giflib.Gif?
-	local g: AnimationsGroupDefault<giflib.Gif> =
-		self.Animations[animationName:sub(1, 4)]
+): Animation.Animation?
+	local g = self.Animations[animationName:sub(1, 4)] :: Animations
 
 	if g then
 		return g[animationName:sub(5)]
@@ -165,14 +126,14 @@ function animatedObject.SetAnimation(
 	self: AnimatedObject,
 	animationName: string
 )
-	local Animation = self:GetAnimation(animationName)
-
-	if Animation and self.CurrentAnimation ~= animationName then
+	local animation = self:GetAnimation(animationName)
+	if animation and self.CurrentAnimation ~= animationName then
 		self:StopAnimation()
 
 		self.CurrentAnimation = animationName
 
-		Animation:RestartAnimation(true)
+		animation.gif:RestartAnimation(true)
+		animation.audio:Play()
 	end
 end
 
@@ -195,7 +156,7 @@ function animatedObject.StartAnimation(
 	local animation = self:GetAnimation(animationName or self.CurrentAnimation)
 
 	if animation then
-		animation:StartAnimation()
+		animation:Start()
 	end
 end
 
@@ -205,12 +166,11 @@ end
 function animatedObject.StopAnimation(
 	self: AnimatedObject,
 	animationName: string?
-)
+): Animation.Animation?
 	local animation = self:GetAnimation(animationName or self.CurrentAnimation)
 
 	if animation then
-		animation:StopAnimation()
-		animation:Hide()
+		animation:Stop()
 	end
 
 	return animation
@@ -219,17 +179,30 @@ end
 --[=[
 	Stop all animations
 
-	@param self AnimatedObject
-
 	@method StopAnimation
 
 	@within AnimatedObject
 ]=]
 function animatedObject.StopAnimations(self: AnimatedObject)
-	for _, v in pairs(self.Animations) do
+	for _, v: AnimationsGroupDefault in pairs(self.Animations) do
 		for _, animation in pairs(v) do
-			animation:StopAnimation()
-			animation:Hide()
+			animation:Stop()
+		end
+	end
+end
+
+--[=[
+	Set ZIndex
+
+	@param ZIndex number
+
+	@method SetZIndex
+	@within AnimatedObject
+]=]
+function animatedObject.SetZIndex(self: AnimatedObject, ZIndex: number)
+	for _, group: AnimationsGroupDefault in pairs(self.Animations) do
+		for _, animation in pairs(group) do
+			animation.gif:SetZIndex(ZIndex)
 		end
 	end
 end
@@ -246,18 +219,24 @@ end
 	@within AnimatedObject
 ]=]
 function animatedObject.new(
-	Animations: ConstructorAnimations,
+	Animations: Animations,
 	Parent: ExImage.ExImage
 ): AnimatedObject
 	local self: AnimatedObjectStruct = {
-		Animations = CreateAnimationsFromConstructor(Animations, Parent),
+		Animations = Animations,
 		Image = Parent,
 		CurrentAnimation = "IDLE",
 	}
 
+	for _, g: AnimationsGroupDefault in pairs(self.Animations) do
+		for _, a in pairs(g) do
+			a.gif:SetParent(Parent.ImageInstance)
+		end
+	end
+
 	setmetatable(self, { __index = animatedObject })
 
-	return self
+	return self :: AnimatedObject
 end
 
 return animatedObject

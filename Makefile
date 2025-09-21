@@ -37,6 +37,7 @@ SOURCES =	src/init.lua				\
 			src/Audio/Audio2dObject.luau	\
 			src/Audio/AudioListener.luau	\
 			src/Audio/AudioEmitter.luau	\
+			src/Animations/Animation.luau
 
 $(BUILD_DIR):
 	mkdir $@	

@@ -33,7 +33,10 @@
 			"$className": "StarterPlayer",
 			"StarterPlayerScripts": {
 				"$className": "StarterPlayerScripts",
-				"$path": "tests/audio"
+				"$path": "tests/audio",
+				"shared": {
+					"$path": "tests/shared"
+				}
 			}
 		}
 	}
