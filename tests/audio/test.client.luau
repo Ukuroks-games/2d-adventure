@@ -9,12 +9,9 @@ local audioAnalyser = require(ReplicatedStorage.DevPackages.audioAnalyser)
 local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
 local Object2d = require(ReplicatedStorage.Packages["2d-adventure"].Object2d)
 
-
 adventure2d.config.ShowHitboxes = true
 
-Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui")
-
-local GameFrame = Players.LocalPlayer.PlayerGui.ScreenGui.Frame
+local GameFrame = Players.LocalPlayer.PlayerGui:WaitForChild("ScreenGui"):WaitForChild("Frame") :: Frame
 GameFrame.Size = UDim2.fromScale(1, 1)
 
 local obj = Object2d.new(
