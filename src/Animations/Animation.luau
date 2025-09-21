@@ -1,7 +1,7 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+--!strict
 
-local giflib = require(ReplicatedStorage.Packages.giflib)
-local gifInfo = require(ReplicatedStorage.Packages["2d-adventure"].gifInfo)
+local giflib = require(script.Parent.Parent.Parent.giflib)
+local gifInfo = require(script.Parent.Parent.gifInfo)
 
 --[=[
 	@class Animation

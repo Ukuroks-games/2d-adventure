@@ -1,3 +1,5 @@
+--!strict
+
 local stdlib = require(script.Parent.Parent.stdlib)
 local mutex = stdlib.mutex
 

@@ -1,3 +1,5 @@
+--!strict
+
 local Audio = require(script.Parent)
 local config = require(script.Parent.Parent.config)
 local physicObject = require(script.Parent.Parent.physicObject)
@@ -77,7 +79,7 @@ function Audio2dObject.new<I, T>(override: {
 
 	UpdatePos()
 
-	return self
+	return self :: Audio2dObject & { [I]: T }
 end
 
 return Audio2dObject

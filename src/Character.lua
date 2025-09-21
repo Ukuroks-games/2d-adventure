@@ -1,3 +1,5 @@
+--!strict
+
 local stdlib = require(script.Parent.Parent.stdlib)
 
 local AnimatedObject = require(script.Parent.AnimatedObject)
@@ -48,7 +50,7 @@ function Character2d.WalkMoveRaw(
 	Y: number,
 	RelativeObject: ExImage.ExImage,
 	cooldownTime: number?
-): Tween
+): Tween?
 	if self.MoveStopConnection then
 		self.MoveStopConnection:Disconnect()
 		self.MoveStopConnection = nil
@@ -123,13 +125,15 @@ function Character2d.WalkMoveRaw(
 	local t =
 		BaseCharacter.WalkMoveRaw(self, X, Y, RelativeObject, cooldownTime)
 
-	self.MoveStopConnection = t.Completed:Connect(
-		function(state: Enum.PlaybackState)
-			if state == Enum.PlaybackState.Completed then
-				self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
+	if t then
+		self.MoveStopConnection = t.Completed:Connect(
+			function(state: Enum.PlaybackState)
+				if state == Enum.PlaybackState.Completed then
+					self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
+				end
 			end
-		end
-	)
+		)
+	end
 
 	return t
 end
@@ -143,7 +147,7 @@ function Character2d.new(
 
 	stdlib.utility.merge(self, AnimatedObject.new(Animations, self.Image))
 
-	setmetatable(self, { __index = Character2d })
+	setmetatable(self :: {}, { __index = Character2d })
 
 	return self
 end

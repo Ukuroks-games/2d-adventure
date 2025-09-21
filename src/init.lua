@@ -3,6 +3,7 @@
 local Animation = require(script.Animations.Animation)
 local AudioEmitter = require(script.Audio.AudioEmitter)
 local AudioListener = require(script.Audio.AudioListener)
+local Character = require(script.Character)
 local Game = require(script.game)
 local Object2d = require(script.Object2d)
 local Player2d = require(script.player)
@@ -18,6 +19,7 @@ local lib = {
 	Object2d = Object2d,
 	Player2d = Player2d,
 	PhysicObject = PhysicObject,
+	Character2d = Character,
 	Map = Map,
 	Camera2d = Camera2d,
 	GifInfo = GifInfo,
@@ -34,5 +36,7 @@ export type Player2d = Player2d.Player2d
 export type Map = Map.Map
 export type Camera2d = Camera2d.Camera2d
 export type ExImage = ExImage.ExImage
+export type Animation = Animation.Animation
+export type Character2d = Character.Character2d
 
 return lib

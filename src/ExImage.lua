@@ -1,5 +1,3 @@
---!nonstrict
-
 local AssetService = game:GetService("AssetService")
 
 --[=[
