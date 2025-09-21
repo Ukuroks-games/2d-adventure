@@ -2,6 +2,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local giflib = require(ReplicatedStorage.Packages.giflib)
 local gifInfo = require(ReplicatedStorage.Packages["2d-adventure"].gifInfo)
+
+--[=[
+	@class Animation
+	@since v0.6.0
+
+	Union for gif and audio
+]=]
 local Animation = {}
 
 export type AnimationStruct = {
@@ -14,17 +21,36 @@ export type Animation = typeof(setmetatable(
 	{ __index = Animation }
 ))
 
+
+--[=[
+	@method Stop
+	@within Animation
+	@since v0.6.0
+]=]
 function Animation.Stop(self: Animation)
 	self.gif:StopAnimation()
 	self.gif:Hide()
 	self.audio:Stop()
 end
 
+--[=[
+	@method Start
+	@within Animation
+	@since v0.6.0
+]=]
 function Animation.Start(self: Animation)
 	self.gif:StartAnimation(true)
 	self.audio:Play()
 end
 
+--[=[
+	Constructor
+
+	@param gif Func
+	@param sound AudioPlayer
+	@return Animation -- Created animation
+	@since v0.6.0
+]=]
 function Animation.new(gif: gifInfo.Func, sound: AudioPlayer): Animation
 	local self: AnimationStruct = {
 		gif = gif(),

@@ -160,9 +160,15 @@ function animatedObject.StartAnimation(
 	end
 end
 
---[[
+--[=[
 	Stop (and hide) current or specified animation
-]]
+
+	@param animationName string?
+	@return Animation? -- Stopped animation
+
+	@method StopAnimation
+	@within AnimatedObject
+]=]
 function animatedObject.StopAnimation(
 	self: AnimatedObject,
 	animationName: string?
