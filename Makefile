@@ -39,6 +39,20 @@ SOURCES =	src/init.lua				\
 			src/Audio/AudioEmitter.luau	\
 			src/Animations/Animation.luau
 
+ASSETS = tests/assets
+
+TEST_SOURCES =	\
+	tests/shared/player.luau	\
+	tests/shared/audio.luau	\
+	tests/shared/animations.luau	\
+	$(ASSETS)/sounds/Stay/init.meta.json	\
+	$(ASSETS)/sounds/Walk/init.meta.json	\
+	$(ASSETS)/sounds/Output/init.meta.json
+
+
+
+	
+
 $(BUILD_DIR):
 	mkdir $@	
 
@@ -99,7 +113,7 @@ library.project.json:	$(SOURCES)	./Packages
 
 ## RBXL
 
-%.rbxl:	%.project.json
+%.rbxl:	%.project.json	$(TEST_SOURCES)
 	rojo build $*.project.json --output $@
 
 ALL_TESTS =	demo.rbxl	\

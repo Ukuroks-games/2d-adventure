@@ -2,17 +2,13 @@
 
 local audio = {}
 
-audio.Walk = Instance.new("AudioPlayer")
-audio.Walk.Parent = workspace
-audio.Walk.Asset = "rbxassetid://6563562192"
-audio.Walk.Looping = true
+local sounds = workspace:WaitForChild("sounds")
 
-audio.Stay = Instance.new("AudioPlayer")
-audio.Stay.Parent = workspace
-audio.Stay.Looping = true
+audio.Walk = sounds:WaitForChild("Walk") :: AudioPlayer
 
-local out = Instance.new("AudioDeviceOutput")
-out.Parent = workspace
+audio.Stay = sounds:WaitForChild("Stay") :: AudioPlayer
+
+local out = sounds:WaitForChild("Output")
 
 local w1 = Instance.new("Wire")
 w1.Parent = workspace

@@ -16,6 +16,7 @@
 		},
 		"Workspace": {
 			"$className": "Workspace",
+			"$path": "tests/assets",
 			"$properties": {
 				"Gravity": 0
 			}

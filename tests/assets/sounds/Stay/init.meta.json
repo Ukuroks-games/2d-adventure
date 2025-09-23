@@ -1,0 +1,6 @@
+{
+	"className": "AudioPlayer",
+	"properties": {
+		"Looping": true
+	}
+}
