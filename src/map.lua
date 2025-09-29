@@ -225,7 +225,7 @@ function map.DeletePlayer(self: Map, Player: player2d.Player2d)
 	local p = table.find(Objects, Player)
 
 	if p then
-		Objects[p] = nil
+		table.remove(Objects, p)
 	end
 end
 
