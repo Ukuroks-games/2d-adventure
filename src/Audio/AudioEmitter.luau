@@ -4,6 +4,8 @@ local physicObject = require(script.Parent.Parent.physicObject)
 --[=[
 	inherit from [Audio2dObject](Audio2dObject)
 
+	Wrapper for [AudioEmitter](https://create.roblox.com/docs/reference/engine/classes/AudioEmitter)
+
 	@class AudioEmitter2d
 	@tag Audio
 	@since v0.6.0
