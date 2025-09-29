@@ -11,6 +11,7 @@
 		"__newindex",
 		"CalcZIndexs",
 		"cooldown",
+		"dialoglib",
 		"getmetatable",
 		"giflib",
 		"nonstrict",

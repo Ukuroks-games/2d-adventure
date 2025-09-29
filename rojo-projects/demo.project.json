@@ -32,7 +32,11 @@
 					"$className": "Frame"
 				},
 				"Pause":{
-					"$className": "TextButton"
+					"$className": "TextButton",
+					"$properties": {
+						"Text": "Pause",
+						"TextScaled": true
+					}
 				}
 			}
 		},

@@ -3,10 +3,10 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterPlayer = game:GetService("StarterPlayer")
-local UserInputService = game:GetService("UserInputService")
 
 local player = require(StarterPlayer.StarterPlayerScripts.shared.player)
 local dialoglib = require(ReplicatedStorage.DevPackages.dialoglib)
+local InputLib = require(ReplicatedStorage.Packages.InputLib)
 local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
 
 local Game = adventure2d.Game
@@ -19,19 +19,22 @@ local ExImage = adventure2d.ExImage
 
 local GameFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui"):WaitForChild("Frame") :: Frame
+	:WaitForChild("ScreenGui")
+	:WaitForChild("Frame") :: Frame
 GameFrame.Size = UDim2.fromScale(1, 1)
 
 local DialogFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui"):WaitForChild("Dialog") :: Frame
+	:WaitForChild("ScreenGui")
+	:WaitForChild("Dialog") :: Frame
 DialogFrame.Size = UDim2.fromScale(1, 0.3)
 DialogFrame.Position = UDim2.fromScale(0, 0.7)
 DialogFrame.ZIndex = 999
 
 local Pause = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui"):WaitForChild("Pause") :: TextButton
+	:WaitForChild("ScreenGui")
+	:WaitForChild("Pause") :: TextButton
 
 Pause.Size = UDim2.fromScale(0.1, 0.1)
 Pause.Position = UDim2.fromScale(0.9, 0.01)
@@ -70,13 +73,9 @@ local map1 = map.new(Vector2.new(1, 1), cam, "114575775575709", {
 	shee,
 }, Vector2.new(80, 300), Vector3.new(22, 48, 8))
 
-local map2 = map.new(Vector2.new(1, 1), cam, "131246783435400")
+local map2 = map.new(Vector2.new(1, 1), cam, "113837532573611")
 
-local _game = Game.new(
-	GameFrame,
-	player,
-	map1
-)
+local _game = Game.new(GameFrame, player, map1)
 
 _game:Loading().Done:Wait()
 
@@ -86,37 +85,47 @@ changeMap.Touched:Connect(function(_)
 	_game:SetMap(map2)
 end)
 
+local faceId: string ="rbxassetid://117978347308606"
 local d = dialoglib.dialog.new(DialogFrame, {
-	dialoglib.phrase.new("test", dialoglib.character.new("null")),
-	dialoglib.phrase.new("test", dialoglib.character.new("null")),
+	dialoglib.phrase.new(
+		"This is a demo. Nothing",
+		dialoglib.character.new(faceId)
+	),
+	dialoglib.phrase.new("test", dialoglib.character.new(faceId)),
+	dialoglib.phrase.new("Go away!", dialoglib.character.new(faceId)),
 })
+d.Text.ZIndex = 999
+d.CharFace.ZIndex = 999
+d.MainFrame.Visible = false
 
-local lock = false
-
-shee:GetCoordinates()
+local Paused = false
 
 shee.Touched:Connect(function(_)
-	if not lock then
-		lock = true
-		DialogFrame.Visible = lock
-		print("pause")
-		_game:Pause()
+	if not d.MainFrame.Visible then
+		d.MainFrame.Visible = true
+		if not Paused then
+			_game:Pause()
+		end
+
 		d:Next()
-		UserInputService.InputBegan:Wait()
-		d:Next()
-		UserInputService.InputBegan:Wait()
-		print("resume")
+
+		InputLib.OnUserInput({
+			Enum.UserInputType.Touch,
+			Enum.UserInputType.MouseButton1,
+			Enum.UserInputType.Gamepad1,
+		}, {}).Event
+			:Wait()
+
 		_game:Resume()
-		lock = false
-		DialogFrame.Visible = lock
+		d.MainFrame.Visible = false
 	end
 end)
 
 Pause.MouseButton1Click:Connect(function()
-	if lock then
+	if Paused then
 		_game:Resume()
 	else
 		_game:Pause()
 	end
-	lock = not lock
+	Paused = not Paused
 end)
