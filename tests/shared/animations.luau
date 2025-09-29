@@ -6,7 +6,6 @@ local giflib = require(ReplicatedStorage.Packages.giflib)
 local audio = require(script.Parent.audio)
 local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
 
-
 return {
 	["IDLE"] = {
 		["a"] = adventure2d.Animation.new(
