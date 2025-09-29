@@ -73,7 +73,12 @@ local map1 = map.new(Vector2.new(1, 1), cam, "114575775575709", {
 	shee,
 }, Vector2.new(80, 300), Vector3.new(22, 48, 8))
 
-local map2 = map.new(Vector2.new(1, 1), cam, "113837532573611")
+local ChangeBack2 = adventure2d.Object2d.new(Vector2.new(15, 414), Vector3.new(65, 50, 50), adventure2d.ExImage.new(""))
+
+local map2 = map.new(Vector2.new(1, 1), cam, "113837532573611",
+{
+	ChangeBack2
+})
 
 local _game = Game.new(GameFrame, player, map1)
 
@@ -83,6 +88,10 @@ _game:Start()
 
 changeMap.Touched:Connect(function(_)
 	_game:SetMap(map2)
+end)
+
+ChangeBack2.Touched:Connect(function()
+	_game:SetMap(map1)
 end)
 
 local faceId: string ="rbxassetid://117978347308606"
