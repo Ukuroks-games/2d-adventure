@@ -15,7 +15,6 @@ export type AudioEmitter2dStruct = {
 	Emitter: AudioEmitter,
 } & Audio2dObject.Audio2dObjectStruct
 
-
 --[=[
 	@interface AudioEmitter2d
 	@within AudioEmitter2d
@@ -39,15 +38,16 @@ export type AudioEmitter2d =
 ]=]
 function AudioEmitter.new(
 	parent: physicObject.PhysicObject,
-	input: Wire
+	input: Wire,
+	emitter: AudioEmitter?
 ): AudioEmitter2d
 	local self = Audio2dObject.new({
 		Parent = parent,
 		Input = input,
-		Emitter = Instance.new("AudioEmitter"),
-	})
+		Emitter = emitter or Instance.new("AudioEmitter"),
+	}) :: AudioEmitter2dStruct
 
-	setmetatable(self :: AudioEmitter2dStruct, { __index = AudioEmitter })
+	setmetatable(self, { __index = AudioEmitter })
 
 	self.Emitter.Parent = self.Part
 

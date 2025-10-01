@@ -4,17 +4,18 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterPlayer = game:GetService("StarterPlayer")
 
-local player = require(StarterPlayer.StarterPlayerScripts.shared.player)
+
 local audioAnalyser = require(ReplicatedStorage.DevPackages.audioAnalyser)
 local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
-local Object2d = require(ReplicatedStorage.Packages["2d-adventure"].Object2d)
 
 adventure2d.config.ShowHitboxes = true
+
+local player = require(StarterPlayer.StarterPlayerScripts.shared.player)
 
 local GameFrame = Players.LocalPlayer.PlayerGui:WaitForChild("ScreenGui"):WaitForChild("Frame") :: Frame
 GameFrame.Size = UDim2.fromScale(1, 1)
 
-local obj = Object2d.new(
+local obj = adventure2d.Object2d.new(
 	Vector2.new(100, 100),
 	Vector3.new(100, 100, 50),
 	adventure2d.ExImage.new("176572847")
@@ -81,7 +82,3 @@ _game:Start()
 
 audioPlayer:Play()
 
-_game.Player.Move:Connect(function()
-	emitter:UpdatePosition()
-	listener:UpdatePosition()
-end)
