@@ -31,7 +31,13 @@
 				"Dialog": {
 					"$className": "Frame"
 				},
-				"Pause":{
+				"$properties": {
+					"ScreenInsets": "None"
+				}
+			},
+			"ScreenUI":{
+				"$className": "ScreenGui",
+				"Pause": {
 					"$className": "TextButton",
 					"$properties": {
 						"Text": "Pause",

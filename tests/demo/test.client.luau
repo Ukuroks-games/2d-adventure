@@ -33,7 +33,7 @@ DialogFrame.ZIndex = 999
 
 local Pause = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui")
+	:WaitForChild("ScreenUI")
 	:WaitForChild("Pause") :: TextButton
 
 Pause.Size = UDim2.fromScale(0.1, 0.1)

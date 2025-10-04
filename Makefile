@@ -40,11 +40,13 @@ SOURCES =	src/init.lua				\
 			src/Animations/Animation.luau
 
 ASSETS = tests/assets
+SHARED = tests/shared
 
 TEST_SOURCES =	\
 	tests/shared/player.luau	\
 	tests/shared/audio.luau	\
 	tests/shared/animations.luau	\
+	$(SHARED)/disableCoreUI.client.luau	\
 	$(ASSETS)/sounds/Stay/init.meta.json	\
 	$(ASSETS)/sounds/Walk/init.meta.json	\
 	$(ASSETS)/sounds/Output/init.meta.json

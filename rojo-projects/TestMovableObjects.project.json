@@ -24,6 +24,9 @@
 				"$className": "ScreenGui",
 				"Frame": {
 					"$className": "Frame"
+				},
+				"$properties": {
+					"ScreenInsets": "None"
 				}
 			}
 		},

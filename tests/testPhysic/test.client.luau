@@ -5,9 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterPlayer = game:GetService("StarterPlayer")
 
 local player = require(StarterPlayer.StarterPlayerScripts.shared.player)
-local giflib = require(ReplicatedStorage.Packages.giflib)
 local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
-local gifInfo = adventure2d.GifInfo
 
 adventure2d.config.ShowHitboxes = true
 
