@@ -1,5 +1,7 @@
 --!strict
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local BaseCharacter = require(ReplicatedStorage.Packages["2d-adventure"].BaseCharacter)
 local Audio = require(script.Parent)
 local config = require(script.Parent.Parent.config)
 local physicObject = require(script.Parent.Parent.physicObject)
@@ -39,12 +41,14 @@ export type Audio2dObject = typeof(setmetatable(
 ]=]
 function Audio2dObject.UpdatePosition(self: Audio2dObject)
 	local pos = self.Parent:GetCenterCoordinates()
-	
-	self.Part.Position = Vector3.new(
-		(pos.X) / self.Parent.background.RealSize.X * config.AudioDistanceFactor,
+
+	local a =  Vector3.new(
+		pos.X / self.Parent.background.RealSize.X * config.AudioDistanceFactor,
 		pos.Y / self.Parent.background.RealSize.Y * config.AudioDistanceFactor,
 		0
 	) + config.AudioPosition
+
+	self.Part.Position = a
 end
 
 --[=[
@@ -78,6 +82,14 @@ function Audio2dObject.new<I, T>(override: {
 	end
 
 	UpdatePos()
+
+	if self.Parent.Move then
+		local p = self.Parent :: BaseCharacter.BaseCharacter2d
+
+		p.Move:Connect(UpdatePos)
+	else
+		self.Parent.physicImage:GetPropertyChangedSignal("Position"):Connect(UpdatePos)
+	end
 
 	return self :: Audio2dObject & { [I]: T }
 end

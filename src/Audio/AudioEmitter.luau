@@ -1,3 +1,6 @@
+--!nocheck
+
+local Audio = require(script.Parent)
 local Audio2dObject = require(script.Parent.Audio2dObject)
 local physicObject = require(script.Parent.Parent.physicObject)
 
@@ -16,7 +19,6 @@ export type AudioEmitter2dStruct = {
 	Input: Wire,
 	Emitter: AudioEmitter,
 } & Audio2dObject.Audio2dObjectStruct
-
 
 --[=[
 	@interface AudioEmitter2d
@@ -41,17 +43,19 @@ export type AudioEmitter2d =
 ]=]
 function AudioEmitter.new(
 	parent: physicObject.PhysicObject,
-	input: Wire
+	input: Wire,
+	emitter: AudioEmitter?
 ): AudioEmitter2d
 	local self = Audio2dObject.new({
 		Parent = parent,
 		Input = input,
-		Emitter = Instance.new("AudioEmitter"),
-	})
+		Emitter = emitter or Instance.new("AudioEmitter"),
+	}) :: AudioEmitter2dStruct
 
-	setmetatable(self :: AudioEmitter2dStruct, { __index = AudioEmitter })
+	setmetatable(self, { __index = AudioEmitter })
 
 	self.Emitter.Parent = self.Part
+	self.Emitter.AudioInteractionGroup = Audio.DefaultGroup
 
 	self.Input.TargetInstance = self.Emitter
 

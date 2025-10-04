@@ -1,3 +1,6 @@
+--!nocheck
+
+local Audio = require(script.Parent)
 local Audio2dObject = require(script.Parent.Audio2dObject)
 local physicObject = require(script.Parent.Parent.physicObject)
 
@@ -40,17 +43,20 @@ export type AudioListener2d =
 ]=]
 function AudioListener.new(
 	p: physicObject.PhysicObject,
-	output: Wire
+	output: Wire,
+	listener: AudioListener?
 ): AudioListener2d
 	local self = Audio2dObject.new({
 		Parent = p,
 		Output = output,
-		Listener = Instance.new("AudioListener"),
-	})
+		Listener = listener or Instance.new("AudioListener"),
+	})	:: AudioListener2dStruct
 
 	setmetatable(self, { __index = AudioListener })
+	
 
 	self.Listener.Parent = self.Part
+	self.Listener.AudioInteractionGroup = Audio.DefaultGroup
 	self.Output.SourceInstance = self.Listener
 
 	return self
