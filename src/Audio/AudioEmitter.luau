@@ -1,3 +1,6 @@
+--!nocheck
+
+local Audio = require(script.Parent)
 local Audio2dObject = require(script.Parent.Audio2dObject)
 local physicObject = require(script.Parent.Parent.physicObject)
 
@@ -50,6 +53,7 @@ function AudioEmitter.new(
 	setmetatable(self, { __index = AudioEmitter })
 
 	self.Emitter.Parent = self.Part
+	self.Emitter.AudioInteractionGroup = Audio.DefaultGroup
 
 	self.Input.TargetInstance = self.Emitter
 

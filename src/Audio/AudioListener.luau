@@ -1,5 +1,6 @@
 --!nocheck
 
+local Audio = require(script.Parent)
 local Audio2dObject = require(script.Parent.Audio2dObject)
 local physicObject = require(script.Parent.Parent.physicObject)
 
@@ -50,8 +51,10 @@ function AudioListener.new(
 	})	:: AudioListener2dStruct
 
 	setmetatable(self, { __index = AudioListener })
+	
 
 	self.Listener.Parent = self.Part
+	self.Listener.AudioInteractionGroup = Audio.DefaultGroup
 	self.Output.SourceInstance = self.Listener
 
 	return self
