@@ -1,7 +1,6 @@
 --!strict
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local BaseCharacter = require(ReplicatedStorage.Packages["2d-adventure"].BaseCharacter)
+local BaseCharacter = require(script.Parent.Parent.BaseCharacter)
 local Audio = require(script.Parent)
 local config = require(script.Parent.Parent.config)
 local physicObject = require(script.Parent.Parent.physicObject)
