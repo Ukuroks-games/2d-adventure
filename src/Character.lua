@@ -90,7 +90,7 @@ function Character2d.WalkMoveRaw(
 		Y = 0
 	end
 
-	local r = math.abs(X / Y)
+	local tg = math.abs(Y / X) -- |tg|
 
 	local animationName = "Walk"
 
@@ -102,18 +102,28 @@ function Character2d.WalkMoveRaw(
 		end
 	end
 
-	if r > 0.75 then -- X bigger
+	local function SetX()
 		if X < 0 then
 			animationName ..= "Left"
 		elseif X > 0 then
 			animationName ..= "Right"
 		end
+	end
 
-		if r <= 1 then
-			SetY()
-		end
-	else -- Y bigger
+	local deltaAngle = 20
+
+	if
+		tg < math.tan(math.rad(90 - deltaAngle))
+		and 1 / tg < 1 / math.tan(math.rad(deltaAngle))
+	then
+		SetX()
 		SetY()
+	else
+		if tg > 1 then
+			SetY()
+		else
+			SetX()
+		end
 	end
 
 	if animationName == "Walk" then
