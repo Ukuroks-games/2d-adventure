@@ -1,0 +1,90 @@
+{
+	"name": "demo",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Packages": {
+				"$path": "Packages",
+				"2d-adventure": {
+					"$path": "src"
+				}
+			},
+			"DevPackages": {
+				"$path": "DevPackages"
+			}
+		},
+		"Workspace": {
+			"$className": "Workspace",
+			"$path": "tests/assets",
+			"$properties": {
+				"Gravity": 0
+			}
+		},
+		"StarterGui": {
+			"$className": "StarterGui",
+			"ScreenGui": {
+				"$className": "ScreenGui",
+				"Left": {
+					"$className": "Frame",
+					"$properties": {
+						"Size": {
+							"UDim2": [
+								[
+									0.5,
+									0
+								],
+								[
+									1.0,
+									0
+								]
+							]
+						}
+					}
+				},
+				"Right": {
+					"$className": "Frame",
+					"$properties": {
+						"Size": {
+							"UDim2": [
+								[
+									0.5,
+									0
+								],
+								[
+									1.0,
+									0
+								]
+							]
+						},
+						"Position": {
+							"UDim2": [
+								[
+									0.5,
+									0
+								],
+								[
+									0.0,
+									0
+								]
+							]
+						}
+					}
+				},
+				"$properties": {
+					"ScreenInsets": "None"
+				}
+			}
+		},
+		"StarterPlayer": {
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+				"$path": "tests/multi-games",
+				"shared": {
+					"$path": "tests/shared"
+				}
+			}
+		}
+	}
+}
