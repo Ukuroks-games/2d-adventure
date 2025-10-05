@@ -12,8 +12,9 @@ adventure2d.config.ShowHitboxes = true
 
 local player = require(StarterPlayer.StarterPlayerScripts.shared.player)
 
-local GameFrame = Players.LocalPlayer.PlayerGui:WaitForChild("ScreenGui"):WaitForChild("Frame") :: Frame
-GameFrame.Size = UDim2.fromScale(1, 1)
+local gui = Players.LocalPlayer.PlayerGui:WaitForChild("ScreenGui")
+
+local GameFrame = gui:WaitForChild("Frame") :: Frame
 
 local obj = adventure2d.Object2d.new(
 	Vector2.new(100, 100),
@@ -60,10 +61,7 @@ w.TargetInstance = out
 w.SourceInstance = listener.Listener
 w.Parent = workspace
 
-local ChannelsGraph = Instance.new("Frame")
-ChannelsGraph.Parent = Players.LocalPlayer.PlayerGui.ScreenGui
-ChannelsGraph.Size = UDim2.fromScale(0.6, 0.3)
-ChannelsGraph.ZIndex = 999
+local ChannelsGraph = gui:WaitForChild("ChannelsGraph") :: Frame
 
 audioAnalyser.new(ChannelsGraph, nil, input)
 

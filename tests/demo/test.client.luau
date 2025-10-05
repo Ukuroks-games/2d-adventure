@@ -21,24 +21,16 @@ local GameFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
 	:WaitForChild("ScreenGui")
 	:WaitForChild("Frame") :: Frame
-GameFrame.Size = UDim2.fromScale(1, 1)
 
 local DialogFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
 	:WaitForChild("ScreenGui")
 	:WaitForChild("Dialog") :: Frame
-DialogFrame.Size = UDim2.fromScale(1, 0.3)
-DialogFrame.Position = UDim2.fromScale(0, 0.7)
-DialogFrame.ZIndex = 999
 
 local Pause = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
 	:WaitForChild("ScreenUI")
 	:WaitForChild("Pause") :: TextButton
-
-Pause.Size = UDim2.fromScale(0.1, 0.1)
-Pause.Position = UDim2.fromScale(0.9, 0.01)
-Pause.ZIndex = 999
 
 local cam = camera2d.new(1)
 
@@ -116,6 +108,7 @@ shee.Touched:Connect(function(_)
 	if not d.MainFrame.Visible then
 		d.MainFrame.Visible = true
 		if not Paused then
+			Paused = true
 			_game:Pause()
 		end
 
@@ -129,6 +122,7 @@ shee.Touched:Connect(function(_)
 			:Wait()
 
 		_game:Resume()
+		Paused = false
 		d.MainFrame.Visible = false
 	end
 end)

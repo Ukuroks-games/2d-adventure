@@ -26,23 +26,93 @@
 			"ScreenGui": {
 				"$className": "ScreenGui",
 				"Frame": {
-					"$className": "Frame"
+					"$className": "Frame",
+					"$properties": {
+						"Size": {
+							"UDim2": [
+								[
+									1.0,
+									0
+								],
+								[
+									1.0,
+									0
+								]
+							]
+						}
+					}
 				},
 				"Dialog": {
-					"$className": "Frame"
+					"$className": "Frame",
+					"$properties": {
+						"Size": {
+							"UDim2": [
+								[
+									1,
+									0
+								],
+								[
+									0.3,
+									0
+								]
+							]
+						},
+						"Position": {
+							"UDim2": [
+								[
+									0,
+									0
+								],
+								[
+									0.7,
+									0
+								]
+							]
+						},
+						"ZIndex": 999,
+						"Visible": false
+					}
 				},
 				"$properties": {
 					"ScreenInsets": "None"
 				}
 			},
-			"ScreenUI":{
+			"ScreenUI": {
 				"$className": "ScreenGui",
 				"Pause": {
 					"$className": "TextButton",
 					"$properties": {
 						"Text": "Pause",
-						"TextScaled": true
+						"TextScaled": true,
+						"Size": {
+							"UDim2": [
+								[
+									0.1,
+									0
+								],
+								[
+									0.1,
+									0
+								]
+							]
+						},
+						"Position": {
+							"UDim2": [
+								[
+									0.9,
+									0
+								],
+								[
+									0.01,
+									0
+								]
+							]
+						},
+						"ZIndex": 999
 					}
+				},
+				"$properties": {
+					"DisplayOrder": 1
 				}
 			}
 		},

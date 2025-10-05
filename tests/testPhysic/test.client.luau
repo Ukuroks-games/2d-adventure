@@ -9,10 +9,10 @@ local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
 
 adventure2d.config.ShowHitboxes = true
 
-Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui")
-
-local GameFrame = Players.LocalPlayer.PlayerGui.ScreenGui.Frame
-GameFrame.Size = UDim2.fromScale(1, 1)
+local GameFrame = Players.LocalPlayer
+	:WaitForChild("PlayerGui")
+	:WaitForChild("ScreenGui")
+	:WaitForChild("Frame") :: Frame
 
 local NoPhysic = adventure2d.Object2d.new(
 	Vector2.new(100, 100),

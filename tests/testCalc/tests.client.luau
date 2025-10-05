@@ -10,8 +10,7 @@ local ExImage = require(ReplicatedStorage.Packages["2d-adventure"].ExImage)
 local Gui =
 	Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui")
 
-local GameFrame: Frame = Gui.Frame
-GameFrame.Size = UDim2.fromScale(1, 1)
+local GameFrame: Frame = Gui:WaitForChild("Frame") :: Frame
 
 local background = ExImage.new("114575775575709")
 background.ImageInstance.Parent = GameFrame

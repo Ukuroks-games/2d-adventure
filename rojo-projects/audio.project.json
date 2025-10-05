@@ -26,7 +26,38 @@
 			"ScreenGui": {
 				"$className": "ScreenGui",
 				"Frame": {
-					"$className": "Frame"
+					"$className": "Frame",
+					"$properties": {
+						"Size": {
+							"UDim2": [
+								[
+									1.0,
+									0
+								],
+								[
+									1.0,
+									0
+								]
+							]
+						}
+					}
+				},
+				"ChannelsGraph": {
+					"$className": "Frame",
+					"$properties": {
+						"Size": {
+							"UDim2": [
+								[
+									0.6,
+									0
+								],
+								[
+									0.3,
+									0
+								]
+							]
+						}
+					}
 				},
 				"$properties": {
 					"ScreenInsets": "None"

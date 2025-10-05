@@ -14,7 +14,6 @@ Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui")
 local GameFrame = Players.LocalPlayer.PlayerGui
 	:WaitForChild("ScreenGui")
 	:WaitForChild("Frame") :: Frame
-GameFrame.Size = UDim2.fromScale(1, 1)
 
 local _game = adventure2d.Game.new(
 	GameFrame,
