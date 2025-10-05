@@ -20,7 +20,7 @@ export type GameStruct = {
 	--[[
 		Game background
 	]]
-	Frame: Frame,
+	Frame: GuiObject,
 
 	--[[
 		Player
@@ -148,7 +148,7 @@ end
 	@within Game
 ]=]
 function Game.new(
-	GameFrame: Frame,
+	GameFrame: GuiObject,
 	Player: player.Player2d,
 	Map: map.Map,
 	cooldownTime: number?,
