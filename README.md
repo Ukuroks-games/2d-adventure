@@ -4,11 +4,15 @@
 
 # 2d Adventure
 
-This is "Engine" for creating 2d isometric game in roblox. Not platformer. 
+This is "Engine" for creating 2d isometric game in roblox. Not platformer(may be added).
+
+It can create game on any surfaces, just provide `GuiObject` as surface for game. 
+
+
 
 [demo](https://www.roblox.com/games/81880122162557/2d-Adventure-demo)
 
-[docs](https://ukuroks-games.github.io/2d-adventure/)
+You can read the [docs](https://ukuroks-games.github.io/2d-adventure/).
 
 
 ## Get it
@@ -32,3 +36,4 @@ Versioning tends to be as follows:
 `B` — Minor changes. Possibly a new feature. Might need to change function calls/arguments slightly.
 
 `C` — Minor changes/bug fixes.
+
