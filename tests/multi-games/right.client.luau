@@ -18,7 +18,7 @@ local ExImage = adventure2d.ExImage
 local GameFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
 	:WaitForChild("ScreenGui")
-	:WaitForChild("Right") :: Frame
+	:WaitForChild("Right") :: CanvasGroup
 
 
 local cam = camera2d.new(1)
