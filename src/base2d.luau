@@ -1,5 +1,6 @@
 --!strict
 
+local stdlib = require(script.Parent.Parent.stdlib)
 local ExImage = require(script.Parent.ExImage)
 
 local base2d = {}
@@ -15,6 +16,10 @@ export type Base2d = typeof(setmetatable(
 
 function base2d.Preload(self: Base2dStruct | Base2d): { Instance }
 	return { self.Image.ImageInstance }
+end
+
+function base2d.Clone<T>(self: T): T
+	return stdlib.utility.clone(self)
 end
 
 function base2d.new(image: ExImage.ExImage): Base2d

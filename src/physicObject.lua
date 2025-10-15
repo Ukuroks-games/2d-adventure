@@ -498,6 +498,14 @@ function physicObject.CalcTouchedSide(self: PhysicObject, obj: PhysicObject)
 	end
 end
 
+function physicObject.Clone(self: PhysicObject)
+	local ret = base2d.Clone(self)
+
+	ret.ID = physicObject.Id + 1
+
+	return ret
+end
+
 --[=[
 	Physic object constructor
 

@@ -13,7 +13,7 @@ local camera2d = adventure2d.Camera2d
 local map = adventure2d.Map
 local ExImage = adventure2d.ExImage
 
---adventure2d.config.ShowHitboxes = true
+adventure2d.config.ShowHitboxes = true
 
 local GameFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
@@ -64,7 +64,7 @@ local map2 = map.new(Vector2.new(1, 1), cam, "113837532573611", {
 	ChangeBack2,
 })
 
-local _game = Game.new(GameFrame, player, map1)
+local _game = Game.new(GameFrame, player:Clone(), map1)
 
 _game:Loading().Done:Wait()
 
