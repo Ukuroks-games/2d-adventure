@@ -4,8 +4,9 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterPlayer = game:GetService("StarterPlayer")
 
-local player = require(StarterPlayer.StarterPlayerScripts.shared.player)
 local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
+local ControlClass =
+	require(ReplicatedStorage.Packages["2d-adventure"].ControlClass)
 
 local Game = adventure2d.Game
 local Object2d = adventure2d.Object2d
@@ -15,11 +16,12 @@ local ExImage = adventure2d.ExImage
 
 adventure2d.config.ShowHitboxes = true
 
+local player = require(StarterPlayer.StarterPlayerScripts.shared.player)
+
 local GameFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
 	:WaitForChild("ScreenGui")
 	:WaitForChild("Right") :: CanvasGroup
-
 
 local cam = camera2d.new(1)
 
@@ -64,7 +66,20 @@ local map2 = map.new(Vector2.new(1, 1), cam, "113837532573611", {
 	ChangeBack2,
 })
 
-local _game = Game.new(GameFrame, player:Clone(), map1)
+local _game = Game.new(
+	GameFrame,
+	player:Clone(),
+	map1,
+	nil,
+	ControlClass.new({
+		Keyboard = {
+			Up = Enum.KeyCode.Up,
+			Down = Enum.KeyCode.Down,
+			Left = Enum.KeyCode.Left,
+			Right = Enum.KeyCode.Right,
+		},
+	})
+)
 
 _game:Loading().Done:Wait()
 

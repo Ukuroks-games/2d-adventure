@@ -498,12 +498,80 @@ function physicObject.CalcTouchedSide(self: PhysicObject, obj: PhysicObject)
 	end
 end
 
-function physicObject.Clone(self: PhysicObject)
+function physicObject.Collide(this: PhysicObject, obj: PhysicObject)
+	if
+		not this.Anchored
+		and this.PhysicMode :: number >= (physicObject.PhysicMode.CanCollide :: number)
+		and obj.PhysicMode :: number >= physicObject.PhysicMode.CanCollide
+	then
+		this.TouchedSideMutex:wait()
+
+		local function calc(s: PhysicObject, b: PhysicObject, m: number)
+			local X, Y =
+				s.physicImage.Position.X.Offset, s.physicImage.Position.Y.Offset
+
+			local function cmp(value: number): boolean
+				return value == b.ID
+			end
+
+			if stdlib.algorithm.find_if(s.TouchedSide.Up, cmp) then
+				Y += (b.physicImage.AbsolutePosition.Y + b.physicImage.AbsoluteSize.Y - s.physicImage.AbsolutePosition.Y) / m
+			end
+
+			if stdlib.algorithm.find_if(s.TouchedSide.Down, cmp) then
+				Y -= (s.physicImage.AbsolutePosition.Y + s.physicImage.AbsoluteSize.Y - b.physicImage.AbsolutePosition.Y) / m
+			end
+
+			if stdlib.algorithm.find_if(s.TouchedSide.Left, cmp) then
+				X += (b.physicImage.AbsolutePosition.X + b.physicImage.AbsoluteSize.X - s.physicImage.AbsolutePosition.X) / m
+			end
+
+			if stdlib.algorithm.find_if(s.TouchedSide.Right, cmp) then
+				X -= (s.physicImage.AbsolutePosition.X + s.physicImage.AbsoluteSize.X - b.physicImage.AbsolutePosition.X) / m
+			end
+
+			s:SetPositionRaw(Vector2.new(X, Y))
+		end
+
+		if not obj.Anchored and physicObject.GetTouchMsg(obj, this) then
+			local a = this :: PhysicObject
+			calc(a, obj, 2)
+			a:SetTouchMsg(obj)
+		else
+			calc(this :: PhysicObject, obj, 1)
+		end
+	end
+end
+
+local function setup(self): PhysicObject
+	self.Image.ImageInstance.Parent = self.physicImage
+
+	self.physicImage.BackgroundTransparency = (function()
+		if config.ShowHitboxes then
+			return config.HitboxesTransparent
+		else
+			return 1
+		end
+	end)()
+
+	ObjectsRegistry[self.ID] = self
+
+	self.Touched:Connect(function (obj)
+		physicObject.Collide(self, obj)
+	end)
+
+	return self
+end
+
+function physicObject.Clone(self: PhysicObject): PhysicObject
 	local ret = base2d.Clone(self)
 
-	ret.ID = physicObject.Id + 1
+	physicObject.Id += 1
+	ret.ID = physicObject.Id
 
-	return ret
+	ret.Image = self.Image:Clone()
+
+	return setup(ret)
 end
 
 --[=[
@@ -569,66 +637,7 @@ function physicObject.new(
 
 	physicObject.Id += 1
 
-	this.Image.ImageInstance.Parent = this.physicImage
-
-	this.physicImage.BackgroundTransparency = (function()
-		if config.ShowHitboxes then
-			return config.HitboxesTransparent
-		else
-			return 1
-		end
-	end)()
-
-	ObjectsRegistry[this.ID] = this
-
-	this.Touched:Connect(function(obj: PhysicObject)
-		if
-			not this.Anchored
-			and this.PhysicMode >= physicObject.PhysicMode.CanCollide
-			and obj.PhysicMode :: number
-				>= physicObject.PhysicMode.CanCollide
-		then
-			this.TouchedSideMutex:wait()
-
-			local function calc(s: PhysicObject, b: PhysicObject, m: number)
-				local X, Y =
-					s.physicImage.Position.X.Offset,
-					s.physicImage.Position.Y.Offset
-
-				local function cmp(value: number): boolean
-					return value == b.ID
-				end
-
-				if stdlib.algorithm.find_if(s.TouchedSide.Up, cmp) then
-					Y += (b.physicImage.AbsolutePosition.Y + b.physicImage.AbsoluteSize.Y - s.physicImage.AbsolutePosition.Y) / m
-				end
-
-				if stdlib.algorithm.find_if(s.TouchedSide.Down, cmp) then
-					Y -= (s.physicImage.AbsolutePosition.Y + s.physicImage.AbsoluteSize.Y - b.physicImage.AbsolutePosition.Y) / m
-				end
-
-				if stdlib.algorithm.find_if(s.TouchedSide.Left, cmp) then
-					X += (b.physicImage.AbsolutePosition.X + b.physicImage.AbsoluteSize.X - s.physicImage.AbsolutePosition.X) / m
-				end
-
-				if stdlib.algorithm.find_if(s.TouchedSide.Right, cmp) then
-					X -= (s.physicImage.AbsolutePosition.X + s.physicImage.AbsoluteSize.X - b.physicImage.AbsolutePosition.X) / m
-				end
-
-				s:SetPositionRaw(Vector2.new(X, Y))
-			end
-
-			if not obj.Anchored and physicObject.GetTouchMsg(obj, this) then
-				local a = this :: PhysicObject
-				calc(a, obj, 2)
-				a:SetTouchMsg(obj)
-			else
-				calc(this :: PhysicObject, obj, 1)
-			end
-		end
-	end)
-
-	return this :: PhysicObject
+	return setup(this)
 end
 
 return physicObject

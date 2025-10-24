@@ -213,6 +213,36 @@ function animatedObject.SetZIndex(self: AnimatedObject, ZIndex: number)
 	end
 end
 
+function animatedObject.UpdateParent(self: AnimatedObject | AnimatedObjectStruct)
+	for _, g: AnimationsGroupDefault in pairs(self.Animations) do
+		for _, a in pairs(g) do
+			a.gif:SetParent(self.Image.ImageInstance)
+		end
+	end
+end
+
+local function setup(self: AnimatedObjectStruct): AnimatedObject
+	animatedObject.UpdateParent(self)
+	
+	setmetatable(self, { __index = animatedObject })
+
+	return self :: AnimatedObject
+end
+
+function animatedObject.Clone(self: AnimatedObject): AnimatedObject
+	local copy = {
+		Animations = {
+			["IDLE"] = {},
+			["Walk"] = {},
+			["Stay"] = {}
+		},
+		Image = self.Image,
+		CurrentAnimation = self.CurrentAnimation
+	}
+
+	return setup(copy :: AnimatedObjectStruct)
+end
+
 --[=[
 	`AnimatedObject` constructor
 
@@ -234,15 +264,7 @@ function animatedObject.new(
 		CurrentAnimation = "IDLE",
 	}
 
-	for _, g: AnimationsGroupDefault in pairs(self.Animations) do
-		for _, a in pairs(g) do
-			a.gif:SetParent(Parent.ImageInstance)
-		end
-	end
-
-	setmetatable(self, { __index = animatedObject })
-
-	return self :: AnimatedObject
+	return setup(self)
 end
 
 return animatedObject
