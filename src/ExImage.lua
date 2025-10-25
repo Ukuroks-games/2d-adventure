@@ -1,5 +1,4 @@
 local AssetService = game:GetService("AssetService")
-local VersionControlService = game:GetService("VersionControlService")
 
 --[=[
 	Extended Image.
@@ -89,8 +88,6 @@ function ExImage.new(
 	setmetatable(_self, { __index = ExImage })
 
 	_self:SetImage(id, overrideSize)
-
-	print(_self)
 
 	return _self
 end
