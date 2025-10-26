@@ -55,7 +55,7 @@ function AudioEmitter.new(
 	setmetatable(self, { __index = AudioEmitter })
 
 	self.Emitter.Parent = self.Part
-	self.Emitter.AudioInteractionGroup = Audio.DefaultGroup
+	self.Emitter.AudioInteractionGroup = AudioEmitter.Audio.DefaultGroup
 
 	self.Input.TargetInstance = self.Emitter
 

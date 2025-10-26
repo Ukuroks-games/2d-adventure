@@ -1,5 +1,11 @@
 --!strict
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Audio = require(script.Parent.Audio)
+local AudioEmitter =
+	require(ReplicatedStorage.Packages["2d-adventure"].Audio.AudioEmitter)
+local AudioListener =
+	require(ReplicatedStorage.Packages["2d-adventure"].Audio.AudioListener)
 local stdlib = require(script.Parent.Parent.stdlib)
 local mutex = stdlib.mutex
 
@@ -43,6 +49,9 @@ export type GameStruct = {
 	CollideSteppedEvent: BindableEvent<>,
 
 	ControlThread: thread?,
+
+	AudioListener: typeof(AudioListener),
+	AudioEmitter: typeof(AudioEmitter)
 } & Control.ControlStruct
 
 export type Game = GameStruct & typeof(Game) & Control.Control
@@ -173,6 +182,8 @@ function Game.new(
 		Moving = false,
 		ControlThread = nil,
 		ControllerSettings = controllerSettings or defaultControls,
+		AudioEmitter = table.clone(AudioEmitter),
+		AudioListener = table.clone(AudioListener)
 	}
 
 	self.Player:SetParent(self.Frame)
@@ -181,7 +192,13 @@ function Game.new(
 
 	setmetatable(self, { __index = Game })
 
+	local cAudio = table.clone(self.AudioListener.Audio) :: typeof(Audio)
+	cAudio.DefaultGroup  ..= tostring(self)
+	self.AudioListener.Audio = cAudio
+	self.AudioListener.Audio = cAudio
+
 	return self :: Game
 end
+
 
 return Game

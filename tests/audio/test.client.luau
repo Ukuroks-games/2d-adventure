@@ -46,7 +46,7 @@ local wire = Instance.new("Wire")
 wire.SourceInstance = audioPlayer
 wire.Parent = workspace
 
-local emitter = adventure2d.AudioEmitter.new(obj, wire)
+local emitter = _game.AudioEmitter.new(obj, wire)
 
 local out = Instance.new("AudioDeviceOutput")
 out.Parent = workspace
@@ -54,7 +54,7 @@ out.Parent = workspace
 local input = Instance.new("Wire")
 input.Parent = workspace
 
-local listener = adventure2d.AudioListener.new(_game.Player, input)
+local listener = _game.AudioListener.new(_game.Player, input)
 
 local w = Instance.new("Wire")
 w.TargetInstance = out

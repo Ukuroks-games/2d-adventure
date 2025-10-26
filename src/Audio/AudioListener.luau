@@ -56,7 +56,7 @@ function AudioListener.new(
 	
 
 	self.Listener.Parent = self.Part
-	self.Listener.AudioInteractionGroup = Audio.DefaultGroup
+	self.Listener.AudioInteractionGroup = AudioListener.Audio.DefaultGroup
 	self.Output.SourceInstance = self.Listener
 
 	return self
