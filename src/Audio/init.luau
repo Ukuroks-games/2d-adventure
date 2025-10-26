@@ -11,7 +11,11 @@ local Audio = {}
 	@within Audio
 	@since v0.6.0
 ]=]
-Audio.Folder = stdlib.utility.CreateOrFindInstance("Adventure2dAudio", "Folder", workspace) :: Folder
+Audio.Folder = stdlib.utility.CreateOrFindInstance(
+	"Adventure2dAudio",
+	"Folder",
+	workspace
+) :: Folder
 
 Audio.DefaultGroup = "Adventure2dAudio"
 

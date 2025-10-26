@@ -50,8 +50,8 @@ function map.CalcPlayerPositionAbsolute(
 	pos: Vector2
 ): Vector2
 	return Vector2.new(
-		player.Image.ImageInstance.AbsolutePosition.X - pos.X,
-		player.Image.ImageInstance.AbsolutePosition.Y - pos.Y
+		(player.Image.ImageInstance.AbsolutePosition.X - player.background.ImageInstance.AbsolutePosition.X) - pos.X,
+		(player.Image.ImageInstance.AbsolutePosition.Y - player.background.ImageInstance.AbsolutePosition.Y) - pos.Y
 	)
 end
 

@@ -122,7 +122,8 @@ ALL_TESTS =	demo.rbxl	\
 			TestMovableObjects.rbxl	\
 			testCalc.rbxl	\
 			testPhysic.rbxl	\
-			audio.rbxl
+			audio.rbxl	\
+			multi-games.rbxl
 
 ### rebuild add tests
 tests: $(ALL_TESTS)
@@ -143,6 +144,9 @@ testPhysic.project.json:	$(ROJO_PROJECTS)/testPhysic.project.json	tests/testPhys
 
 audio.project.json: 	$(ROJO_PROJECTS)/audio.project.json	tests/audio/test.client.luau	$(SOURCES)	./Packages
 	make "GENERATE_SOURCEMAP=audio" $@
+
+multi-games.project.json: 	$(ROJO_PROJECTS)/multi-games.project.json	tests/multi-games/left.client.luau tests/multi-games/right.client.luau	$(SOURCES)	./Packages
+	make "GENERATE_SOURCEMAP=multi-games" $@
 
 defaultTests.project.json:	./Packages	./DevPackages
 

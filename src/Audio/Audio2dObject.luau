@@ -19,6 +19,8 @@ export type Audio2dObjectStruct = {
 	Parent: physicObject.PhysicObject,
 }
 
+Audio2dObject.Audio = Audio
+
 --[=[
 	@interface Audio2dObject
 	@within Audio2dObject
@@ -41,7 +43,7 @@ export type Audio2dObject = typeof(setmetatable(
 function Audio2dObject.UpdatePosition(self: Audio2dObject)
 	local pos = self.Parent:GetCenterCoordinates()
 
-	local a =  Vector3.new(
+	local a = Vector3.new(
 		pos.X / self.Parent.background.RealSize.X * config.AudioDistanceFactor,
 		pos.Y / self.Parent.background.RealSize.Y * config.AudioDistanceFactor,
 		0
@@ -87,7 +89,9 @@ function Audio2dObject.new<I, T>(override: {
 
 		p.Move:Connect(UpdatePos)
 	else
-		self.Parent.physicImage:GetPropertyChangedSignal("Position"):Connect(UpdatePos)
+		self.Parent.physicImage
+			:GetPropertyChangedSignal("Position")
+			:Connect(UpdatePos)
 	end
 
 	return self :: Audio2dObject & { [I]: T }

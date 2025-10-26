@@ -13,7 +13,7 @@ local ExImage = {}
 
 export type Image = ImageLabel
 
-export type ExImage = {
+export type ExImageStruct = {
 	--[[
 		Real image resolution
 	]]
@@ -21,6 +21,48 @@ export type ExImage = {
 
 	ImageInstance: Image,
 }
+
+export type ExImage = typeof(setmetatable(
+	{} :: ExImageStruct,
+	{ __index = ExImage }
+))
+
+function ExImage.Destroy(self: ExImage)
+	self.ImageInstance:Destroy()
+end
+
+function ExImage.Clone(self: ExImage): ExImage
+	local c = table.clone(self)
+	c.ImageInstance = self.ImageInstance:Clone()
+	return c
+end
+
+local function GetResolution(id: string, overrideSize: Vector2?): Vector2?
+	if overrideSize then
+		return overrideSize
+	else
+		
+		local s, e = pcall(function(...)
+			return AssetService:CreateEditableImageAsync(id).Size
+		end)
+
+		if s then
+			return e
+		else
+			warn(e)
+		end
+	end
+
+	return nil
+end
+
+function ExImage.SetImage(self: ExImage, id: string, overrideSize: Vector2?)
+	id = "rbxassetid://" .. id
+	
+	self.ImageInstance.Image = id
+
+	self.RealSize = GetResolution(id, overrideSize) or Vector2.new()
+end
 
 --[=[
 	ExImage constructor
@@ -30,8 +72,6 @@ function ExImage.new(
 	isButton: boolean?,
 	overrideSize: Vector2?
 ): ExImage
-	id = "rbxassetid://" .. id
-
 	local ImageInstance = Instance.new("Image" .. (function()
 		if isButton == true then
 			return "Button"
@@ -39,24 +79,15 @@ function ExImage.new(
 			return "Label"
 		end
 	end)())
-	ImageInstance.Image = id
 
-	local s, e = pcall(function(...)
-		return AssetService:CreateEditableImageAsync(id).Size
-	end)
-
-	local size
-
-	if s then
-		size = overrideSize or e
-	else
-		size = overrideSize
-	end
-
-	local _self = {
-		RealSize = size,
+	local _self: ExImageStruct = {
+		RealSize = Vector2.new(),
 		ImageInstance = ImageInstance,
 	}
+
+	setmetatable(_self, { __index = ExImage })
+
+	_self:SetImage(id, overrideSize)
 
 	return _self
 end

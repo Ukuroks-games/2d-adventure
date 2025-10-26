@@ -165,25 +165,21 @@ function Control.Start(self: Control)
 		self.DestroyableObjects.Up = InputLib.WhileKeyPressed(w, {
 			self.ControllerSettings.Keyboard.Up,
 			self.ControllerSettings.Gamepad.Up,
-			Enum.KeyCode.Up,
 		})
 
 		self.DestroyableObjects.Down = InputLib.WhileKeyPressed(w, {
 			self.ControllerSettings.Keyboard.Down,
 			self.ControllerSettings.Gamepad.Down,
-			Enum.KeyCode.Down,
 		})
 
 		self.DestroyableObjects.Right = InputLib.WhileKeyPressed(w, {
 			self.ControllerSettings.Keyboard.Right,
 			self.ControllerSettings.Gamepad.Right,
-			Enum.KeyCode.Right,
 		})
 
 		self.DestroyableObjects.Left = InputLib.WhileKeyPressed(w, {
 			self.ControllerSettings.Keyboard.Left,
 			self.ControllerSettings.Gamepad.Left,
-			Enum.KeyCode.Left,
 		})
 
 		-- gamepad input

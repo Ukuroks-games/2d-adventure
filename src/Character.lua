@@ -148,6 +148,14 @@ function Character2d.WalkMoveRaw(
 	return t
 end
 
+function Character2d.Clone(self: Character2d): Character2d
+	local copy: Character2d = BaseCharacter.Clone(self)
+
+	copy:UpdateParent()
+
+	return copy
+end
+
 function Character2d.new(
 	Animations: AnimatedObject.Animations,
 	WalkSpeed: BaseCharacter.CharacterSpeed,
