@@ -1,0 +1,31 @@
+name: Tests
+
+on:
+  workflow_call:
+  
+  push:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'rojo-projects/**'
+      - 'Makefile'
+      - 'wally.toml'
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: BuildTests
+        run: make tests
+
+        # пока с тестами не определился пусть будет линтер
+      - name: Run tests
+        run: selene src/ tests/
+    

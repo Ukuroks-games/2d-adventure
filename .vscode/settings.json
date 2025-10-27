@@ -1,10 +1,22 @@
 {
-	"editor.insertSpaces": false,
+	
 	"[lua]": {
-		"editor.defaultFormatter": "JohnnyMorganz.stylua"
+		"editor.defaultFormatter": "JohnnyMorganz.stylua",
+		"editor.insertSpaces": false,
 	},
 	"[luau]": {
-		"editor.defaultFormatter": "JohnnyMorganz.stylua"
+		"editor.defaultFormatter": "JohnnyMorganz.stylua",
+		"editor.insertSpaces": false,
+	},
+	"[yaml]": {
+		"editor.insertSpaces": true,
+		"editor.tabSize": 2,
+		"editor.autoIndent": "advanced",
+		"diffEditor.ignoreTrimWhitespace": false,
+		"editor.defaultColorDecorators": "never",
+		"editor.quickSuggestions": {
+			"strings": "on"
+		}
 	},
 	"cSpell.enabled": true,
 	"cSpell.words": [
