@@ -50,10 +50,5 @@ jobs:
         run: make demo.rbxl -j$(npoc)
 
       - name: publish
-        run: |
-          curl --verbose --fail-with-body --location --request POST "https://apis.roblox.com/universes/v1/8228902512/places/81880122162557/versions?versionType=Published" \
-          --header "x-api-key: ${{ secrets.AUTOPUBLISH_KEY }}" \
-          --header 'Content-Type: application/octet-stream' \
-          --data-binary demo.rbxl
-    
+        run: make "KEY=${{ secrets.AUTOPUBLISH_KEY }}" publish-demo
   
