@@ -164,6 +164,13 @@ sourcemap.json:	$(GENERATE_SOURCEMAP).project.json PackagesTypes DevPackagesType
 # for manual run
 sourcemap:	clean-sourcemap	sourcemap.json
 
+KEY=
+publish-demo: demo.rbxl
+	curl --verbose --fail-with-body --location --request POST "https://apis.roblox.com/universes/v1/8228902512/places/81880122162557/versions?versionType=Published" \
+          --header "x-api-key: $(KEY)" \
+          --header 'Content-Type: application/octet-stream' \
+          --data-binary demo.rbxl
+
 
 clean-sourcemap:
 	$(RM) *.json

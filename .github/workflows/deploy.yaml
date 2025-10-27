@@ -1,0 +1,54 @@
+name: Deploy
+
+on:
+  release:
+    types: [published]
+
+
+jobs:
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tests
+        uses: ./.github/workflows/tests.yaml
+
+  PackagePublish:
+    name: Publish wally package
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Log in to wally
+        env:
+          WALLY_AUTH: ${{ secrets.WALLY_AUTH }}
+        run: |
+          mkdir ~/.wally
+          printenv WALLY_AUTH > ~/.wally/auth.toml
+
+      - name: Build and publish package
+        run: make publish -j$(npoc)
+
+  DemoPublish:
+    name: Publish demo
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Lint
+        run: make demo.rbxl -j$(npoc)
+
+      - name: publish
+        run: make "KEY=${{ secrets.AUTOPUBLISH_KEY }}" publish-demo
+  
