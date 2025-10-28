@@ -1,7 +1,7 @@
 {
 	"className": "AudioPlayer",
 	"properties": {
-		"AssetId": "rbxassetid://6563562192",
+		"Asset": "rbxassetid://6563562192",
 		"Looping": true,
 		"PlaybackSpeed": 0.866
 	}
