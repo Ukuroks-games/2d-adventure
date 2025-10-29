@@ -156,6 +156,15 @@ function Character2d.Clone(self: Character2d): Character2d
 	return copy
 end
 
+--[=[
+	@function new
+	@param Animations Animations
+	@param WalkSpeed CharacterSpeed
+	@param Size Vector3
+	@return Character2d
+
+	@within Character2d
+]=]
 function Character2d.new(
 	Animations: AnimatedObject.Animations,
 	WalkSpeed: BaseCharacter.CharacterSpeed,

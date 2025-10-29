@@ -58,4 +58,5 @@ function PhysicController.CalcCollide(self: PhysicController)
 		v:DonePhysicCalc()
 	end
 end
+
 return PhysicController

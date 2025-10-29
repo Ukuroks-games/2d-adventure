@@ -65,7 +65,8 @@ export type AnimatedObject =
 	& typeof(animatedObject)
 
 --[=[
-	@param self AnimatedObject
+
+	@return { Instance } -- List of Instances for [`ContentProvider:PreloadAsync`](https://create.roblox.com/docs/reference/engine/classes/ContentProvider#PreloadAsync)
 
 	@method Preload 
 
@@ -88,9 +89,8 @@ end
 --[=[
 	GetAnimation
 
-	@param self AnimatedObject
 	@param animationName string
-	@return found gif or nil
+	@return Animation? -- found gif or nil
 
 	@method GetAnimation
 

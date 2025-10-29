@@ -73,7 +73,10 @@ export type Control = typeof(setmetatable(
 ))
 
 --[=[
-		
+	Stay
+
+	@method IDLE
+	@within Control
 ]=]
 function Control.IDLE(self: Control, name: string?)
 	if self.MoveTween then
@@ -91,41 +94,91 @@ function Control.IDLE(self: Control, name: string?)
 	self.Player:SetAnimation("IDLE" .. (name or n[math.random(#n)]))
 end
 
+--[=[
+	Move up
+
+	@method Up
+	@within Control
+]=]
 function Control.Up(self: Control)
 	Control.Move(self, 0, 1)
 end
 
+--[=[
+	Move down
+
+	@method Down
+	@within Control
+]=]
 function Control.Down(self: Control)
 	Control.Move(self, 0, -1)
 end
 
+--[=[
+	Move Left
+
+	@method Left
+	@within Control
+]=]
 function Control.Left(self: Control)
 	Control.Move(self, -1, 0)
 end
 
+--[=[
+	Move right
+
+	@method Right
+	@within Control
+]=]
 function Control.Right(self: Control)
 	Control.Move(self, 1, 0)
 end
 
+--[=[
+	Move left and up
+	@method LeftUp
+	@within Control
+]=]
 function Control.LeftUp(self: Control)
 	Control.Move(self, -1, 1)
 end
 
+--[=[
+	Move left and down
+	@method LeftDown
+	@within Control
+]=]
 function Control.LeftDown(self: Control)
 	Control.Move(self, -1, -1)
 end
 
+--[=[
+	Move right and up
+	@method RightUp
+	@within Control
+]=]
 function Control.RightUp(self: Control)
 	Control.Move(self, 1, 1)
 end
 
+--[=[
+	Move right and down
+	@method RightDown
+	@within Control
+]=]
 function Control.RightDown(self: Control)
 	Control.Move(self, 1, -1)
 end
 
---[[
-	Move player
-]]
+--[=[
+	Move player. Working like joystick input: if `X` > 0 moving right else move left and if `X`=0 not move by `X` axis. Same with `Y`.
+
+	@param X number	-- x axis
+	@param Y number	-- y axis
+
+	@method Move
+	@within Control
+]=]
 function Control.Move(self: Control, X: number, Y: number)
 	if not self.Moving then
 		self.Moving = true
@@ -148,9 +201,12 @@ function Control.Move(self: Control, X: number, Y: number)
 	end
 end
 
---[[
+--[=[
 	Start game
-]]
+
+	@method Start
+	@within Control
+]=]
 function Control.Start(self: Control)
 	self.ControlThread = task.spawn(function()
 		self:IDLE()
@@ -325,6 +381,12 @@ function Control.Start(self: Control)
 	end)
 end
 
+--[=[
+	Set game to pause
+
+	@method Pause
+	@within Control
+]=]
 function Control.Pause(self: Control)
 	if self.DestroyableObjects.Up then
 		self.DestroyableObjects.Up.Pause()
@@ -343,6 +405,12 @@ function Control.Pause(self: Control)
 	end
 end
 
+--[=[
+	Resume game after `Pause`
+
+	@method Resume
+	@within Control
+]=]
 function Control.Resume(self: Control)
 	if self.DestroyableObjects.Up then
 		self.DestroyableObjects.Up.Resume()

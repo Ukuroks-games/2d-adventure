@@ -1,11 +1,5 @@
 --!strict
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Audio = require(script.Parent.Audio)
-local AudioEmitter =
-	require(ReplicatedStorage.Packages["2d-adventure"].Audio.AudioEmitter)
-local AudioListener =
-	require(ReplicatedStorage.Packages["2d-adventure"].Audio.AudioListener)
 local stdlib = require(script.Parent.Parent.stdlib)
 local mutex = stdlib.mutex
 
@@ -14,6 +8,9 @@ local defaultControls = require(script.Parent.defaultControls)
 local map = require(script.Parent.map)
 local player = require(script.Parent.player)
 local Control = require(script.Parent.Control)
+local Audio = require(script.Parent.Audio)
+local AudioEmitter = require(script.Parent.Audio.AudioEmitter)
+local AudioListener = require(script.Parent.Audio.AudioListener)
 
 --[=[
 	Класс игры
@@ -51,7 +48,7 @@ export type GameStruct = {
 	ControlThread: thread?,
 
 	AudioListener: typeof(AudioListener),
-	AudioEmitter: typeof(AudioEmitter)
+	AudioEmitter: typeof(AudioEmitter),
 } & Control.ControlStruct
 
 export type Game = GameStruct & typeof(Game) & Control.Control
@@ -86,7 +83,6 @@ end
 --[=[
 	Set current map
 
-	@param self Game
 	@param newMap Map
 
 	@method SetMap
@@ -101,7 +97,6 @@ end
 --[=[
 	Set player
 
-	@param self Game
 	@param newPlayer Player2d
 
 	@method SetPlayer
@@ -114,8 +109,6 @@ end
 
 --[=[
 	Loading game
-
-	@param self Game
 
 	@method Loading
 	@within Game
@@ -183,7 +176,7 @@ function Game.new(
 		ControlThread = nil,
 		ControllerSettings = controllerSettings or defaultControls,
 		AudioEmitter = table.clone(AudioEmitter),
-		AudioListener = table.clone(AudioListener)
+		AudioListener = table.clone(AudioListener),
 	}
 
 	self.Player:SetParent(self.Frame)
@@ -193,12 +186,11 @@ function Game.new(
 	setmetatable(self, { __index = Game })
 
 	local cAudio = table.clone(self.AudioListener.Audio) :: typeof(Audio)
-	cAudio.DefaultGroup  ..= tostring(self)
+	cAudio.DefaultGroup ..= tostring(self)
 	self.AudioListener.Audio = cAudio
 	self.AudioListener.Audio = cAudio
 
 	return self :: Game
 end
-
 
 return Game

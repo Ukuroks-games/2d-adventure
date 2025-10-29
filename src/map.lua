@@ -14,9 +14,11 @@ local physicObject = require(script.Parent.physicObject)
 local player2d = require(script.Parent.player)
 local PhysicController = require(script.Parent.PhysicController)
 
---[[
+--[=[
 	Map class
-]]
+
+	@class Map
+]=]
 local map = setmetatable({}, { __index = PhysicController })
 
 export type MapStruct = {
@@ -243,6 +245,12 @@ function map.SetPlayer(
 	table.insert(self.Objects, newPlayer) -- add player to objects for enable collision for player
 end
 
+--[=[
+	@param Progress NumberValue
+
+	@method Loading
+	@within Map
+]=]
 function map.Loading(self: Map, Progress: NumberValue)
 	local i = 0
 	local PreloadList = { self.Image.ImageInstance }

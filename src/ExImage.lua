@@ -27,10 +27,16 @@ export type ExImage = typeof(setmetatable(
 	{ __index = ExImage }
 ))
 
+--[=[
+	Destroy `ExImage`
+]=]
 function ExImage.Destroy(self: ExImage)
 	self.ImageInstance:Destroy()
 end
 
+--[=[
+	Clone `ExImage`
+]=]
 function ExImage.Clone(self: ExImage): ExImage
 	local c = table.clone(self)
 	c.ImageInstance = self.ImageInstance:Clone()
@@ -56,6 +62,9 @@ local function GetResolution(id: string, overrideSize: Vector2?): Vector2?
 	return nil
 end
 
+--[=[
+	Set id and recalc size
+]=]
 function ExImage.SetImage(self: ExImage, id: string, overrideSize: Vector2?)
 	id = "rbxassetid://" .. id
 	

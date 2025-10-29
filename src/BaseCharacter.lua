@@ -20,6 +20,10 @@ local BaseCharacter2d = setmetatable({}, {
 	__index = physicObject,
 })
 
+--[=[
+	@type CharacterSpeed {X: number, Y: number, Calculated: Vector2?}
+	@within BaseCharacter2d
+]=]
 export type CharacterSpeed = {
 	X: number,
 	Y: number,
@@ -30,10 +34,9 @@ export type CharacterSpeed = {
 	Базовый класс персонажа
 ]]
 export type BaseCharacter2dStruct = {
-
-	--[[
+	--[=[
 		Скорость ходьбы
-	]]
+	]=]
 	WalkSpeed: CharacterSpeed,
 
 	Move: RBXScriptSignal,
@@ -58,7 +61,14 @@ function BaseCharacter2d.Destroy(self: BaseCharacter2d)
 end
 
 --[=[
+	@param X number
+	@param Y number
+	@param RelativeObject ExImage?
+	@param cooldownTime number?
+	@return Tween?
 
+	@method GetMoveTween
+	@within BaseCharacter2d
 ]=]
 function BaseCharacter2d.GetMoveTween(
 	self: BaseCharacter2d,
@@ -117,9 +127,17 @@ function BaseCharacter2d.NormalizeXY(X: number, Y: number): (number, number)
 	end
 end
 
---[[
+--[=[
+	@param X number
+	@param Y number
+	@param RelativeObject ExImage
+	@param collideTime number?
 
-]]
+	@return Tween?
+
+	@method WalkMoveRaw
+	@within BaseCharacter2d
+]=]
 function BaseCharacter2d.WalkMoveRaw(
 	self: BaseCharacter2d,
 	X: number,
@@ -144,7 +162,13 @@ function BaseCharacter2d.WalkMoveRaw(
 end
 
 --[=[
+	@param X number
+	@param Y number
+	@param RelativeObject ExImage
+	@param collideTime number?
 
+	@method WalkMove
+	@within BaseCharacter2d
 ]=]
 function BaseCharacter2d.WalkMove(
 	self: BaseCharacter2d,

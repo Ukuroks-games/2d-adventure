@@ -17,6 +17,11 @@ Audio.Folder = stdlib.utility.CreateOrFindInstance(
 	workspace
 ) :: Folder
 
+--[=[
+	@prop DefaultGroup string
+	@within Audio
+	@since v0.6.2
+]=]
 Audio.DefaultGroup = "Adventure2dAudio"
 
 return Audio

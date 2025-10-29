@@ -5,7 +5,9 @@ local ExImage = require(script.Parent.ExImage)
 local physicObject = require(script.Parent.physicObject)
 
 --[=[
-	inherited from PhysicObject
+	Just static object.
+
+	inherited from PhysicObject.
 
 	@class Object2d
 ]=]

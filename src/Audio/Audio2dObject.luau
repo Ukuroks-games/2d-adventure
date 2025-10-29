@@ -35,8 +35,6 @@ export type Audio2dObject = typeof(setmetatable(
 
 --[=[
 
-	@param self Audio2dObject
-
 	@method UpdatePosition
 	@within Audio2dObject
 ]=]

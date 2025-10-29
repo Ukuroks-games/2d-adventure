@@ -9,7 +9,7 @@ local physic = require(script.Parent.physic)
 local mutex = stdlib.mutex
 
 --[=[
-	Physic object
+	Physic object. Abstract class, not usable.
 
 	interface for another classes, that can have physic
 
@@ -369,9 +369,14 @@ function physicObject.SetTouchMsg(
 	self.TouchMsgMutex:unlock()
 end
 
---[[
-	Get `PhysicObject` coordinates
-]]
+--[=[
+	Get physicImage `PhysicObject` coordinates
+
+	@return Vector2 -- In pixels
+
+	@method GetCoordinates
+	@within PhysicObject
+]=]
 function physicObject.GetCoordinates(self: PhysicObject): Vector2
 	if self.background then
 		return Calc.ReturnPosition(
@@ -384,13 +389,18 @@ function physicObject.GetCoordinates(self: PhysicObject): Vector2
 			self.background
 		)
 	else -- без фона не получится посчитать
-		error("self.background = nil") -- ошибка чтоб ненадобыло возвращать что-либо
+		error("self.background = nil") -- ошибка чтоб ненадо было возвращать что-либо
 	end
 end
 
---[[
-	Get `PhysicObject` coordinates
-]]
+--[=[
+	Get center of `physicImage` of `PhysicObject` coordinates
+
+	@return Vector2 -- in pixels
+
+	@method GetCenterCoordinates
+	@within PhysicObject
+]=]
 function physicObject.GetCenterCoordinates(self: PhysicObject): Vector2
 	if self.background then
 		return Calc.ReturnPosition(
