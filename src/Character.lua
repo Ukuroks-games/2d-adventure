@@ -143,6 +143,8 @@ function Character2d.WalkMoveRaw(
 				end
 			end
 		)
+	else
+		warn("Tween not been created")
 	end
 
 	return t

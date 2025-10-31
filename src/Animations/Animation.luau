@@ -44,6 +44,17 @@ function Animation.Start(self: Animation)
 end
 
 --[=[
+	@method Clone
+	@within Animation
+]=]
+function Animation.Clone(self: Animation): Animation
+	return setmetatable({
+		gif = self.gif:Clone(),
+		audio = self.audio:Clone()
+	}, {__index = Animation})
+end
+
+--[=[
 	Constructor
 
 	@param gif Func

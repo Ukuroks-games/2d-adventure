@@ -3,6 +3,7 @@
 local Animation = require(script.Animations.Animation)
 local AudioEmitter = require(script.Audio.AudioEmitter)
 local AudioListener = require(script.Audio.AudioListener)
+local Calc = require(script.Calc)
 local Character = require(script.Character)
 local Game = require(script.game)
 local Object2d = require(script.Object2d)
@@ -27,7 +28,8 @@ local lib = {
 	config = config,
 	AudioEmitter = AudioEmitter,
 	AudioListener = AudioListener,
-	Animation = Animation
+	Animation = Animation,
+	Calc = Calc
 }
 
 export type Game = Game.Game

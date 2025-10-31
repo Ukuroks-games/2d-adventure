@@ -244,13 +244,15 @@ function Control.Start(self: Control)
 
 		self.DestroyableObjects.Gamepad = InputLib.WhileKeyPressed(
 			function(InputObject: InputObject, a1: boolean)
-				if
-					Players.LocalPlayer.Character.Humanoid.MoveDirection
-					~= Vector3.new()
-				then
-					GamepadThumbStick1.Value = PlayerModule:GetControls()
-						:GetMoveVector()
-					return true
+				if Players.LocalPlayer.Character then
+					if
+						(Players.LocalPlayer.Character:WaitForChild("Humanoid") :: Humanoid).MoveDirection
+						~= Vector3.new()
+					then
+						GamepadThumbStick1.Value = PlayerModule:GetControls()
+							:GetMoveVector()
+						return true
+					end
 				end
 
 				return false

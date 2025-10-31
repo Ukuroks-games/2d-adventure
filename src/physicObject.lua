@@ -226,24 +226,34 @@ function physicObject.SetBackground(
 	self.background = background
 end
 
---[[
+--[=[
+	Set object position on image in pixels
 
-]]
+	@method SetPosition
+	@within PhysicObject
+]=]
 function physicObject.SetPosition(self: PhysicObject, pos: Vector2)
 	self:SetPositionX(pos.X)
 	self:SetPositionY(pos.Y)
 end
 
---[[
-	Set physicObject position.
-]]
+--[=[
+	Set physicObject position  on image in pixels
+
+
+	@method SetPositionX
+	@within PhysicObject
+]=]
 function physicObject.SetPositionX(self: PhysicObject, pos: number)
 	self.physicImage.Position =
 		UDim2.fromOffset(pos, self.physicImage.Position.Y.Offset)
 end
 
 --[[
-	Set physicObject position.
+	Set physicObject position on image in pixels
+
+	@method SetPositionY
+	@within PhysicObject
 ]]
 function physicObject.SetPositionY(self: PhysicObject, pos: number)
 	self.physicImage.Position = UDim2.fromOffset(

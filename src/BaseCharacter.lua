@@ -176,10 +176,20 @@ function BaseCharacter2d.WalkMove(
 	Y: number,
 	RelativeObject: ExImage.ExImage?,
 	cooldownTime: number?
-)
+): Tween?
 	X, Y = self.NormalizeXY(X, Y)
 
 	return self:WalkMoveRaw(X, Y, RelativeObject, cooldownTime)
+end
+
+function BaseCharacter2d.WalkTo(self: BaseCharacter2d, pos: Vector2)
+	local t = self:WalkMove(pos.X, pos.Y,{ImageInstance = self.physicImage}, 0.1)
+
+	if t then
+		t:Play()
+	else
+		warn("Tween not been created")
+	end
 end
 
 --[=[
