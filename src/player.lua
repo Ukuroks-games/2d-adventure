@@ -61,7 +61,7 @@ function player2d.new(
 
 	self.InFocus = true
 
-	setmetatable(self, {
+	setmetatable(self :: {}, {
 		__index = player2d,
 	})
 
