@@ -108,7 +108,7 @@ end
 ]=]
 function BaseCharacter2d.NormalizeXY(X: number, Y: number): (number, number)
 	-- Привидение значений X и Y к [-1; 1]
-	if not (X == 0 and Y == 0) then
+	if not (X == 0 and Y == 0) then	-- because 0/0 is NaN
 		local a = math.atan(Y / X)
 
 		local function sign(n: number): number
@@ -121,7 +121,7 @@ function BaseCharacter2d.NormalizeXY(X: number, Y: number): (number, number)
 			return r
 		end
 
-		return math.cos(a) * X, math.sin(a) * sign(X) * math.abs(Y)
+		return math.cos(a) * X * -1, math.sin(a) * sign(X) * math.abs(Y) * -1
 	else
 		return 0, 0
 	end

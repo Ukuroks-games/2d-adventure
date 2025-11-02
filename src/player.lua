@@ -47,6 +47,11 @@ function player2d.SetPositionRaw(self: Player2d, _: Vector2)
 	) -- move to center PlayerFrame
 end
 
+function player2d.NormalizeXY(X: number, Y: number): (number, number)
+	X, Y = BaseCharacter.NormalizeXY(X, Y)
+	return X * -1, Y * -1
+end
+
 --[=[
 	Player2d constructor
 
