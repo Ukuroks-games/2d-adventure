@@ -6,7 +6,9 @@ local TweenService = game:GetService("TweenService")
 
 --
 
+local Calc = require(script.Parent.Calc)
 local ExImage = require(script.Parent.ExImage)
+local Object2d = require(script.Parent.Object2d)
 local physicObject = require(script.Parent.physicObject)
 
 --[=[
@@ -17,7 +19,7 @@ local physicObject = require(script.Parent.physicObject)
 	@class BaseCharacter2d
 ]=]
 local BaseCharacter2d = setmetatable({}, {
-	__index = physicObject,
+	__index = Object2d,
 })
 
 --[=[
@@ -50,14 +52,14 @@ export type BaseCharacter2dStruct = {
 export type BaseCharacter2d =
 	BaseCharacter2dStruct
 	& typeof(BaseCharacter2d)
-	& physicObject.PhysicObject
+	& Object2d.Object2d
 
 --[[
 	Destroy player
 ]]
 function BaseCharacter2d.Destroy(self: BaseCharacter2d)
 	self.MoveEvent:Destroy()
-	physicObject.Destroy(self)
+	Object2d.Destroy(self)
 end
 
 --[=[
@@ -84,18 +86,16 @@ function BaseCharacter2d.GetMoveTween(
 
 		tween = TweenService:Create(instance, TweenInfo.new(cooldownTime), {
 			["Position"] = UDim2.new(
-				UDim.new(
-					instance.Position.X.Scale,
-					instance.Position.X.Offset
-						- (X * self.WalkSpeed.Calculated.X)
-				),
-				UDim.new(
-					instance.Position.Y.Scale,
-					instance.Position.Y.Offset
-						+ (Y * self.WalkSpeed.Calculated.Y)
-				)
+				instance.Position.X.Scale,
+				instance.Position.X.Offset - (X * self.WalkSpeed.Calculated.X),
+				instance.Position.Y.Scale,
+				instance.Position.Y.Offset + (Y * self.WalkSpeed.Calculated.Y)
 			),
 		})
+
+		tween.Completed:Connect(function(a0: Enum.PlaybackState)
+			self.AnchorPosition = Calc.ReturnPosition(instance.AbsolutePosition, self.background)
+		end)
 	else
 		warn("self.WalkSpeed not been calculated")
 	end
@@ -108,7 +108,7 @@ end
 ]=]
 function BaseCharacter2d.NormalizeXY(X: number, Y: number): (number, number)
 	-- Привидение значений X и Y к [-1; 1]
-	if not (X == 0 and Y == 0) then	-- because 0/0 is NaN
+	if not (X == 0 and Y == 0) then -- because 0/0 is NaN
 		local a = math.atan(Y / X)
 
 		local function sign(n: number): number
@@ -183,7 +183,8 @@ function BaseCharacter2d.WalkMove(
 end
 
 function BaseCharacter2d.WalkTo(self: BaseCharacter2d, pos: Vector2)
-	local t = self:WalkMove(pos.X, pos.Y,{ImageInstance = self.physicImage}, 0.1)
+	local t =
+		self:WalkMove(pos.X, pos.Y, { ImageInstance = self.physicImage }, 0.1)
 
 	if t then
 		t:Play()

@@ -14,6 +14,7 @@ local Camera2d = require(script.camera2d)
 local GifInfo = require(script.gifInfo)
 local ExImage = require(script.ExImage)
 local config = require(script.config)
+local physicObject = require(script.physicObject)
 
 local lib = {
 	Game = Game,
@@ -40,5 +41,6 @@ export type Camera2d = Camera2d.Camera2d
 export type ExImage = ExImage.ExImage
 export type Animation = Animation.Animation
 export type Character2d = Character.Character2d
+export type PhysicObject = physicObject.PhysicObject
 
 return lib

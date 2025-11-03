@@ -17,7 +17,7 @@ local camera2d = adventure2d.Camera2d
 local map = adventure2d.Map
 local ExImage = adventure2d.ExImage
 
-adventure2d.config.ShowHitboxes = true
+--adventure2d.config.ShowHitboxes = true
 
 local GameFrame = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
@@ -44,13 +44,12 @@ local changeMap = Object2d.new(
 
 local shee = adventure2d.Character2d.new(
 	stdlib.utility.clone(animations),
-	{X = 9, Y= 9},
+	{ X = 9, Y = 9 },
 	Vector3.new(24, 50, 8)
 )
-shee:SetPosition(Vector2.new(300, 140))
 shee:SetAnimation("IDLE")
 shee.Anchored = true
-
+shee.AnchorPosition = Vector2.new(200, 300)
 
 local map1 = map.new(Vector2.new(1, 1), cam, "114575775575709", {
 	Object2d.new( -- door
@@ -83,19 +82,21 @@ local map2 = map.new(Vector2.new(1, 1), cam, "113837532573611", {
 
 local _game = Game.new(GameFrame, player, map1)
 
-
 local a = adventure2d.Calc.CalcSize(
-			Vector3.new(_game.Player.WalkSpeed.X, _game.Player.WalkSpeed.Y, 0),
-			map1.Image
-		)
+	Vector3.new(_game.Player.WalkSpeed.X, _game.Player.WalkSpeed.Y, 0),
+	map1.Image
+)
 shee.WalkSpeed.Calculated = Vector2.new(a.X, a.Y)
 
 _game:Loading().Done:Wait()
 
 _game:Start()
 
-changeMap.Touched:Connect(function(_)
-	_game:SetMap(map2)
+
+changeMap.Touched:Connect(function(obj: adventure2d.PhysicObject)
+	if obj.ID == player.ID then
+		_game:SetMap(map2)
+	end
 end)
 
 ChangeBack2.Touched:Connect(function()
@@ -137,6 +138,7 @@ shee.Touched:Connect(function(_)
 		_game:Resume()
 		Paused = false
 		d.MainFrame.Visible = false
+
 		shee:WalkTo(Vector2.new(1, 1))
 	end
 end)

@@ -1,8 +1,10 @@
 --!strict
+local StarterPlayer = game:GetService("StarterPlayer")
 
 local AnimatedObject = require(script.Parent.AnimatedObject)
 local BaseCharacter = require(script.Parent.BaseCharacter)
 local Character = require(script.Parent.Character)
+local physicObject = require(script.Parent.physicObject)
 
 --[=[
 	Player class
@@ -52,6 +54,8 @@ function player2d.NormalizeXY(X: number, Y: number): (number, number)
 	return X * -1, Y * -1
 end
 
+player2d.SetPosition = physicObject.SetPosition
+
 --[=[
 	Player2d constructor
 
@@ -64,6 +68,7 @@ function player2d.new(
 ): Player2d
 	local self = Character.new(Animations, WalkSpeed, Size)
 
+	self.AnchorPosition = Vector2.new()
 	self.InFocus = true
 
 	setmetatable(self :: {}, {
