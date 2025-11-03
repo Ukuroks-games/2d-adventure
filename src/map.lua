@@ -289,7 +289,7 @@ function map.new(
 		cam = cam,
 		ObjectMovement = ObjectMovementEvent.Event,
 		ObjectMovementEvent = ObjectMovementEvent,
-		StartPosition = startPosition,
+		StartPosition = startPosition or Vector2.new(),
 		PlayerSize = playerSize,
 		Connections = {},
 		PlayerIndex = nil,
