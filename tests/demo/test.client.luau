@@ -4,11 +4,9 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterPlayer = game:GetService("StarterPlayer")
 
-local animations = require(StarterPlayer.StarterPlayerScripts.shared.animations)
 local player = require(StarterPlayer.StarterPlayerScripts.shared.player)
 local dialoglib = require(ReplicatedStorage.DevPackages.dialoglib)
 local InputLib = require(ReplicatedStorage.Packages.InputLib)
-local stdlib = require(ReplicatedStorage.Packages.stdlib)
 local adventure2d = require(ReplicatedStorage.Packages["2d-adventure"])
 
 local Game = adventure2d.Game
@@ -34,10 +32,13 @@ local Pause = Players.LocalPlayer
 	:WaitForChild("ScreenUI")
 	:WaitForChild("Pause") :: TextButton
 
-local Coords = Players.LocalPlayer
-	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenUI")
-	:WaitForChild("Coords") :: TextLabel
+local Coords
+if adventure2d.config.ShowHitboxes then
+	Coords = Players.LocalPlayer
+		:WaitForChild("PlayerGui")
+		:WaitForChild("ScreenUI")
+		:WaitForChild("Coords") :: TextLabel
+end
 
 local cam = camera2d.new(1)
 
@@ -47,14 +48,11 @@ local changeMap = Object2d.new(
 	ExImage.new("84486373084684")
 )
 
-local shee = adventure2d.Character2d.new(
-	stdlib.utility.clone(animations),
-	{ X = 9, Y = 9 },
-	Vector3.new(24, 50, 8)
+local shee = Object2d.new(
+	Vector2.new(300, 140),
+	Vector3.new(24, 50, 8),
+	ExImage.new("75550147574274")
 )
-shee:SetAnimation("IDLE")
-shee.Anchored = true
-shee.AnchorPosition = Vector2.new(200, 300)
 
 local map1 = map.new(Vector2.new(1, 1), cam, "114575775575709", {
 	Object2d.new( -- door
@@ -83,15 +81,9 @@ local ChangeBack2 = adventure2d.Object2d.new(
 
 local map2 = map.new(Vector2.new(1, 1), cam, "113837532573611", {
 	ChangeBack2,
-}, Vector2.new(80, 300))
+}, Vector2.new(80, 310))
 
 local _game = Game.new(GameFrame, player, map1)
-
-local a = adventure2d.Calc.CalcSize(
-	Vector3.new(_game.Player.WalkSpeed.X, _game.Player.WalkSpeed.Y, 0),
-	map1.Image
-)
-shee.WalkSpeed.Calculated = Vector2.new(a.X, a.Y)
 
 _game:Loading().Done:Wait()
 
@@ -144,8 +136,6 @@ shee.Touched:Connect(function(_)
 		_game:Resume()
 		Paused = false
 		d.MainFrame.Visible = false
-
-		shee:WalkTo(Vector2.new(1, 1))
 	end
 end)
 
@@ -158,6 +148,8 @@ Pause.MouseButton1Click:Connect(function()
 	Paused = not Paused
 end)
 
-player.Move:Connect(function(_)
-	Coords.Text = tostring(player:GetCoordinates())
-end)
+if Coords then
+	player.Move:Connect(function(_)
+		Coords.Text = tostring(player:GetCoordinates())
+	end)
+end
