@@ -32,6 +32,14 @@ local Pause = Players.LocalPlayer
 	:WaitForChild("ScreenUI")
 	:WaitForChild("Pause") :: TextButton
 
+local Coords
+if adventure2d.config.ShowHitboxes then
+	Coords = Players.LocalPlayer
+		:WaitForChild("PlayerGui")
+		:WaitForChild("ScreenUI")
+		:WaitForChild("Coords") :: TextLabel
+end
+
 local cam = camera2d.new(1)
 
 local changeMap = Object2d.new(
@@ -73,7 +81,7 @@ local ChangeBack2 = adventure2d.Object2d.new(
 
 local map2 = map.new(Vector2.new(1, 1), cam, "113837532573611", {
 	ChangeBack2,
-})
+}, Vector2.new(80, 310))
 
 local _game = Game.new(GameFrame, player, map1)
 
@@ -81,12 +89,16 @@ _game:Loading().Done:Wait()
 
 _game:Start()
 
-changeMap.Touched:Connect(function(_)
-	_game:SetMap(map2)
+changeMap.Touched:Connect(function(obj: adventure2d.PhysicObject)
+	if obj.ID == player.ID then
+		_game:SetMap(map2)
+	end
 end)
 
-ChangeBack2.Touched:Connect(function()
-	_game:SetMap(map1)
+ChangeBack2.Touched:Connect(function(obj: adventure2d.PhysicObject)
+	if obj.ID == player.ID then
+		_game:SetMap(map1)
+	end
 end)
 
 local faceId: string = "rbxassetid://117978347308606"
@@ -135,3 +147,9 @@ Pause.MouseButton1Click:Connect(function()
 	end
 	Paused = not Paused
 end)
+
+if Coords then
+	player.Move:Connect(function(_)
+		Coords.Text = tostring(player:GetCoordinates())
+	end)
+end

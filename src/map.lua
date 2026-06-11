@@ -13,6 +13,7 @@ local physic = require(script.Parent.physic)
 local physicObject = require(script.Parent.physicObject)
 local player2d = require(script.Parent.player)
 local PhysicController = require(script.Parent.PhysicController)
+local player = require(script.Parent.player)
 
 --[=[
 	Map class
@@ -51,10 +52,9 @@ function map.CalcPlayerPositionAbsolute(
 	player: player2d.Player2d,
 	pos: Vector2
 ): Vector2
-	return Vector2.new(
-		(player.Image.ImageInstance.AbsolutePosition.X - player.background.ImageInstance.AbsolutePosition.X) - pos.X,
-		(player.Image.ImageInstance.AbsolutePosition.Y - player.background.ImageInstance.AbsolutePosition.Y) - pos.Y
-	)
+	return player.Image.ImageInstance.AbsolutePosition
+		- (self.Image.ImageInstance.AbsolutePosition :: Vector2)
+		- pos
 end
 
 --[[
@@ -112,7 +112,9 @@ function map.SetPlayerPosition(
 	player: player2d.Player2d,
 	pos: Vector2
 )
+	self.Image.ImageInstance.Position = UDim2.fromScale(0,0)
 	local p = map.CalcPlayerPosition(self, player, pos)
+	print("get", Calc.ReturnPosition(p, self.Image), "from", pos)
 	self.Image.ImageInstance.Position = UDim2.fromOffset(p.X, p.Y)
 end
 
@@ -138,17 +140,14 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 
 	self:SetPlayer(Player)
 
-	Player:SetPosition(Vector2.new())
-
 	for _, v in pairs(self.Objects) do
 		v:SetBackground(self.Image)
 	end
 
 	CalcPositions() -- первоначальный расчет
 
-	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
 
-	Player:CalcSizeAndPos()
+	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
 
 	--[[
 		расчет после изменения фрейма игры
@@ -241,6 +240,7 @@ function map.SetPlayer(
 	end
 
 	newPlayer.Size = self.PlayerSize or newPlayer.Size
+	newPlayer.background = self.Image
 
 	table.insert(self.Objects, newPlayer) -- add player to objects for enable collision for player
 end
@@ -289,7 +289,7 @@ function map.new(
 		cam = cam,
 		ObjectMovement = ObjectMovementEvent.Event,
 		ObjectMovementEvent = ObjectMovementEvent,
-		StartPosition = startPosition,
+		StartPosition = startPosition or Vector2.new(),
 		PlayerSize = playerSize,
 		Connections = {},
 		PlayerIndex = nil,

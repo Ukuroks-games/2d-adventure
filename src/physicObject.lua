@@ -226,24 +226,34 @@ function physicObject.SetBackground(
 	self.background = background
 end
 
---[[
+--[=[
+	Set object position on image in pixels
 
-]]
+	@method SetPosition
+	@within PhysicObject
+]=]
 function physicObject.SetPosition(self: PhysicObject, pos: Vector2)
 	self:SetPositionX(pos.X)
 	self:SetPositionY(pos.Y)
 end
 
---[[
-	Set physicObject position.
-]]
+--[=[
+	Set physicObject position  on image in pixels
+
+
+	@method SetPositionX
+	@within PhysicObject
+]=]
 function physicObject.SetPositionX(self: PhysicObject, pos: number)
 	self.physicImage.Position =
 		UDim2.fromOffset(pos, self.physicImage.Position.Y.Offset)
 end
 
 --[[
-	Set physicObject position.
+	Set physicObject position on image in pixels
+
+	@method SetPositionY
+	@within PhysicObject
 ]]
 function physicObject.SetPositionY(self: PhysicObject, pos: number)
 	self.physicImage.Position = UDim2.fromOffset(
@@ -380,12 +390,7 @@ end
 function physicObject.GetCoordinates(self: PhysicObject): Vector2
 	if self.background then
 		return Calc.ReturnPosition(
-			Vector2.new(
-				self.physicImage.AbsolutePosition.X
-					- self.background.ImageInstance.AbsolutePosition.X,
-				self.physicImage.AbsolutePosition.Y
-					- self.background.ImageInstance.AbsolutePosition.Y
-			),
+			self.Image.ImageInstance.AbsolutePosition - self.background.ImageInstance.AbsolutePosition,
 			self.background
 		)
 	else -- без фона не получится посчитать
@@ -404,14 +409,7 @@ end
 function physicObject.GetCenterCoordinates(self: PhysicObject): Vector2
 	if self.background then
 		return Calc.ReturnPosition(
-			Vector2.new(
-				self.physicImage.AbsolutePosition.X
-					- self.background.ImageInstance.AbsolutePosition.X
-					+ (self.physicImage.AbsoluteSize.X / 2),
-				self.physicImage.AbsolutePosition.Y
-					- self.background.ImageInstance.AbsolutePosition.Y
-					+ (self.physicImage.AbsoluteSize.Y / 2)
-			),
+			self.physicImage.AbsolutePosition - (self.physicImage.AbsoluteSize / Vector2.new(2,2)),
 			self.background
 		)
 	else -- без фона не получится посчитать
@@ -508,13 +506,13 @@ function physicObject.CalcTouchedSide(self: PhysicObject, obj: PhysicObject)
 	end
 end
 
-function physicObject.Collide(this: PhysicObject, obj: PhysicObject)
+function physicObject.Collide(self: PhysicObject, obj: PhysicObject)
 	if
-		not this.Anchored
-		and this.PhysicMode :: number >= (physicObject.PhysicMode.CanCollide :: number)
+		not self.Anchored
+		and self.PhysicMode :: number >= (physicObject.PhysicMode.CanCollide :: number)
 		and obj.PhysicMode :: number >= physicObject.PhysicMode.CanCollide
 	then
-		this.TouchedSideMutex:wait()
+		self.TouchedSideMutex:wait()
 
 		local function calc(s: PhysicObject, b: PhysicObject, m: number)
 			local X, Y =
@@ -543,12 +541,12 @@ function physicObject.Collide(this: PhysicObject, obj: PhysicObject)
 			s:SetPositionRaw(Vector2.new(X, Y))
 		end
 
-		if not obj.Anchored and physicObject.GetTouchMsg(obj, this) then
-			local a = this :: PhysicObject
+		if not obj.Anchored and physicObject.GetTouchMsg(obj, self) then
+			local a = self :: PhysicObject
 			calc(a, obj, 2)
 			a:SetTouchMsg(obj)
 		else
-			calc(this :: PhysicObject, obj, 1)
+			calc(self :: PhysicObject, obj, 1)
 		end
 	end
 end
@@ -612,7 +610,7 @@ function physicObject.new(
 ): PhysicObject
 	local TouchedEvent = Instance.new("BindableEvent")
 
-	local this: PhysicObjectStruct = {
+	local self: PhysicObjectStruct = {
 		Touched = TouchedEvent.Event,
 		TouchedEvent = TouchedEvent,
 		physicImage = Instance.new("Frame"),
@@ -647,7 +645,7 @@ function physicObject.new(
 
 	physicObject.Id += 1
 
-	return setup(this)
+	return setup(self)
 end
 
 return physicObject

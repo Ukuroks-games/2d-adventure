@@ -56,6 +56,31 @@ function Character2d.WalkMoveRaw(
 		self.MoveStopConnection = nil
 	end
 
+	local t =
+		BaseCharacter.WalkMoveRaw(self, X, Y, RelativeObject, cooldownTime)
+
+	if t then
+		self.MoveStopConnection = t.Completed:Connect(
+			function(state: Enum.PlaybackState)
+				if state == Enum.PlaybackState.Completed then
+					self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
+				end
+			end
+		)
+	else
+		warn("Tween not been created")
+	end
+
+	return t
+end
+
+function Character2d.WalkMove(
+	self: Character2d,
+	X: number,
+	Y: number,
+	RelativeObject: ExImage.ExImage,
+	cooldownTime: number?
+): Tween?
 	local touchedSide = self:GetTouchedSide()
 
 	local function CheckCanMoveToSide(side: physicObject.TouchSide): boolean
@@ -132,20 +157,9 @@ function Character2d.WalkMoveRaw(
 
 	self:SetAnimation(animationName)
 
-	local t =
-		BaseCharacter.WalkMoveRaw(self, X, Y, RelativeObject, cooldownTime)
+	X, Y = self.NormalizeXY(X, Y)
 
-	if t then
-		self.MoveStopConnection = t.Completed:Connect(
-			function(state: Enum.PlaybackState)
-				if state == Enum.PlaybackState.Completed then
-					self:SetAnimation("Stay" .. self.CurrentAnimation:sub(5))
-				end
-			end
-		)
-	end
-
-	return t
+	return self:WalkMoveRaw(X, Y, RelativeObject, cooldownTime)
 end
 
 function Character2d.Clone(self: Character2d): Character2d
