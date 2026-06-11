@@ -101,7 +101,7 @@ end
 	@within Control
 ]=]
 function Control.Up(self: Control)
-	Control.Move(self, 0, 1)
+	self:Move(0, 1)
 end
 
 --[=[
@@ -111,7 +111,7 @@ end
 	@within Control
 ]=]
 function Control.Down(self: Control)
-	Control.Move(self, 0, -1)
+	self:Move(0, -1)
 end
 
 --[=[
@@ -121,7 +121,7 @@ end
 	@within Control
 ]=]
 function Control.Left(self: Control)
-	Control.Move(self, -1, 0)
+	self:Move(-1, 0)
 end
 
 --[=[
@@ -131,7 +131,7 @@ end
 	@within Control
 ]=]
 function Control.Right(self: Control)
-	Control.Move(self, 1, 0)
+	self:Move(1, 0)
 end
 
 --[=[
@@ -140,7 +140,7 @@ end
 	@within Control
 ]=]
 function Control.LeftUp(self: Control)
-	Control.Move(self, -1, 1)
+	self:Move(-1, 1)
 end
 
 --[=[
@@ -149,7 +149,7 @@ end
 	@within Control
 ]=]
 function Control.LeftDown(self: Control)
-	Control.Move(self, -1, -1)
+	self:Move(-1, -1)
 end
 
 --[=[
@@ -158,7 +158,7 @@ end
 	@within Control
 ]=]
 function Control.RightUp(self: Control)
-	Control.Move(self, 1, 1)
+	self:Move(1, 1)
 end
 
 --[=[
@@ -167,7 +167,7 @@ end
 	@within Control
 ]=]
 function Control.RightDown(self: Control)
-	Control.Move(self, 1, -1)
+	self:Move(1, -1)
 end
 
 --[=[

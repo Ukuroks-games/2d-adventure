@@ -506,13 +506,13 @@ function physicObject.CalcTouchedSide(self: PhysicObject, obj: PhysicObject)
 	end
 end
 
-function physicObject.Collide(this: PhysicObject, obj: PhysicObject)
+function physicObject.Collide(self: PhysicObject, obj: PhysicObject)
 	if
-		not this.Anchored
-		and this.PhysicMode :: number >= (physicObject.PhysicMode.CanCollide :: number)
+		not self.Anchored
+		and self.PhysicMode :: number >= (physicObject.PhysicMode.CanCollide :: number)
 		and obj.PhysicMode :: number >= physicObject.PhysicMode.CanCollide
 	then
-		this.TouchedSideMutex:wait()
+		self.TouchedSideMutex:wait()
 
 		local function calc(s: PhysicObject, b: PhysicObject, m: number)
 			local X, Y =
@@ -541,12 +541,12 @@ function physicObject.Collide(this: PhysicObject, obj: PhysicObject)
 			s:SetPositionRaw(Vector2.new(X, Y))
 		end
 
-		if not obj.Anchored and physicObject.GetTouchMsg(obj, this) then
-			local a = this :: PhysicObject
+		if not obj.Anchored and physicObject.GetTouchMsg(obj, self) then
+			local a = self :: PhysicObject
 			calc(a, obj, 2)
 			a:SetTouchMsg(obj)
 		else
-			calc(this :: PhysicObject, obj, 1)
+			calc(self :: PhysicObject, obj, 1)
 		end
 	end
 end
@@ -610,7 +610,7 @@ function physicObject.new(
 ): PhysicObject
 	local TouchedEvent = Instance.new("BindableEvent")
 
-	local this: PhysicObjectStruct = {
+	local self: PhysicObjectStruct = {
 		Touched = TouchedEvent.Event,
 		TouchedEvent = TouchedEvent,
 		physicImage = Instance.new("Frame"),
@@ -645,7 +645,7 @@ function physicObject.new(
 
 	physicObject.Id += 1
 
-	return setup(this)
+	return setup(self)
 end
 
 return physicObject

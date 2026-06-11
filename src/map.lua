@@ -53,7 +53,7 @@ function map.CalcPlayerPositionAbsolute(
 	pos: Vector2
 ): Vector2
 	return player.Image.ImageInstance.AbsolutePosition
-		- (player.background.ImageInstance.AbsolutePosition :: Vector2)
+		- (self.Image.ImageInstance.AbsolutePosition :: Vector2)
 		- pos
 end
 
@@ -112,7 +112,9 @@ function map.SetPlayerPosition(
 	player: player2d.Player2d,
 	pos: Vector2
 )
+	self.Image.ImageInstance.Position = UDim2.fromScale(0,0)
 	local p = map.CalcPlayerPosition(self, player, pos)
+	print("get", Calc.ReturnPosition(p, self.Image), "from", pos)
 	self.Image.ImageInstance.Position = UDim2.fromOffset(p.X, p.Y)
 end
 
@@ -144,13 +146,8 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 
 	CalcPositions() -- первоначальный расчет
 
+
 	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
-
-	Player:CalcSizeAndPos()
-
-	local a = Calc.CalcPosition(self.StartPosition, Player.background)
-	print("AnchorTo:", self.StartPosition, "To:", a)
-	Player:SetPositionRaw(a)
 
 	--[[
 		расчет после изменения фрейма игры
@@ -243,6 +240,7 @@ function map.SetPlayer(
 	end
 
 	newPlayer.Size = self.PlayerSize or newPlayer.Size
+	newPlayer.background = self.Image
 
 	table.insert(self.Objects, newPlayer) -- add player to objects for enable collision for player
 end
