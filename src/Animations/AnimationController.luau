@@ -6,7 +6,7 @@ local base2d = require(script.Parent.Parent.base2d)
 --[=[
 	general character controller
 
-	@class AnimatedObject
+	@class AnimationController
 
 	@external Gif https://ukuroks-games.github.io/giflib/api/gif
 ]=]
@@ -48,7 +48,7 @@ export type AnimationController =
 
 	@method Preload 
 
-	@within AnimatedObject
+	@within AnimationController
 ]=]
 function AnimationController.Preload(self: AnimationController): { Instance }
 	local t = base2d.Preload(self)
@@ -72,7 +72,7 @@ end
 
 	@method GetAnimation
 
-	@within AnimatedObject
+	@within AnimationController
 ]=]
 function AnimationController.GetAnimation(
 	self: AnimationController,
@@ -98,7 +98,7 @@ end
 
 	@method SetAnimation
 
-	@within AnimatedObject
+	@within AnimationController
 ]=]
 function AnimationController.SetAnimation(
 	self: AnimationController,
@@ -165,7 +165,7 @@ end
 
 	@method StopAnimation
 
-	@within AnimatedObject
+	@within AnimationController
 ]=]
 function AnimationController.StopAnimations(self: AnimationController)
 	for _, v: AnimationsGroupDefault in pairs(self.Animations) do
@@ -181,7 +181,7 @@ end
 	@param ZIndex number
 
 	@method SetZIndex
-	@within AnimatedObject
+	@within AnimationController
 ]=]
 function AnimationController.SetZIndex(self: AnimationController, ZIndex: number)
 	for _, group: AnimationsGroupDefault in pairs(self.Animations) do
