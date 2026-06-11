@@ -2,10 +2,12 @@
 
 -- services
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
 --
 
+local stdlib = require(ReplicatedStorage.Packages.stdlib)
 local Calc = require(script.Parent.Calc)
 local ExImage = require(script.Parent.ExImage)
 local Object2d = require(script.Parent.Object2d)
@@ -93,9 +95,11 @@ function BaseCharacter2d.GetMoveTween(
 			),
 		})
 
-		tween.Completed:Connect(function(a0: Enum.PlaybackState)
-			self.AnchorPosition = Calc.ReturnPosition(instance.AbsolutePosition, self.background)
-		end)
+		stdlib.events
+			.AnyEvent({ tween.Completed, tween.Destroying }).Event
+			:Connect(function(a0: Enum.PlaybackState)
+				self.AnchorPosition = self:GetCoordinates()
+			end)
 	else
 		warn("self.WalkSpeed not been calculated")
 	end

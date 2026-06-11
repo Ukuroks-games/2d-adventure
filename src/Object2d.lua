@@ -54,11 +54,11 @@ end
 
 ]]
 function Object2d.SetPosition(self: Object2d, pos: Vector2)
-	if self.background then
-		self.AnchorPosition = Calc.ReturnPosition(pos, self.background)
-	end
-
 	physicObject.SetPosition(self, pos)
+
+	if self.background then
+		self.AnchorPosition = self:GetCoordinates()
+	end
 end
 
 --[[
@@ -82,12 +82,6 @@ function Object2d.SetSize(self: Object2d, size: Vector3)
 	physicObject.SetSize(self, size)
 end
 
---[[
-
-]]
-function Object2d.GetCoordinates(self: Object2d): Vector2
-	return self.AnchorPosition
-end
 
 --[=[
 	Constructor

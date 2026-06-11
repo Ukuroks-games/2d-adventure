@@ -139,7 +139,7 @@ function calc.CalcSize(Size: Vector3, background: ExImage.ExImage): Vector3
 end
 
 --[=[
-	Обратная CalcPosition функция
+	Обратная CalcPosition функция.
 
 	@param AbsolutePosition Vector2 -- координаты
 	@param background ExImage
@@ -157,22 +157,24 @@ function calc.ReturnPosition(
 
 			return Vector2.new(
 				AbsolutePosition.X
-					/ background.ImageInstance.AbsoluteSize.X
-					* background.RealSize.X,
+					/ (
+						background.ImageInstance.AbsoluteSize.X
+						/ background.RealSize.X
+					),
 				(AbsolutePosition.Y - UpSpace(h, background))
-					/ h
-					* background.RealSize.Y
+					/ (h / background.RealSize.Y)
 			)
 		elseif currentSizes > ResSizes then
 			local w = width(background)
 
 			return Vector2.new(
 				(AbsolutePosition.X - LeftSpace(w, background))
-					/ w
-					* background.RealSize.X,
+					/ (w / background.RealSize.X),
 				AbsolutePosition.Y
-					/ background.ImageInstance.AbsoluteSize.Y
-					* background.RealSize.Y
+					/ (
+						background.ImageInstance.AbsoluteSize.Y
+						/ background.RealSize.Y
+					)
 			)
 		end
 	end
@@ -208,10 +210,12 @@ function calc.ReturnSize(
 
 			return Vector3.new(
 				AbsoluteSize.X
-					/ background.ImageInstance.AbsoluteSize.X
-					* background.RealSize.X,
-				AbsoluteSize.Y / h * background.RealSize.Y,
-				AbsoluteSize.Z / h * background.RealSize.Y
+					/ (
+						background.ImageInstance.AbsoluteSize.X
+						/ background.RealSize.X
+					),
+				AbsoluteSize.Y / (h / background.RealSize.Y),
+				AbsoluteSize.Z / (h / background.RealSize.Y)
 			)
 		elseif currentSizes > ResSizes then -- поля справа и слева
 			local w = width(background)
@@ -219,25 +223,26 @@ function calc.ReturnSize(
 			return Vector3.new(
 				AbsoluteSize.X / w * background.RealSize.X,
 				AbsoluteSize.Y
-					/ background.ImageInstance.AbsoluteSize.Y
-					* background.RealSize.Y,
+					/ (
+						background.ImageInstance.AbsoluteSize.Y
+						/ background.RealSize.Y
+					),
 				AbsoluteSize.Z
-					/ background.ImageInstance.AbsoluteSize.Y
-					* background.RealSize.Y
+					/ (
+						background.ImageInstance.AbsoluteSize.Y
+						/ background.RealSize.Y
+					)
 			)
 		end
 	end
 
 	return Vector3.new(
 		AbsoluteSize.X
-			/ background.ImageInstance.AbsoluteSize.X
-			* background.RealSize.X,
+			/ (background.ImageInstance.AbsoluteSize.X / background.RealSize.X),
 		AbsoluteSize.Y
-			/ background.ImageInstance.AbsoluteSize.Y
-			* background.RealSize.Y,
+			/ (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y),
 		AbsoluteSize.Z
-			/ background.ImageInstance.AbsoluteSize.Y
-			* background.RealSize.Y
+			/ (background.ImageInstance.AbsoluteSize.Y / background.RealSize.Y)
 	)
 end
 

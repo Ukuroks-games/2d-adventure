@@ -390,12 +390,7 @@ end
 function physicObject.GetCoordinates(self: PhysicObject): Vector2
 	if self.background then
 		return Calc.ReturnPosition(
-			Vector2.new(
-				self.physicImage.AbsolutePosition.X
-					- self.background.ImageInstance.AbsolutePosition.X,
-				self.physicImage.AbsolutePosition.Y
-					- self.background.ImageInstance.AbsolutePosition.Y
-			),
+			self.Image.ImageInstance.AbsolutePosition - self.background.ImageInstance.AbsolutePosition,
 			self.background
 		)
 	else -- без фона не получится посчитать
@@ -414,14 +409,7 @@ end
 function physicObject.GetCenterCoordinates(self: PhysicObject): Vector2
 	if self.background then
 		return Calc.ReturnPosition(
-			Vector2.new(
-				self.physicImage.AbsolutePosition.X
-					- self.background.ImageInstance.AbsolutePosition.X
-					+ (self.physicImage.AbsoluteSize.X / 2),
-				self.physicImage.AbsolutePosition.Y
-					- self.background.ImageInstance.AbsolutePosition.Y
-					+ (self.physicImage.AbsoluteSize.Y / 2)
-			),
+			self.physicImage.AbsolutePosition - (self.physicImage.AbsoluteSize / Vector2.new(2,2)),
 			self.background
 		)
 	else -- без фона не получится посчитать

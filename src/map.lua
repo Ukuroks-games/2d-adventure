@@ -13,6 +13,7 @@ local physic = require(script.Parent.physic)
 local physicObject = require(script.Parent.physicObject)
 local player2d = require(script.Parent.player)
 local PhysicController = require(script.Parent.PhysicController)
+local player = require(script.Parent.player)
 
 --[=[
 	Map class
@@ -51,10 +52,9 @@ function map.CalcPlayerPositionAbsolute(
 	player: player2d.Player2d,
 	pos: Vector2
 ): Vector2
-	return Vector2.new(
-		(player.Image.ImageInstance.AbsolutePosition.X - player.background.ImageInstance.AbsolutePosition.X) - pos.X,
-		(player.Image.ImageInstance.AbsolutePosition.Y - player.background.ImageInstance.AbsolutePosition.Y) - pos.Y
-	)
+	return player.Image.ImageInstance.AbsolutePosition
+		- (player.background.ImageInstance.AbsolutePosition :: Vector2)
+		- pos
 end
 
 --[[
@@ -138,8 +138,6 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 
 	self:SetPlayer(Player)
 
-	Player:SetPosition(Vector2.new())
-
 	for _, v in pairs(self.Objects) do
 		v:SetBackground(self.Image)
 	end
@@ -149,6 +147,10 @@ function map.Init(self: Map, Player: player2d.Player2d, GameFrame: Frame)
 	self:SetPlayerPosition(Player, self.StartPosition or Vector2.new(0, 0))
 
 	Player:CalcSizeAndPos()
+
+	local a = Calc.CalcPosition(self.StartPosition, Player.background)
+	print("AnchorTo:", self.StartPosition, "To:", a)
+	Player:SetPositionRaw(a)
 
 	--[[
 		расчет после изменения фрейма игры

@@ -107,8 +107,37 @@
 									0
 								]
 							]
+						}
+					}
+				},
+				"Coords": {
+					"$className": "TextLabel",
+					"$properties": {
+						"Size": {
+							"UDim2": [
+								[
+									0.1,
+									0
+								],
+								[
+									0.1,
+									0
+								]
+							]
 						},
-						"ZIndex": 999
+						"Position": {
+							"UDim2": [
+								[
+									0.9,
+									0
+								],
+								[
+									0.8,
+									0
+								]
+							]
+						},
+						"TextScaled": true
 					}
 				},
 				"$properties": {

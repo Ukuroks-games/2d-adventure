@@ -4,6 +4,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local testlib = require(ReplicatedStorage.DevPackages.testlib)
+local stdlib = require(ReplicatedStorage.Packages.stdlib)
 local Calc = require(ReplicatedStorage.Packages["2d-adventure"].Calc)
 local ExImage = require(ReplicatedStorage.Packages["2d-adventure"].ExImage)
 
@@ -38,22 +39,31 @@ end)
 
 local TestsNum = 1000
 
+local diffsP = {}
+local diffsS = {}
+
 for i = 1, TestsNum do
-	local Pos = Vector2.new(math.random(-256, 256), math.random(-256, 256))
+	local Pos = Vector2.new(math.random(-4096, 4096), math.random(-4096, 4096))
 	local Size = Vector3.new(
-		math.random(-256, 256),
-		math.random(-256, 256),
-		math.random(-256, 256)
+		math.random(-4096, 4096),
+		math.random(-4096, 4096),
+		math.random(-4096, 512)
 	)
 
 	testlib:AddTest(
 		testlib.test.new(
 			"ReturnPos " .. i .. " " .. tostring(Pos),
 			function(): boolean
-				return Calc.ReturnPosition(
+				local v = Calc.ReturnPosition(
 					Calc.CalcPosition(Pos, background),
 					background
-				) == Pos
+				)
+
+				table.insert(diffsP, math.abs(v.X - Pos.X))
+				table.insert(diffsP, math.abs(v.Y - Pos.Y))
+
+				return stdlib.math.floatcmp(v.X, Pos.X, 1.6e-5)
+					and stdlib.math.floatcmp(v.Y, Pos.Y, 1.6e-5)
 			end
 		)
 	)
@@ -62,10 +72,16 @@ for i = 1, TestsNum do
 		testlib.test.new(
 			"ReturnSize " .. i .. " " .. tostring(Size),
 			function(): boolean
-				return Calc.ReturnSize(
-					Calc.CalcSize(Size, background),
-					background
-				) == Size
+				local v =
+					Calc.ReturnSize(Calc.CalcSize(Size, background), background)
+
+				table.insert(diffsS, math.abs(v.X - Size.X))
+				table.insert(diffsS, math.abs(v.Y - Size.Y))
+				table.insert(diffsS, math.abs(v.Z - Size.Z))
+
+				return stdlib.math.floatcmp(v.X, Size.X, 1.6e-5)
+					and stdlib.math.floatcmp(v.Y, Size.Y, 1.6e-5)
+					and stdlib.math.floatcmp(v.Z, Size.Z, 1.6e-5)
 			end
 		)
 	)
@@ -74,3 +90,6 @@ end
 wait(1)
 
 testlib:Summary()
+
+print("POSITION PRECISION", diffsP[table.maxn(diffsP)])
+print("SIZE PRECISION", diffsS[table.maxn(diffsS)])
