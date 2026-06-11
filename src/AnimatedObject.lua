@@ -1,7 +1,8 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local AnimationController = require(
+	ReplicatedStorage.Packages["2d-adventure"].Animations.AnimationController
+)
 local Animation = require(script.Parent.Animations.Animation)
-local ExImage = require(script.Parent.ExImage)
-
-local base2d = require(script.Parent.base2d)
 
 --[=[
 	character animation controller
@@ -10,7 +11,7 @@ local base2d = require(script.Parent.base2d)
 
 	@external Gif https://ukuroks-games.github.io/giflib/api/gif
 ]=]
-local animatedObject = {}
+local animatedObject = setmetatable({}, { __index = AnimationController })
 
 type AnimationsGroupDefault = { [string]: Animation.Animation }
 
@@ -44,201 +45,33 @@ export type Animations = {
 	IDLE: AnimationsGroupDefault,
 }
 
-export type AnimatedObjectStruct = {
-	--[[
-		Анимации
-	]]
-	Animations: Animations,
-
-	--[[
-		Текущая анимация
-	]]
-	CurrentAnimation: string,
-} & base2d.Base2dStruct
-
 --[[
 	Animations controller
 ]]
 export type AnimatedObject =
-	base2d.Base2d
-	& AnimatedObjectStruct
+	AnimationController.AnimationController
 	& typeof(animatedObject)
 
---[=[
+local function setup(self: AnimationController): AnimatedObject
+	AnimationController.UpdateParent(self)
 
-	@return { Instance } -- List of Instances for [`ContentProvider:PreloadAsync`](https://create.roblox.com/docs/reference/engine/classes/ContentProvider#PreloadAsync)
-
-	@method Preload 
-
-	@within AnimatedObject
-]=]
-function animatedObject.Preload(self: AnimatedObject): { Instance }
-	local t = base2d.Preload(self)
-
-	for _, group: AnimationsGroupDefault in pairs(self.Animations) do
-		for _, animation in pairs(group) do
-			for _, frame in pairs(animation.gif.Frames) do
-				table.insert(t, frame.Image)
-			end
-		end
-	end
-
-	return t
-end
-
---[=[
-	GetAnimation
-
-	@param animationName string
-	@return Animation? -- found gif or nil
-
-	@method GetAnimation
-
-	@within AnimatedObject
-]=]
-function animatedObject.GetAnimation(
-	self: AnimatedObject,
-	animationName: string
-): Animation.Animation?
-	local g = self.Animations[animationName:sub(1, 4)] :: Animations
-
-	if g then
-		return g[animationName:sub(5)]
-	else
-		warn("Animation " .. tostring(animationName) .. "not exist")
-		return nil
-	end
-end
-
---[=[
-	Set current animation.
-
-	Automatically stop current animation and start specified animation
-
-	@param self AnimatedObject
-	@param animationName string
-
-	@method SetAnimation
-
-	@within AnimatedObject
-]=]
-function animatedObject.SetAnimation(
-	self: AnimatedObject,
-	animationName: string
-)
-	local animation = self:GetAnimation(animationName)
-	if animation and self.CurrentAnimation ~= animationName then
-		self:StopAnimation()
-
-		self.CurrentAnimation = animationName
-
-		animation.gif:RestartAnimation(true)
-		animation.audio:Play()
-	end
-end
-
---[=[
-	Raw start current or specified animation.
-
-	Usually you don't need to call this function.
-
-	@param self AnimatedObject
-	@param animationName string
-
-	@method StartAnimation
-
-	@within AnimatedObject
-]=]
-function animatedObject.StartAnimation(
-	self: AnimatedObject,
-	animationName: string?
-)
-	local animation = self:GetAnimation(animationName or self.CurrentAnimation)
-
-	if animation then
-		animation:Start()
-	end
-end
-
---[=[
-	Stop (and hide) current or specified animation
-
-	@param animationName string?
-	@return Animation? -- Stopped animation
-
-	@method StopAnimation
-	@within AnimatedObject
-]=]
-function animatedObject.StopAnimation(
-	self: AnimatedObject,
-	animationName: string?
-): Animation.Animation?
-	local animation = self:GetAnimation(animationName or self.CurrentAnimation)
-
-	if animation then
-		animation:Stop()
-	end
-
-	return animation
-end
-
---[=[
-	Stop all animations
-
-	@method StopAnimation
-
-	@within AnimatedObject
-]=]
-function animatedObject.StopAnimations(self: AnimatedObject)
-	for _, v: AnimationsGroupDefault in pairs(self.Animations) do
-		for _, animation in pairs(v) do
-			animation:Stop()
-		end
-	end
-end
-
---[=[
-	Set ZIndex
-
-	@param ZIndex number
-
-	@method SetZIndex
-	@within AnimatedObject
-]=]
-function animatedObject.SetZIndex(self: AnimatedObject, ZIndex: number)
-	for _, group: AnimationsGroupDefault in pairs(self.Animations) do
-		for _, animation in pairs(group) do
-			animation.gif:SetZIndex(ZIndex)
-		end
-	end
-end
-
-function animatedObject.UpdateParent(self: AnimatedObject | AnimatedObjectStruct)
-	for _, g: AnimationsGroupDefault in pairs(self.Animations) do
-		for _, a in pairs(g) do
-			a.gif:SetParent(self.Image.ImageInstance)
-		end
-	end
-end
-
-local function setup(self: AnimatedObjectStruct): AnimatedObject
-	animatedObject.UpdateParent(self)
-	
-	setmetatable(self, { __index = animatedObject })
+	setmetatable(self, { __index = AnimationController })
 
 	return self :: AnimatedObject
 end
 
-function animatedObject.Clone(self: AnimatedObject): AnimatedObject
-	local copy = {
-		Animations = {
-			["IDLE"] = {},
-			["Walk"] = {},
-			["Stay"] = {}
-		},
-		Image = self.Image,
-		CurrentAnimation = self.CurrentAnimation
-	}
+function animatedObject.Clone(self: AnimatedObjectStruct): AnimatedObject
+	local copy = self:Clone()
+
+	local function CheckGroup(name)
+		if not copy.Animations[name] then
+			copy.Animations[name] = {}
+		end
+	end
+
+	CheckGroup("Walk")
+	CheckGroup("Stay")
+	CheckGroup("IDLE")
 
 	return setup(copy :: AnimatedObjectStruct)
 end
