@@ -32,13 +32,12 @@ local Pause = Players.LocalPlayer
 	:WaitForChild("ScreenUI")
 	:WaitForChild("Pause") :: TextButton
 
-local Coords
-if adventure2d.config.ShowHitboxes then
-	Coords = Players.LocalPlayer
-		:WaitForChild("PlayerGui")
-		:WaitForChild("ScreenUI")
-		:WaitForChild("Coords") :: TextLabel
-end
+local Coords = Players.LocalPlayer
+	:WaitForChild("PlayerGui")
+	:WaitForChild("ScreenUI")
+	:WaitForChild("Coords") :: TextLabel
+
+Coords.Visible = adventure2d.config.ShowHitboxes
 
 local cam = camera2d.new(1)
 
@@ -149,7 +148,9 @@ Pause.MouseButton1Click:Connect(function()
 end)
 
 if Coords then
-	player.Move:Connect(function(_)
+	local function OnMove(_)
 		Coords.Text = tostring(player:GetCoordinates())
-	end)
+	end
+	OnMove(nil)
+	player.Move:Connect(OnMove)
 end
