@@ -390,7 +390,8 @@ end
 function physicObject.GetCoordinates(self: PhysicObject): Vector2
 	if self.background then
 		return Calc.ReturnPosition(
-			self.Image.ImageInstance.AbsolutePosition - self.background.ImageInstance.AbsolutePosition,
+			self.Image.ImageInstance.AbsolutePosition
+				- self.background.ImageInstance.AbsolutePosition,
 			self.background
 		)
 	else -- без фона не получится посчитать
@@ -409,7 +410,8 @@ end
 function physicObject.GetCenterCoordinates(self: PhysicObject): Vector2
 	if self.background then
 		return Calc.ReturnPosition(
-			self.physicImage.AbsolutePosition - (self.physicImage.AbsoluteSize / Vector2.new(2,2)),
+			self.physicImage.AbsolutePosition
+				- (self.physicImage.AbsoluteSize / Vector2.new(2, 2)),
 			self.background
 		)
 	else -- без фона не получится посчитать
@@ -564,11 +566,64 @@ local function setup(self): PhysicObject
 
 	ObjectsRegistry[self.ID] = self
 
-	self.Touched:Connect(function (obj)
+	self.Touched:Connect(function(obj)
 		physicObject.Collide(self, obj)
 	end)
 
 	return self
+end
+
+local function tableSetup(
+	Image: ExImage.ExImage,
+	phsyicImage: Frame,
+	TouchedEvent: BindableEvent?,
+	canCollide: boolean?,
+	checkingTouchedSize: boolean?,
+	anchored: boolean?,
+	background: ExImage.ExImage?,
+	imageOffset: Vector2?,
+	imageSize: Vector2?,
+	TransparencyOnFocusedBack: number?,
+	PhysicMode: number?
+): PhysicObjectStruct
+
+	if not TouchedEvent then
+		TouchedEvent = Instance.new("BindableEvent")
+	end
+
+	--TouchedEvent.Parent = phsyicImage
+
+	local self =  {
+		Touched = TouchedEvent.Event,
+		TouchedEvent = TouchedEvent,
+		physicImage = phsyicImage,
+		CanCollide = canCollide or true,
+		TouchedSideMutex = mutex.new(false),
+		TouchedSide = {
+			Right = {},
+			Left = {},
+			Up = {},
+			Down = {},
+		},
+		Anchored = anchored or true,
+		Size = Vector3.new(),
+		Image = Image,
+		TouchMsg = {},
+		TouchMsgMutex = mutex.new(),
+		ID = physicObject.Id,
+		background = background,
+		ImageOffset = imageOffset or Vector2.new(),
+		ImageSize = imageSize or Vector2.new(-1, -1),
+		TransparencyOnFocusedBack = TransparencyOnFocusedBack or 0,
+		InFocus = false,
+		PhysicMode = PhysicMode or physicObject.PhysicMode.CanCollide,
+		checkingTouchedSize = checkingTouchedSize or false,
+	} :: PhysicObjectStruct
+
+	physicObject.Id += 1
+
+	return self
+
 end
 
 function physicObject.Clone(self: PhysicObject): PhysicObject
@@ -580,6 +635,11 @@ function physicObject.Clone(self: PhysicObject): PhysicObject
 	ret.Image = self.Image:Clone()
 
 	return setup(ret)
+end
+
+function physicObject.fromExists(f: Frame): PhysicObject
+	local self = tableSetup(ExImage.fromExists(f:WaitForChild("ImageLabel")), f, nil, nil, nil, nil, f.Parent)
+	return setup(self)
 end
 
 --[=[
@@ -608,42 +668,19 @@ function physicObject.new(
 	TransparencyOnFocusedBack: number?,
 	PhysicMode: number?
 ): PhysicObject
-	local TouchedEvent = Instance.new("BindableEvent")
-
-	local self: PhysicObjectStruct = {
-		Touched = TouchedEvent.Event,
-		TouchedEvent = TouchedEvent,
-		physicImage = Instance.new("Frame"),
-		CanCollide = canCollide or true,
-		TouchedSideMutex = mutex.new(false),
-		TouchedSide = {
-			Right = {},
-			Left = {},
-			Up = {},
-			Down = {},
-		},
-		Anchored = (function()
-			if anchored ~= nil then
-				return anchored
-			else
-				return true
-			end
-		end)(),
-		Size = Vector3.new(),
-		Image = Image,
-		TouchMsg = {},
-		TouchMsgMutex = mutex.new(),
-		ID = physicObject.Id,
-		background = background,
-		ImageOffset = imageOffset or Vector2.new(),
-		ImageSize = imageSize or Vector2.new(-1, -1),
-		TransparencyOnFocusedBack = TransparencyOnFocusedBack or 0,
-		InFocus = false,
-		PhysicMode = PhysicMode or physicObject.PhysicMode.CanCollide,
-		checkingTouchedSize = checkingTouchedSize,
-	}
-
-	physicObject.Id += 1
+	local self = tableSetup(
+	Image,
+	Instance.new("Frame"),
+		nil,
+		canCollide,
+		checkingTouchedSize,
+		anchored,
+		background,
+		imageOffset,
+		imageSize,
+		TransparencyOnFocusedBack,
+		PhysicMode
+	)
 
 	return setup(self)
 end

@@ -39,6 +39,12 @@ function base2d.Clone<T>(self: T): T
 	return stdlib.utility.clone(self)
 end
 
+function base2d.fromExists(img: ExImage.ExImage): Base2d
+	local self = base2d.new(img)
+
+	return self
+end
+
 --[=[
 	@param image ExImage
 	@return Base2d

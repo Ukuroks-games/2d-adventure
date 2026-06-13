@@ -17,15 +17,12 @@ local ExImage = adventure2d.ExImage
 
 --adventure2d.config.ShowHitboxes = true
 
-local GameFrame = Players.LocalPlayer
-	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui")
-	:WaitForChild("Frame") :: Frame
+local gui =
+	Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui")
 
-local DialogFrame = Players.LocalPlayer
-	:WaitForChild("PlayerGui")
-	:WaitForChild("ScreenGui")
-	:WaitForChild("Dialog") :: Frame
+local GameFrame = gui:WaitForChild("Frame") :: Frame
+
+local DialogFrame = gui:WaitForChild("Dialog") :: Frame
 
 local Pause = Players.LocalPlayer
 	:WaitForChild("PlayerGui")
@@ -41,16 +38,23 @@ Coords.Visible = adventure2d.config.ShowHitboxes
 
 local cam = camera2d.new(1)
 
-local changeMap = Object2d.new(
-	Vector2.new(336, 94),
+local changeMap = Object2d.fromExists(
+	GameFrame:WaitForChild("Entrace"):WaitForChild("shee door"),
 	Vector3.new(28, 69, 10),
-	ExImage.new("84486373084684")
+	Vector2.new(336, 94)
 )
 
-local shee = Object2d.new(
-	Vector2.new(300, 140),
+local shee = Object2d.fromExists(
+
+	GameFrame:WaitForChild("Entrace"):WaitForChild("shee"),
 	Vector3.new(24, 50, 8),
-	ExImage.new("75550147574274")
+	Vector2.new(300, 140)
+)
+
+local ChangeBack2 = adventure2d.Object2d.fromExists(
+	GameFrame:WaitForChild("SheeApartment"):WaitForChild("Exit"),
+	Vector3.new(65, 50, 50),
+	Vector2.new(15, 414)
 )
 
 local map1 = map.new(Vector2.new(1, 1), cam, "114575775575709", {
@@ -71,12 +75,6 @@ local map1 = map.new(Vector2.new(1, 1), cam, "114575775575709", {
 	),
 	shee,
 }, Vector2.new(80, 300), Vector3.new(22, 48, 8))
-
-local ChangeBack2 = adventure2d.Object2d.new(
-	Vector2.new(15, 414),
-	Vector3.new(65, 50, 50),
-	adventure2d.ExImage.new("")
-)
 
 local map2 = map.new(Vector2.new(1, 1), cam, "113837532573611", {
 	ChangeBack2,

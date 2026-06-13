@@ -40,6 +40,9 @@
 								]
 							]
 						}
+					},
+					"Entrace": {
+						"$path": "tests/demo/entrace.rbxm"
 					}
 				},
 				"Dialog": {
