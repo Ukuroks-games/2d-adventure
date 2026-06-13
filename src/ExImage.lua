@@ -47,7 +47,6 @@ local function GetResolution(id: string, overrideSize: Vector2?): Vector2?
 	if overrideSize then
 		return overrideSize
 	else
-		
 		local s, e = pcall(function(...)
 			return AssetService:CreateEditableImageAsync(id).Size
 		end)
@@ -67,10 +66,31 @@ end
 ]=]
 function ExImage.SetImage(self: ExImage, id: string, overrideSize: Vector2?)
 	id = "rbxassetid://" .. id
-	
+
 	self.ImageInstance.Image = id
 
 	self.RealSize = GetResolution(id, overrideSize) or Vector2.new()
+end
+
+local function setup(
+	ImageInstance: ImageLabel | ImageButton,
+	realSize: Vector2?
+)
+	local self: ExImageStruct = {
+		RealSize = realSize or Vector2.new(),
+		ImageInstance = ImageInstance,
+	}
+
+	setmetatable(self, { __index = ExImage })
+
+	return self
+end
+
+function ExImage.fromExists(
+	ImageInstance: ImageLabel | ImageButton,
+	realSize: Vector2?
+): ExImage
+	return setup(ImageInstance, realSize)
 end
 
 --[=[
@@ -89,16 +109,11 @@ function ExImage.new(
 		end
 	end)())
 
-	local _self: ExImageStruct = {
-		RealSize = Vector2.new(),
-		ImageInstance = ImageInstance,
-	}
+	local self = setup(ImageInstance)
 
-	setmetatable(_self, { __index = ExImage })
+	self:SetImage(id, overrideSize)
 
-	_self:SetImage(id, overrideSize)
-
-	return _self
+	return self
 end
 
 return ExImage

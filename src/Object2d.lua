@@ -82,6 +82,27 @@ function Object2d.SetSize(self: Object2d, size: Vector3)
 	physicObject.SetSize(self, size)
 end
 
+local function setup(self, AnchorPosition: Vector2, Size: Vector3) : Object2d
+	self.AnchorPosition = AnchorPosition
+	self.Size = Size
+
+	self.Image.ImageInstance.BackgroundTransparency = 1
+
+	setmetatable(self, {
+		__index = Object2d,
+	})
+
+	return self
+end
+
+function Object2d.fromExists(
+	f: Frame,
+	Size: Vector3,
+	AnchorPosition: Vector2?
+): Object2d
+	local self = physicObject.fromExists(f)
+	return setup(self, AnchorPosition or self:GetCoordinates(), Size)
+end
 
 --[=[
 	Constructor
@@ -97,16 +118,7 @@ function Object2d.new(
 ): Object2d
 	local self = physicObject.new(Image, canCollide, CheckTouchedSide, anchored)
 
-	self.AnchorPosition = AnchorPosition
-	self.Size = Size
-
-	self.Image.ImageInstance.BackgroundTransparency = 1
-
-	setmetatable(self, {
-		__index = Object2d,
-	})
-
-	return self
+	return setup(self, AnchorPosition, Size)
 end
 
 return Object2d
